@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Zelvora – E-Learning, Business Consulting & Social Media Marketing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Zelvora helps entrepreneurs and small businesses grow with e-learning, business consulting and social media marketing.">
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --primary: #0c2340;
+      --accent: #1f7aff;
+      --text: #111827;
+      --muted: #6b7280;
+      --card: #ffffff;
+      --border: #e5e7eb;
+      --radius-lg: 18px;
+      --radius-pill: 999px;
+      --shadow: 0 18px 40px rgba(15,23,42,0.08);
+      --max-width: 1120px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    .page {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 22px 16px 40px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 26px;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 22px;
+    }
+    .logo-text-main {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: .08em;
+    }
+    .logo-text-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    nav {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 18px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: #175ac0;
+      box-shadow: 0 14px 30px rgba(31,122,255,.35);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--primary);
+      border-color: var(--border);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      gap: 20px;
+      padding: 26px 22px;
+      border-radius: 28px;
+      background: radial-gradient(circle at top left,#e2e8ff,#f6f7fb);
+      box-shadow: var(--shadow);
+      margin-bottom: 30px;
+    }
+    @media (max-width: 768px) {
+      header { flex-direction: column; align-items: flex-start; }
+      nav { display: none; }
+      .hero { grid-template-columns: minmax(0,1fr); padding: 18px 16px; }
+    }
+
+    .hero-kicker {
+      font-size: 11px;
+      color: var(--muted);
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(255,255,255,.8);
+      border: 1px solid #d4ddff;
+      display: inline-flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .hero-title {
+      font-size: clamp(26px, 4vw, 34px);
+      font-weight: 750;
+      letter-spacing: -.03em;
+      margin-bottom: 10px;
+    }
+    .hero-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      max-width: 420px;
+      margin-bottom: 16px;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .hero-note {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .hero-card {
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid #dde3ff;
+      padding: 16px 14px;
+      font-size: 12px;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .badge {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: #eef1ff;
+      color: #374151;
+    }
+    .mini-stat {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #e5e7eb;
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+    }
+
+    .section {
+      margin-bottom: 28px;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 650;
+    }
+    .section-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      max-width: 380px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+      gap: 14px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 14px 14px 15px;
+      border: 1px solid var(--border);
+      box-shadow: 0 12px 26px rgba(15,23,42,0.05);
+      font-size: 12px;
+    }
+    .card-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .pill-list span {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: #f3f4f6;
+    }
+    .card-footer {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .price-tag {
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 12px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0,1.3fr) minmax(0,1fr);
+      gap: 14px;
+    }
+    @media (max-width: 768px) {
+      .two-col { grid-template-columns: minmax(0,1fr); }
+    }
+    .list {
+      font-size: 12px;
+      color: var(--muted);
+      padding-left: 16px;
+    }
+    .list li { margin-bottom: 4px; }
+
+    .contact {
+      margin-top: 12px;
+      padding: 16px 14px;
+      border-radius: 18px;
+      background: #0b1220;
+      color: #e5e7eb;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+    .contact-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .contact-sub {
+      font-size: 12px;
+      opacity: .8;
+    }
+    .contact-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .btn-light {
+      padding: 9px 15px;
+      border-radius: 999px;
+      border: none;
+      background: #f9fafb;
+      color: #111827;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-outline-light {
+      padding: 9px 15px;
+      border-radius: 999px;
+      border: 1px solid rgba(249,250,251,.5);
+      background: transparent;
+      color: #e5e7eb;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    footer {
+      margin-top: 18px;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="logo-row">
+        <div class="logo-icon">Z</div>
+        <div>
+          <div class="logo-text-main">ZELVORA</div>
+          <div class="logo-text-sub">E-Learning • Business Consulting • Social Media Marketing</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <nav>
+          <a href="#services">Services</a>
+          <a href="#about">About</a>
+          <a href="#courses">E-Learning</a>
+          <a href="#contact">Contact</a>
+        </nav>
+        <a href="#contact" class="btn btn-ghost">Book a Call</a>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero">
+        <div>
+          <div class="hero-kicker">
+            <span>Strategy • Skills • Visibility</span>
+            <span>Built for entrepreneurs & small businesses</span>
+          </div>
+          <h1 class="hero-title">
+            Grow smarter with Zelvora: learn, launch and scale your online presence.
+          </h1>
+          <p class="hero-subtitle">
+            We combine practical e-learning, hands-on business consulting and social media marketing
+            to help you turn ideas into a profitable, visible brand.
+          </p>
+          <div class="hero-actions">
+            <a href="#services" class="btn btn-primary">Explore Services</a>
+            <a href="https://wa.me/917306770117" class="btn btn-ghost">WhatsApp: +91 73067 70117</a>
+          </div>
+          <p class="hero-note">
+            Done-for-you support for busy founders — clear strategy, simple systems and content that converts.
+          </p>
+        </div>
+        <div class="hero-card">
+          <strong style="font-size:13px;">What we help you achieve</strong>
+          <div class="badge-row">
+            <span class="badge">Launch or refine your offer</span>
+            <span class="badge">Build a simple online funnel</span>
+            <span class="badge">Stand out on social media</span>
+          </div>
+          <p style="font-size:12px;color:var(--muted);">
+            Start with a clarity call, choose a service or program that fits your stage,
+            and get step-by-step guidance instead of random advice.
+          </p>
+          <div class="mini-stat">
+            <span>📚 E-learning tracks for self-paced growth</span>
+            <span>📲 Direct support via WhatsApp & email</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SERVICES -->
+      <section id="services" class="section">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Core services</h2>
+            <p class="section-subtitle">
+              Three pillars that work together: learn the skills, get the strategy, and stay visible online.
+            </p>
+          </div>
+        </div>
+        <div class="card-grid">
+          <article class="card">
+            <div class="card-label">E-Learning</div>
+            <h3 class="card-title">Zelvora Learning Studio</h3>
+            <p>
+              Bite-sized, practical online lessons that show you exactly how to
+              plan, launch and grow your personal or business brand.
+            </p>
+            <div class="pill-list">
+              <span>Online business basics</span>
+              <span>Content & branding</span>
+              <span>Beginner-friendly</span>
+            </div>
+            <div class="card-footer">
+              <span class="price-tag">From ₹799 / course</span>
+              <span>Self-paced access</span>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-label">Consulting</div>
+            <h3 class="card-title">Business & Brand Consulting</h3>
+            <p>
+              1:1 sessions to clarify your niche, offers, pricing, and simple strategies
+              you can actually maintain as a solo founder or small team.
+            </p>
+            <div class="pill-list">
+              <span>Niche & offer clarity</span>
+              <span>Simple funnel plans</span>
+              <span>Action steps in writing</span>
+            </div>
+            <div class="card-footer">
+              <span class="price-tag">From ₹1,499 / session</span>
+              <span>Online via Zoom</span>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-label">Marketing</div>
+            <h3 class="card-title">Social Media & Content</h3>
+            <p>
+              Strategy, content ideas and execution support so your brand looks
+              consistent and professional across Instagram, Facebook & more.
+            </p>
+            <div class="pill-list">
+              <span>Content calendars</span>
+              <span>Profile optimisation</span>
+              <span>Done-with-you support</span>
+            </div>
+            <div class="card-footer">
+              <span class="price-tag">Custom monthly packages</span>
+              <span>Limited slots</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ABOUT + COURSES -->
+      <section id="about" class="section two-col">
+        <div>
+          <div class="section-header" style="margin-bottom:8px;">
+            <div>
+              <h2 class="section-title">About Zelvora</h2>
+            </div>
+          </div>
+          <p class="section-subtitle" style="max-width:none;margin-bottom:8px;">
+            Zelvora was created to make online growth simpler for small businesses and individuals.
+            No jargon, no 100-page plans — just clear guidance, realistic strategies and
+            compact lessons that fit into a busy life.
+          </p>
+          <ul class="list">
+            <li>We focus on what actually moves the needle, not trends for the sake of views.</li>
+            <li>We keep things lean, so you can start even with a low budget and basic tools.</li>
+            <li>Everything is designed to be practical for Indian and global audiences.</li>
+          </ul>
+        </div>
+
+        <div id="courses">
+          <div class="section-header" style="margin-bottom:8px;">
+            <div>
+              <h2 class="section-title">Sample learning paths</h2>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:10px;">
+            <div class="card-label">PATH 01</div>
+            <div class="card-title">Launch Your First Online Service</div>
+            <ul class="list">
+              <li>Clarify problem, audience and offer.</li>
+              <li>Set up a simple landing page & booking flow.</li>
+              <li>Create 30 days of basic content to promote it.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label">PATH 02</div>
+            <div class="card-title">Social Media Visibility Sprint</div>
+            <ul class="list">
+              <li>Optimise your Instagram / Facebook profile.</li>
+              <li>Plan a 4-week posting schedule.</li>
+              <li>Learn how to turn followers into enquiries.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section id="contact" class="contact">
+        <div>
+          <div class="contact-title">Ready to talk to Zelvora?</div>
+          <div class="contact-sub">
+            Share your situation in a message, and we’ll reply with the best next step:
+            a course, a consulting session, or a custom package.
+          </div>
+        </div>
+        <div class="contact-actions">
+          <a href="tel:+917306770117" class="btn-light">📞 Call: +91 73067 70117</a>
+          <a href="mailto:zelvora.global@gmail.com?subject=Zelvora%20enquiry" class="btn-outline-light">
+            ✉ Email: zelvora.global@gmail.com
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>© <span id="year"></span> Zelvora. All rights reserved.</span>
+      <span>Built in India • Online services worldwide.</span>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
