@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Zelvora Academy – Online Tuition & Skill Learning Centre</title>
+  <title>Zelvora – Online Academy & Mentoring Platform</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Zelvora Academy is an online learning centre offering tuition classes and skill-based training for students and young learners. Headquartered in Kerala, serving students worldwide.">
+  <meta name="description" content="Zelvora offers online tuition for students, skill training, business consulting and personal mentoring. Headquartered in Kerala, serving clients worldwide.">
   <style>
     :root {
       --bg: #f5f7fb;
@@ -165,7 +165,7 @@
     .hero-subtitle {
       font-size: 13px;
       color: #cbd5f5;
-      max-width: 460px;
+      max-width: 480px;
       margin-bottom: 16px;
     }
 
@@ -258,25 +258,14 @@
       max-width: 420px;
     }
 
-    .stats-strip {
-      margin-top: 14px;
-      padding: 11px 12px;
-      border-radius: var(--radius-lg);
-      background: #0f172a;
-      color: #e5e7eb;
+    .cols-two {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0,1fr));
-      gap: 8px;
-      font-size: 11px;
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+      gap: 14px;
     }
 
-    .stats-strip strong {
-      display: block;
-      font-size: 15px;
-    }
-
-    @media (max-width: 640px) {
-      .stats-strip { grid-template-columns: minmax(0,1fr); }
+    @media (max-width: 768px) {
+      .cols-two { grid-template-columns: minmax(0,1fr); }
     }
 
     .card-grid {
@@ -330,17 +319,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-
-    .two-col {
-      display: grid;
-      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-      gap: 14px;
-      margin-top: 6px;
-    }
-
-    @media (max-width: 768px) {
-      .two-col { grid-template-columns: minmax(0,1fr); }
     }
 
     .list {
@@ -465,15 +443,15 @@
       <div class="brand">
         <img src="logo-zelvora.png" alt="Zelvora logo" class="logo-img">
         <div>
-          <div class="brand-title">ZELVORA ACADEMY</div>
-          <div class="brand-subtitle">Online Tuition & Skill Learning Centre • Kerala • Serving Worldwide</div>
+          <div class="brand-title">ZELVORA</div>
+          <div class="brand-subtitle">Online Academy • Business Mentoring • Kerala • Serving worldwide</div>
         </div>
       </div>
       <div style="display:flex;gap:10px;align-items:center;">
         <nav>
-          <a href="#services">Programs</a>
-          <a href="#about">About</a>
-          <a href="#paths">Learning Paths</a>
+          <a href="#students">For Students</a>
+          <a href="#business">For Business</a>
+          <a href="#paths">Learning & Mentoring</a>
           <a href="#contact">Contact</a>
         </nav>
         <a href="#contact" class="btn btn-ghost">Enquire now</a>
@@ -485,112 +463,95 @@
       <section class="hero">
         <div>
           <div class="hero-kicker">
-            <span>Online academy for students & young learners</span>
-            <span>Tuition • Skills • Support</span>
+            <span>Online academy & mentoring platform</span>
+            <span>Students • Learners • Entrepreneurs</span>
           </div>
           <h1 class="hero-title">
-            Help your child <span>understand better, score higher</span> and grow with the right skills.
+            One platform for <span>tuition, skills</span> and <span>business mentoring</span>.
           </h1>
           <p class="hero-subtitle">
-            Zelvora Academy is an online learning centre offering live tuition, study support and skill-based
-            training for students. Flexible timings, clear explanations and personalised attention.
+            Zelvora helps school students, young adults and small business owners with clear teaching,
+            skill training and practical guidance — fully online, from Kerala to the world.
           </p>
           <div class="hero-actions">
-            <a href="#services" class="btn btn-primary">View programs</a>
-            <a href="https://wa.me/917306770117" class="btn btn-ghost">Chat on WhatsApp</a>
+            <a href="#students" class="btn btn-primary">I'm a parent / student</a>
+            <a href="#business" class="btn btn-ghost">I'm an entrepreneur / professional</a>
           </div>
           <p class="hero-note">
-            Headquartered in Kerala, supporting students across India and abroad through online classes.
+            Live online sessions, simple explanations and realistic strategies instead of confusing theory.
           </p>
         </div>
         <div class="hero-right">
-          <div class="hero-right-title">Who is Zelvora Academy for?</div>
+          <div class="hero-right-title">Who we support</div>
           <div class="hero-tag-row">
             <span class="tag">School students (Classes 5–12)</span>
-            <span class="tag">Board exam preparation</span>
             <span class="tag">College beginners</span>
-            <span class="tag">Students needing extra support</span>
+            <span class="tag">Freelancers & solopreneurs</span>
+            <span class="tag">Small business owners</span>
           </div>
           <p style="font-size:12px;color:#cbd5f5;">
-            We focus on foundations: understanding concepts, not just memorising.
-            Students can join for tuition, skills or a combined learning plan.
+            Whether you need help with studies or want to grow your online work / business,
+            Zelvora gives you clear direction, step-by-step support and accountability.
           </p>
           <div class="hero-stat-row">
             <div class="hero-stat">
               <strong>2 pillars</strong>
-              Academic tuition + skill development under one academy.
+              Education (tuition & skills) + business mentoring under one brand.
             </div>
             <div class="hero-stat">
-              <strong>Flexible</strong>
-              Online batches and 1:1 sessions based on need.
+              <strong>Online</strong>
+              Classes, calls and support through Zoom / Meet / WhatsApp.
             </div>
           </div>
         </div>
       </section>
 
-      <!-- SMALL STATS -->
-      <section class="section">
-        <div class="stats-strip">
-          <div>
-            <strong>Clear teaching</strong>
-            Simple explanations, real-life examples, language students can understand.
-          </div>
-          <div>
-            <strong>Personal attention</strong>
-            Small batches and optional 1:1 support for doubts and weak areas.
-          </div>
-          <div>
-            <strong>Balanced learning</strong>
-            Focus on marks, understanding and life skills together.
-          </div>
-        </div>
-      </section>
-
-      <!-- PROGRAMS / SERVICES -->
-      <section id="services" class="section">
+      <!-- FOR STUDENTS -->
+      <section id="students" class="section">
         <div class="section-header">
           <div>
-            <h2 class="section-title">Programs at Zelvora Academy</h2>
+            <h2 class="section-title">For students & young learners</h2>
             <p class="section-subtitle">
-              We combine traditional tuition with modern skill learning so students get both academic support
-              and future-ready skills.
+              Online tuition, academic support and skill training to help students understand better,
+              score higher and grow more confident.
             </p>
           </div>
         </div>
+
         <div class="card-grid">
           <article class="card">
-            <div class="card-label">Academic Tuition</div>
+            <div class="card-label">Tuition</div>
             <h3 class="card-title">School Tuition (Classes 5–12)</h3>
             <p>
-              Regular online tuition for school students with focus on understanding, practice and exam preparation.
-              Medium: English / regional, depending on subject.
+              Regular online tuition for school students with focus on concepts, practice and exam preparation.
+              Medium: English / regional, depending on subject and board.
             </p>
             <div class="pill-list">
-              <span>Maths (optional based on tutor)</span>
-              <span>English & Social Science</span>
-              <span>Science basics</span>
-              <span>Commerce basics (higher classes)</span>
+              <span>Core subjects support</span>
+              <span>Concept explanation</span>
+              <span>Revision & tests</span>
             </div>
             <div class="card-footer">
-              <span>Live online classes</span>
-              <span>Individual & small batches</span>
+              <span>Individual & small group options</span>
+              <span>Flexible schedule</span>
             </div>
           </article>
 
           <article class="card">
             <div class="card-label">Skills</div>
-            <h3 class="card-title">Skill Development for Students</h3>
+            <h3 class="card-title">Student Skill Development</h3>
             <p>
-              Simple, student-friendly skill programs to build confidence and prepare for higher studies and careers.
+              Simple, student-friendly skill programs that support studies and future readiness.
+              Ideal for teens and college beginners.
             </p>
             <div class="pill-list">
-              <span>Spoken English practice</span>
-              <span>Basic computer & internet</span>
+              <span>Spoken English basics</span>
+              <span>Computer & internet basics</span>
               <span>Study skills & time management</span>
-              <span>Presentation & communication basics</span>
+              <span>Presentation confidence</span>
             </div>
             <div class="card-footer">
-              <span>Short structured modules</span>
+              <span>Short modules</span>
               <span>Activity-based learning</span>
             </div>
           </article>
@@ -599,75 +560,145 @@
             <div class="card-label">Support</div>
             <h3 class="card-title">Study Support & Mentoring</h3>
             <p>
-              Extra help for students who feel left behind in class or need someone to guide their study routine
-              and exam preparation.
+              Extra guidance for students who feel lost, stressed or left behind in class and need
+              someone patient to help them plan and stay on track.
             </p>
             <div class="pill-list">
               <span>Doubt-clearing sessions</span>
-              <span>Exam preparation planning</span>
-              <span>Progress check-ins</span>
+              <span>Exam planning</span>
+              <span>Monthly progress check-ins</span>
               <span>Parent updates</span>
             </div>
             <div class="card-footer">
-              <span>WhatsApp & call support</span>
-              <span>Custom plans available</span>
+              <span>WhatsApp support</span>
+              <span>Custom plans possible</span>
             </div>
           </article>
         </div>
       </section>
 
-      <!-- ABOUT + PATHS -->
-      <section id="about" class="section two-col">
-        <div>
-          <div class="section-header" style="margin-bottom:8px;">
-            <div>
-              <h2 class="section-title">About Zelvora Academy</h2>
-            </div>
+      <!-- FOR BUSINESS & ADULTS -->
+      <section id="business" class="section">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">For entrepreneurs & professionals</h2>
+            <p class="section-subtitle">
+              Simple, practical mentoring and consulting for people who want to start, improve or grow
+              their online work, small business or personal brand.
+            </p>
           </div>
-          <p class="section-subtitle" style="max-width:none;margin-bottom:8px;">
-            Zelvora Academy is an online learning centre based in Kerala, created to support students who need
-            clear teaching, patient guidance and flexible learning from home.
-          </p>
-          <ul class="list">
-            <li>Focus on concepts first, then exam practice.</li>
-            <li>Simple language, step-by-step explanations and regular revision.</li>
-            <li>Friendly environment where students can ask doubts without fear.</li>
-            <li>Designed for students in India and abroad following Indian syllabi.</li>
-          </ul>
         </div>
 
-        <div id="paths">
-          <div class="section-header" style="margin-bottom:8px;">
-            <div>
-              <h2 class="section-title">Sample learning paths</h2>
+        <div class="card-grid">
+          <article class="card">
+            <div class="card-label">Mentoring</div>
+            <h3 class="card-title">1:1 Business & Career Mentoring</h3>
+            <p>
+              Personal guidance sessions to talk through your ideas, challenges and next steps —
+              so you don’t have to figure everything out alone.
+            </p>
+            <div class="pill-list">
+              <span>Clarity on goals</span>
+              <span>Idea & niche discussion</span>
+              <span>Step-by-step action plan</span>
+            </div>
+            <div class="card-footer">
+              <span>Online sessions</span>
+              <span>Notes & follow-up</span>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-label">Business Consulting</div>
+            <h3 class="card-title">Small Business & Online Service Consulting</h3>
+            <p>
+              Practical consulting for freelancers, tutors, coaches and small business owners
+              who want to present themselves better and grow steadily online.
+            </p>
+            <div class="pill-list">
+              <span>Basic business planning</span>
+              <span>Service & package structure</span>
+              <span>Simple online presence guidance</span>
+              <span>Social media strategy basics</span>
+            </div>
+            <div class="card-footer">
+              <span>Suited for beginners</span>
+              <span>India & global clients</span>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-label">Coaching</div>
+            <h3 class="card-title">Personal Growth & Productivity Coaching</h3>
+            <p>
+              Coaching conversations focused on your habits, routines, mindset and daily structure
+              so you can actually follow through on your plans.
+            </p>
+            <div class="pill-list">
+              <span>Routine & habit support</span>
+              <span>Planning & prioritising</span>
+              <span>Accountability check-ins</span>
+            </div>
+            <div class="card-footer">
+              <span>Coaching, not therapy</span>
+              <span>Online, conversational style</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- LEARNING & MENTORING PATHS -->
+      <section id="paths" class="section">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Learning & mentoring paths</h2>
+            <p class="section-subtitle">
+              Examples of how students and adults typically work with Zelvora. Each plan can be
+              adjusted based on your situation.
+            </p>
+          </div>
+        </div>
+
+        <div class="cols-two">
+          <div>
+            <div class="mini-card">
+              <div class="mini-label">STUDENT PATH</div>
+              <div class="mini-title">Foundation + Confidence (Classes 5–8)</div>
+              <ul class="list">
+                <li>Regular tuition for main subjects (weekly schedule).</li>
+                <li>Basic study skills and time planning guidance.</li>
+                <li>Monthly parent review and progress feedback.</li>
+              </ul>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">STUDENT PATH</div>
+              <div class="mini-title">Board Exam Support (Classes 9–12)</div>
+              <ul class="list">
+                <li>Concept revision and exam-oriented practice.</li>
+                <li>Doubt-clearing sessions before tests.</li>
+                <li>Study plan and exam strategy discussion.</li>
+              </ul>
             </div>
           </div>
-          <div class="mini-card">
-            <div class="mini-label">PATH 01</div>
-            <div class="mini-title">Foundation Support (Classes 5–8)</div>
-            <ul class="list">
-              <li>Weekly tuition for main subjects.</li>
-              <li>Concept explanation + simple notes.</li>
-              <li>Monthly tests and parent feedback.</li>
-            </ul>
-          </div>
-          <div class="mini-card">
-            <div class="mini-label">PATH 02</div>
-            <div class="mini-title">Board Exam Booster (Classes 9–12)</div>
-            <ul class="list">
-              <li>Exam-focused revision and practice.</li>
-              <li>Doubt-clearing sessions.</li>
-              <li>Study plan and exam strategy guidance.</li>
-            </ul>
-          </div>
-          <div class="mini-card">
-            <div class="mini-label">PATH 03</div>
-            <div class="mini-title">Skills + Studies Combo</div>
-            <ul class="list">
-              <li>Regular tuition + spoken English or computer basics.</li>
-              <li>Balanced schedule to avoid overload.</li>
-              <li>Ideal for students preparing for future studies and careers.</li>
-            </ul>
+          <div>
+            <div class="mini-card">
+              <div class="mini-label">MENTORING PATH</div>
+              <div class="mini-title">Start Your Online Service</div>
+              <ul class="list">
+                <li>Clarify who you want to help and with what.</li>
+                <li>Shape 1–2 simple offers and basic pricing.</li>
+                <li>Set up a simple online presence and enquiry flow.</li>
+              </ul>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">MENTORING PATH</div>
+              <div class="mini-title">Stabilise & Grow Slowly</div>
+              <ul class="list">
+                <li>Review current work / business and challenges.</li>
+                <li>Set realistic monthly goals and routines.</li>
+                <li>Regular check-ins to adjust and stay accountable.</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
@@ -677,13 +708,14 @@
         <div>
           <div class="contact-title">Admission & enquiry</div>
           <div class="contact-sub">
-            Send your child's class, board, subjects and preferred timing.
-            We’ll reply with available options and batch / 1:1 details.
+            For students: share class, board, subjects and preferred timing.  
+            For mentoring / consulting: share your current situation and what you need help with.  
+            We’ll reply with suitable options and next steps.
           </div>
         </div>
         <div class="contact-actions">
           <a href="tel:+917306770117" class="btn-light">📞 Call: +91 73067 70117</a>
-          <a href="mailto:zelvora.global@gmail.com?subject=Zelvora%20Academy%20Enquiry" class="btn-outline-light">
+          <a href="mailto:zelvora.global@gmail.com?subject=Zelvora%20Enquiry" class="btn-outline-light">
             ✉ Email: zelvora.global@gmail.com
           </a>
         </div>
@@ -691,15 +723,15 @@
     </main>
 
     <footer>
-      <span>© <span id="year"></span> Zelvora Academy. All rights reserved.</span>
-      <span>Headquartered in Kerala • Online classes for students worldwide.</span>
+      <span>© <span id="year"></span> Zelvora. All rights reserved.</span>
+      <span>Headquartered in Kerala • Online services for students & adults worldwide.</span>
     </footer>
   </div>
 
   <!-- Floating WhatsApp Button -->
   <a href="https://wa.me/917306770117"
      class="whatsapp-float"
-     aria-label="Chat on WhatsApp with Zelvora Academy"
+     aria-label="Chat on WhatsApp with Zelvora"
      target="_blank" rel="noopener noreferrer">💬</a>
 
   <script>
