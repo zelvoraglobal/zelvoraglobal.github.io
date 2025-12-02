@@ -328,12 +328,6 @@
       align-items: center;
     }
 
-    .price-tag {
-      font-weight: 600;
-      color: var(--accent);
-      font-size: 12px;
-    }
-
     .two-col {
       display: grid;
       grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
@@ -436,6 +430,29 @@
       justify-content: space-between;
       gap: 8px;
     }
+
+    /* Floating WhatsApp button */
+    .whatsapp-float {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 52px;
+      height: 52px;
+      border-radius: 999px;
+      background: #22c55e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      color: #ffffff;
+      box-shadow: 0 12px 24px rgba(22,163,74,.5);
+      z-index: 50;
+    }
+
+    .whatsapp-float:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 30px rgba(22,163,74,.65);
+    }
   </style>
 </head>
 <body>
@@ -512,7 +529,7 @@
         <div class="stats-strip">
           <div>
             <strong>Clarity first</strong>
-            1:1 sessions to simplify your offers, pricing and positioning.
+            1:1 sessions to simplify your offers, positioning and next steps.
           </div>
           <div>
             <strong>Systems next</strong>
@@ -549,8 +566,8 @@
               <span>Beginner-friendly</span>
             </div>
             <div class="card-footer">
-              <span class="price-tag">From ₹799 / course</span>
               <span>Self-paced access</span>
+              <span>Start with one track</span>
             </div>
           </article>
 
@@ -558,7 +575,7 @@
             <div class="card-label">Consulting</div>
             <h3 class="card-title">Business & Brand Consulting</h3>
             <p>
-              1:1 sessions to clarify your niche, offers, pricing and simple strategies
+              1:1 sessions to clarify your niche, offers and simple strategies
               that match your stage and capacity.
             </p>
             <div class="pill-list">
@@ -567,8 +584,8 @@
               <span>Action steps in writing</span>
             </div>
             <div class="card-footer">
-              <span class="price-tag">From ₹1,499 / session</span>
-              <span>Online via Zoom</span>
+              <span>Online via Zoom / Meet</span>
+              <span>Session-based or packages</span>
             </div>
           </article>
 
@@ -585,8 +602,8 @@
               <span>Done-with-you support</span>
             </div>
             <div class="card-footer">
-              <span class="price-tag">Custom monthly packages</span>
-              <span>Limited slots</span>
+              <span>Custom monthly scopes</span>
+              <span>Limited client slots</span>
             </div>
           </article>
         </div>
@@ -661,6 +678,12 @@
       <span>Built in India • Online services worldwide.</span>
     </footer>
   </div>
+
+  <!-- Floating WhatsApp Button -->
+  <a href="https://wa.me/917306770117"
+     class="whatsapp-float"
+     aria-label="Chat on WhatsApp with Zelvora"
+     target="_blank" rel="noopener noreferrer">💬</a>
 
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
