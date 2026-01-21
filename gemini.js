@@ -1,38 +1,47 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAI, getGenerativeModel } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-ai.js";
+// gemini.js — WORKS on GitHub Pages
 
-// ONLY ONE CONFIG BLOCK
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDZIxV_3OsFYBCGch6OYHiGL-aUkBPUre0",
-  authDomain: "zelvora.firebaseapp.com",
-  projectId: "zelvora",
-  storageBucket: "zelvora.firebasestorage.app",
-  messagingSenderId: "784709435771",
-  appId: "1:784709435771:web:1898111582c0c798e3fdde",
-  measurementId: "G-1H25LVSJR9"
-};
-
-
-// ONLY ONE INITIALIZATION
-const app = initializeApp(firebaseConfig);
-const ai = getAI(app, { backend: "google-ai" }); // Targets the free Gemini Developer API
-
-const model = getGenerativeModel(ai, {
-  model: "gemini-3-flash-preview", 
-});
+const GEMINI_API_KEY = "PASTE_YOUR_GEMINI_API_KEY_HERE"; // from https://aistudio.google.com/app/apikey
+const MODEL = "gemini-1.5-flash";
 
 export async function askZelvora(prompt) {
-  console.log("Button Tapped!"); // This must appear in the console now
   try {
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text();
-  } catch (error) {
-    console.error("AI Error:", error);
-    return "Connection error. Please check your internet.";
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: "user",
+              parts: [{ text: prompt }]
+            }
+          ],
+          systemInstruction: {
+            parts: [
+              {
+                text:
+                  "You are Zelvora, a professional academic and business mentor. Give clear, practical advice for students (classes 5–12) and entrepreneurs."
+              }
+            ]
+          }
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!data.candidates) {
+      console.error(data);
+      return "⚠️ No response from AI. Check API key or quota.";
+    }
+
+    return data.candidates[0].content.parts[0].text;
+  } catch (err) {
+    console.error("Gemini error:", err);
+    return "⚠️ AI connection failed. Please try again.";
   }
 }
 
-// CRITICAL: Links the code to your HTML button
-window.askZelvora = askZelvora; 
+// expose globally (important)
+window.askZelvora = askZelvora;
