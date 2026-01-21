@@ -1,9 +1,8 @@
-// Replace this with your actual key from Google AI Studio
 const API_KEY = "AIzaSyDi3Vdh26eTJlunDleQMzurTAvqK2-J71c";
 
 export async function askZelvora(prompt) {
-  // 2026 Stable Models: 3-flash is the primary, 2.5-flash is the backup
-  const models = ["gemini-3-flash", "gemini-2.5-flash"];
+  // 2026 Stable models: 3-flash-preview is primary, 2.5-flash is backup
+  const models = ["gemini-3-flash-preview", "gemini-2.5-flash"];
   
   for (const modelName of models) {
     try {
@@ -13,6 +12,10 @@ export async function askZelvora(prompt) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            // System instructions define the AI's personality
+            systemInstruction: {
+              parts: [{ text: "You are the Zelvora Global Mentor. Be helpful, professional, and encouraging. Focus on educational excellence and clarity." }]
+            },
             contents: [{ parts: [{ text: prompt }] }]
           })
         }
@@ -20,18 +23,17 @@ export async function askZelvora(prompt) {
 
       const data = await res.json();
 
-      // If this specific model is not found (404), try the next one in the list
+      // If the model name is not found (404), try the next model in the list
       if (res.status === 404) {
-        console.warn(`Model ${modelName} not found, trying backup...`);
+        console.warn(`Model ${modelName} not found, trying fallback...`);
         continue; 
       }
 
       if (!res.ok) {
         console.error("Gemini API error:", data);
-        return "⚠️ AI is calibrating. Please try again in a moment.";
+        return "⚠️ The mentor is currently unavailable. Please try again in a moment.";
       }
 
-      // Success! Return the AI text
       return data.candidates[0].content.parts[0].text;
 
     } catch (error) {
@@ -39,8 +41,8 @@ export async function askZelvora(prompt) {
     }
   }
   
-  return "⚠️ Connection error. Please check your internet.";
+  return "⚠️ Network or connection error. Please check your internet.";
 }
 
-// Make the function available to your HTML button
+// Connect to the HTML button globally
 window.askZelvora = askZelvora;
