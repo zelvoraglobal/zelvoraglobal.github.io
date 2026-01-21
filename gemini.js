@@ -2,28 +2,23 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebas
 import { getAI, getGenerativeModel } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-ai.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_ACTUAL_API_KEY", 
+  apiKey: "AIza...", // REPLACE WITH YOUR KEY
   authDomain: "zelvoraglobal.firebaseapp.com",
   projectId: "zelvoraglobal",
-  appId: "YOUR_ACTUAL_APP_ID"
+  appId: "1:..." // REPLACE WITH YOUR ID
 };
 
 const app = initializeApp(firebaseConfig);
 const ai = getAI(app, { backend: "google-ai" });
 const model = getGenerativeModel(ai, {
   model: "gemini-3-flash-preview",
-  systemInstruction: "You are Zelvora, a world-class academic and business mentor. Provide brief, practical, and professional advice."
+  systemInstruction: "You are Zelvora, a helpful mentor for Zelvora Global. Provide brief, encouraging, and expert advice for students and business owners."
 });
 
 export async function askZelvora(prompt) {
-  try {
-    const result = await model.generateContent(prompt);
-    return result.response.text();
-  } catch (error) {
-    console.error("AI Error:", error);
-    throw error;
-  }
+  const result = await model.generateContent(prompt);
+  return result.response.text();
 }
 
-// Crucial: Expose to the browser window for the HTML script to find it
+// Expose to global window
 window.askZelvora = askZelvora;
