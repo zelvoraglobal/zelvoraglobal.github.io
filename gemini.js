@@ -1,6 +1,6 @@
 // gemini.js — FINAL WORKING VERSION FOR GITHUB PAGES
 
-const API_KEY = "AIzaSyDpueYhA7kc3ciwCet51GJv3_qBf4GtEAo"; // <-- REQUIRED
+const API_KEY = "AIzaSyDi3Vdh26eTJlunDleQMzurTAvqK2-J71c"; // <-- REQUIRED
 const ENDPOINT =
   `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
