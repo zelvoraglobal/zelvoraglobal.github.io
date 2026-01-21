@@ -1,4 +1,4 @@
-const API_KEY = " ";
+const API_KEY = "AIzaSyCbKvJ_JhEG0EU5Zofrq_jBlANnm7v64D0";
 
 export async function askZelvora(prompt) {
   try {
