@@ -3,7 +3,7 @@ const API_KEY = "AIzaSyCbKvJ_JhEG0EU5Zofrq_jBlANnm7v64D0";
 export async function askZelvora(prompt) {
   try {
     const url =
-      "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" +
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
       API_KEY;
 
     const response = await fetch(url, {
@@ -20,18 +20,22 @@ export async function askZelvora(prompt) {
       })
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const errText = await response.text();
-      console.error("Gemini API error:", errText);
+      console.error("Gemini API error:", data);
 
       if (response.status === 403) {
-        return "⚠️ API key blocked. Check restrictions or use AI Studio key.";
+        return "⚠️ API key blocked or quota exhausted.";
       }
 
-      return "⚠️ The mentor is resting. Try again shortly.";
+      if (response.status === 404) {
+        return "⚠️ Model endpoint unavailable. Please refresh and retry.";
+      }
+
+      return "⚠️ Mentor is temporarily unavailable.";
     }
 
-    const data = await response.json();
     return data.candidates[0].content.parts[0].text;
 
   } catch (error) {
@@ -40,5 +44,4 @@ export async function askZelvora(prompt) {
   }
 }
 
-// expose globally for your button
 window.askZelvora = askZelvora;
