@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAI, getGenerativeModel } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-ai.js";
 
-// YOUR REAL CONFIG FROM FIREBASE CONSOLE
+// ONLY ONE CONFIG BLOCK
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyDZIxV_3OsFYBCGch6OYHiGL-aUkBPUre0",
@@ -14,24 +14,25 @@ const firebaseConfig = {
 };
 
 
+// ONLY ONE INITIALIZATION
 const app = initializeApp(firebaseConfig);
-const ai = getAI(app, { backend: "google-ai" }); // Free tier backend
+const ai = getAI(app, { backend: "google-ai" }); // Targets the free Gemini Developer API
 
 const model = getGenerativeModel(ai, {
   model: "gemini-3-flash-preview", 
 });
 
 export async function askZelvora(prompt) {
-  console.log("Button Tapped!"); // This must stay here to verify the click
+  console.log("Button Tapped!"); // This must appear in the console now
   try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
     return response.text();
   } catch (error) {
-    console.error("AI Error Details:", error);
-    return "The mentor is resting. Check back soon.";
+    console.error("AI Error:", error);
+    return "Connection error. Please check your internet.";
   }
 }
 
-// CRITICAL: Connects the internal function to your HTML button
+// CRITICAL: Links the code to your HTML button
 window.askZelvora = askZelvora; 
