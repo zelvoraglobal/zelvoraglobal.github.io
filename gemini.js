@@ -12,7 +12,7 @@ const firebaseConfig = {
   appId: "1:784709435771:web:1898111582c0c798e3fdde",
   measurementId: "G-1H25LVSJR9"
 };
-};
+
 
 const app = initializeApp(firebaseConfig);
 const ai = getAI(app, { backend: "google-ai" }); // Free tier backend
