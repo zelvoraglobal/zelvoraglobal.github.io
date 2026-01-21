@@ -10,6 +10,7 @@ import { getAnalytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyDZIxV_3OsFYBCGch6OYHiGL-aUkBPUre0",
   authDomain: "zelvora.firebaseapp.com",
@@ -18,7 +19,7 @@ const firebaseConfig = {
   messagingSenderId: "784709435771",
   appId: "1:784709435771:web:1898111582c0c798e3fdde",
   measurementId: "G-1H25LVSJR9"
-};
+}; "
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
