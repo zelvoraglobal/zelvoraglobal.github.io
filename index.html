@@ -1,231 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Zelvora – Online Academy & Business Mentoring</title>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description"
-        content="Zelvora – Online tuition, skill development and business mentoring for students and entrepreneurs worldwide." />
-
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
-      background: #f5f7fb;
-      color: #111;
-    }
-
-    header {
-      background: #0b1c3d;
-      color: #fff;
-      padding: 16px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 20px;
-      letter-spacing: 1px;
-    }
-
-    nav a {
-      color: #cfe1ff;
-      text-decoration: none;
-      margin-left: 16px;
-      font-size: 14px;
-    }
-
-    .hero {
-      padding: 50px 24px;
-      background: linear-gradient(135deg, #0b1c3d, #122e6d);
-      color: #fff;
-      text-align: center;
-    }
-
-    .hero h2 {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-
-    .hero p {
-      max-width: 700px;
-      margin: auto;
-      opacity: 0.9;
-    }
-
-    .search-box {
-      margin: 30px auto 0;
-      max-width: 520px;
-      display: flex;
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .search-box input {
-      flex: 1;
-      padding: 14px;
-      border: none;
-      font-size: 15px;
-      outline: none;
-    }
-
-    .search-box button {
-      background: #2563eb;
-      color: #fff;
-      border: none;
-      padding: 0 22px;
-      cursor: pointer;
-      font-size: 15px;
-    }
-
-    .response {
-      max-width: 720px;
-      margin: 20px auto 0;
-      background: #ffffff;
-      padding: 18px;
-      border-radius: 8px;
-      display: none;
-      color: #111;
-      text-align: left;
-      white-space: pre-wrap;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    }
-
-    section {
-      padding: 40px 24px;
-      max-width: 1100px;
-      margin: auto;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    }
-
-    footer {
-      background: #0b1c3d;
-      color: #cbd5f5;
-      text-align: center;
-      padding: 20px;
-      font-size: 13px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Zelvora – Online Academy & Mentoring</title>
+<style>
+:root{ --primary:#0c2340; --accent:#1f7aff; --success:#22c55e; --bg:#f6f7fb; --card:#ffffff; --text:#111827; }
+body{ margin:0; font-family:system-ui, sans-serif; background:var(--bg); color:var(--text); }
+header{ background:white; padding:14px 20px; box-shadow:0 2px 10px rgba(0,0,0,.05); }
+.nav{ max-width:1100px; margin:auto; display:flex; justify-content:space-between; align-items:center; }
+.nav a{ text-decoration:none; color:#374151; margin-left:16px; font-size:14px; font-weight:500; }
+.hero{ max-width:1100px; margin:40px auto; background:linear-gradient(135deg, var(--primary), #1a3a5f); color:white; border-radius:22px; padding:60px 40px; border-bottom: 6px solid var(--success); text-align:center; }
+.section{ max-width:1100px; margin:60px auto; }
+.cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; }
+.card{ background:var(--card); padding:30px; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.05); transition:0.3s; }
+.card:hover{ transform:translateY(-5px); border-left:4px solid var(--success); }
+#ai-btn{ position:fixed; bottom:20px; right:20px; width:64px; height:64px; border-radius:50%; background:var(--success); color:white; font-size:30px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:9999; box-shadow:0 4px 15px rgba(34,197,94,0.4); }
+#ai-box{ position:fixed; bottom:95px; right:20px; width:340px; height:480px; background:white; border-radius:18px; box-shadow:0 20px 50px rgba(0,0,0,.2); display:none; flex-direction:column; overflow:hidden; z-index:9999; border:1px solid #e5e7eb; }
+#ai-header{ background:var(--primary); color:white; padding:15px; font-weight:600; display:flex; justify-content:space-between; }
+#ai-output{ padding:15px; font-size:14px; flex:1; overflow-y:auto; background:#f9fafb; display:flex; flex-direction:column; gap:12px; }
+.msg { padding:10px 14px; border-radius:14px; max-width:85%; line-height:1.5; }
+.user-msg { background:var(--accent); color:white; align-self:flex-end; border-bottom-right-radius:2px; }
+.ai-msg { background:white; color:var(--text); align-self:flex-start; border-bottom-left-radius:2px; box-shadow:0 2px 5px rgba(0,0,0,0.05); }
+#ai-input-area { display:flex; border-top:1px solid #e5e7eb; padding:10px; }
+#ai-input { border:none; padding:10px; flex:1; outline:none; }
+#ai-send { border:none; background:var(--accent); color:white; padding:8px 16px; border-radius:8px; cursor:pointer; }
+</style>
 </head>
-
 <body>
-
-<header>
-  <h1>ZELVORA</h1>
-  <nav>
-    <a href="#students">Students</a>
-    <a href="#business">Business</a>
-    <a href="#contact">Contact</a>
-  </nav>
-</header>
-
-<div class="hero">
-  <h2>One platform for tuition, skills and business mentoring</h2>
-  <p>
-    Zelvora supports students, learners and entrepreneurs with clear guidance,
-    practical learning and step-by-step mentoring — fully online.
-  </p>
-
-  <!-- ASK ZELVORA -->
-  <div class="search-box">
-    <input id="userInput" type="text" placeholder="Ask Zelvora anything…" />
-    <button onclick="askZelvoraFromUI()">Ask</button>
-  </div>
-
-  <div id="response" class="response"></div>
+<header><div class="nav"><strong>ZELVORA</strong><nav><a href="#">Students</a><a href="#">Business</a><a href="#" style="background:var(--primary);color:white;padding:8px 16px;border-radius:8px;">Enquire</a></nav></div></header>
+<section class="hero"><h1>Empowering Minds Through <br/>Strategic Mentoring</h1><p>Online tuition, skill development, and business guidance.</p></section>
+<div id="ai-btn">💬</div>
+<div id="ai-box">
+  <div id="ai-header"><span>Zelvora AI Mentor</span><span style="cursor:pointer" onclick="document.getElementById('ai-box').style.display='none'">✕</span></div>
+  <div id="ai-output"><div class="ai-msg">Hi! I'm your Zelvora AI Mentor. How can I help you today?</div></div>
+  <div id="ai-input-area"><input id="ai-input" placeholder="Ask me anything..." /><button id="ai-send">Send</button></div>
 </div>
-
-<section id="students">
-  <h3>For Students & Learners</h3>
-  <div class="cards">
-    <div class="card">
-      <h4>School Tuition (Classes 5–12)</h4>
-      <p>Concept-based teaching, exam preparation and doubt clearing.</p>
-    </div>
-    <div class="card">
-      <h4>Skill Development</h4>
-      <p>Spoken English, confidence building and digital basics.</p>
-    </div>
-    <div class="card">
-      <h4>Study Mentoring</h4>
-      <p>Guidance, planning and consistent academic support.</p>
-    </div>
-  </div>
-</section>
-
-<section id="business">
-  <h3>For Entrepreneurs & Professionals</h3>
-  <div class="cards">
-    <div class="card">
-      <h4>Business Mentoring</h4>
-      <p>One-to-one clarity sessions and structured growth guidance.</p>
-    </div>
-    <div class="card">
-      <h4>Online Service Setup</h4>
-      <p>From idea to simple online presence and enquiry flow.</p>
-    </div>
-    <div class="card">
-      <h4>Productivity Coaching</h4>
-      <p>Build habits, routines and focus that actually work.</p>
-    </div>
-  </div>
-</section>
-
-<section id="contact">
-  <h3>Contact & Enquiry</h3>
-  <p>
-    📞 +91 73067 70117 <br />
-    ✉️ zelvora.global@gmail.com
-  </p>
-</section>
-
-<footer>
-  © 2026 Zelvora. All rights reserved. <br />
-  Online academy & mentoring — serving worldwide.
-</footer>
-
-<!-- LOAD GEMINI (ES MODULE) -->
-<script type="module" src="gemini.js"></script>
-
-<!-- UI CONTROLLER -->
-<script>
-  async function askZelvoraFromUI() {
-    const input = document.getElementById("userInput");
-    const responseBox = document.getElementById("response");
-    const question = input.value.trim();
-
-    if (!question) return;
-
-    responseBox.style.display = "block";
-    responseBox.innerText = "🤖 Zelvora is thinking...";
-
-    try {
-      const reply = await window.askZelvora(question);
-      responseBox.innerText = reply;
-    } catch (err) {
-      responseBox.innerText = "❌ Unable to connect to Zelvora AI.";
-      console.error(err);
-    }
-
-    input.value = "";
+<script type="module">
+  import { askZelvora } from "./gemini.js";
+  const btn = document.getElementById("ai-btn"), box = document.getElementById("ai-box"), input = document.getElementById("ai-input"), output = document.getElementById("ai-output"), sendBtn = document.getElementById("ai-send");
+  btn.onclick = () => { box.style.display = box.style.display === "flex" ? "none" : "flex"; if(box.style.display === "flex") input.focus(); };
+  function addMsg(text, isUser) {
+    const d = document.createElement("div"); d.className = isUser ? "msg user-msg" : "msg ai-msg"; d.innerHTML = text;
+    output.appendChild(d); output.scrollTop = output.scrollHeight;
   }
+  async function handleChat() {
+    const p = input.value.trim(); if (!p || sendBtn.disabled) return;
+    addMsg(p, true); input.value = ""; sendBtn.disabled = true;
+    const load = document.createElement("div"); load.className = "msg ai-msg"; load.innerHTML = "<i>Thinking...</i>"; output.appendChild(load);
+    try { const res = await askZelvora(p); load.remove(); addMsg(res); } 
+    catch (e) { load.innerHTML = "⚠️ Connection error."; console.error(e); } finally { sendBtn.disabled = false; }
+  }
+  sendBtn.onclick = handleChat;
+  input.onkeypress = (e) => { if(e.key === "Enter") handleChat(); };
 </script>
-
 </body>
 </html>
