@@ -1,5 +1,5 @@
 // Replace this with your actual key from Google AI Studio
-const API_KEY = "AIzaSyCbKvJ_JhEG0EU5Zofrq_jBlANnm7v64D0";
+const API_KEY = "AIzaSyDi3Vdh26eTJlunDleQMzurTAvqK2-J71c";
 
 export async function askZelvora(prompt) {
   // 2026 Stable Models: 3-flash is the primary, 2.5-flash is the backup
