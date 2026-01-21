@@ -1,58 +1,42 @@
-/* ===============================
-   ZELVORA – Gemini AI Client
-   Frontend-only (GitHub Pages)
-   Free-tier compatible
-================================ */
+// Import the latest Firebase AI Logic SDK (v12.8.0)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getAI, getGenerativeModel } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-ai.js";
 
-// 🔑 PASTE YOUR GEMINI API KEY HERE
-const GEMINI_API_KEY = "PASTE_YOUR_API_KEY_HERE";
+// Your Firebase Configuration (Keep these updated from your Firebase Console)
+const firebaseConfig = {
+  apiKey: "AIza...", // 🔹 Replace with your actual API Key
+  authDomain: "zelvoraglobal.firebaseapp.com",
+  projectId: "zelvoraglobal",
+  storageBucket: "zelvoraglobal.firebasestorage.app",
+  messagingSenderId: "...", 
+  appId: "1:..." // 🔹 Replace with your actual App ID
+};
 
-// Gemini endpoint (text-only, fast & cheap)
-const GEMINI_ENDPOINT =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
-  GEMINI_API_KEY;
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Initialize the AI Service using Google AI as the backend
+const ai = getAI(app, { backend: "google-ai" });
+
+// Configure the model with the Zelvora Mentor Persona
+const model = getGenerativeModel(ai, {
+  model: "gemini-3-flash-preview",
+  systemInstruction: "You are Zelvora, a world-class academic and business mentor. Provide clear, encouraging, and practical advice for students (Classes 5-12) and entrepreneurs. Keep responses helpful and professional."
+});
 
 /**
- * Ask Gemini AI
- * @param {string} prompt
- * @returns {Promise<string>}
+ * Sends a message to the AI and returns the text response.
+ * @param {string} prompt - The user's question.
  */
-async function askZelvora(prompt) {
-  if (!prompt || !prompt.trim()) {
-    return "Please ask something 🙂";
-  }
-
+export async function askZelvora(prompt) {
   try {
-    const response = await fetch(GEMINI_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: prompt }]
-          }
-        ]
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error("Gemini API error");
-    }
-
-    const data = await response.json();
-
-    return (
-      data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "No response from AI."
-    );
-  } catch (err) {
-    console.error("Gemini error:", err);
-    return "⚠️ Zelvora AI is temporarily unavailable.";
+    const result = await model.generateContent(prompt);
+    return result.response.text();
+  } catch (error) {
+    console.error("Zelvora AI Error:", error);
+    throw error;
   }
 }
 
-/* Expose globally */
+// ✅ IMPORTANT: Expose to the global window object so index.html can find it
 window.askZelvora = askZelvora;
