@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <title>Zelvora – Online Academy & Business Mentoring</title>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Zelvora – Online tuition, skills training and business mentoring. Serving students, learners and entrepreneurs worldwide." />
+  <meta name="description"
+        content="Zelvora – Online tuition, skill development and business mentoring for students and entrepreneurs worldwide." />
 
   <style>
     body {
@@ -37,7 +39,7 @@
     }
 
     .hero {
-      padding: 40px 24px;
+      padding: 50px 24px;
       background: linear-gradient(135deg, #0b1c3d, #122e6d);
       color: #fff;
       text-align: center;
@@ -45,7 +47,7 @@
 
     .hero h2 {
       font-size: 28px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .hero p {
@@ -56,7 +58,7 @@
 
     .search-box {
       margin: 30px auto 0;
-      max-width: 500px;
+      max-width: 520px;
       display: flex;
       background: #fff;
       border-radius: 8px;
@@ -75,18 +77,22 @@
       background: #2563eb;
       color: #fff;
       border: none;
-      padding: 0 20px;
+      padding: 0 22px;
       cursor: pointer;
       font-size: 15px;
     }
 
     .response {
-      max-width: 700px;
+      max-width: 720px;
       margin: 20px auto 0;
       background: #ffffff;
-      padding: 16px;
+      padding: 18px;
       border-radius: 8px;
       display: none;
+      color: #111;
+      text-align: left;
+      white-space: pre-wrap;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
     }
 
     section {
@@ -136,10 +142,10 @@
     practical learning and step-by-step mentoring — fully online.
   </p>
 
-  <!-- SEARCH / ASK BAR -->
+  <!-- ASK ZELVORA -->
   <div class="search-box">
     <input id="userInput" type="text" placeholder="Ask Zelvora anything…" />
-    <button onclick="ask()">Ask</button>
+    <button onclick="askZelvoraFromUI()">Ask</button>
   </div>
 
   <div id="response" class="response"></div>
@@ -194,17 +200,28 @@
   Online academy & mentoring — serving worldwide.
 </footer>
 
+<!-- LOAD GEMINI (ES MODULE) -->
+<script type="module" src="gemini.js"></script>
+
+<!-- UI CONTROLLER -->
 <script>
-  function ask() {
+  async function askZelvoraFromUI() {
     const input = document.getElementById("userInput");
     const responseBox = document.getElementById("response");
+    const question = input.value.trim();
 
-    if (!input.value.trim()) return;
+    if (!question) return;
 
     responseBox.style.display = "block";
-    responseBox.innerText =
-      "🤖 Zelvora AI will be connected here. You asked:\n\n" +
-      input.value;
+    responseBox.innerText = "🤖 Zelvora is thinking...";
+
+    try {
+      const reply = await window.askZelvora(question);
+      responseBox.innerText = reply;
+    } catch (err) {
+      responseBox.innerText = "❌ Unable to connect to Zelvora AI.";
+      console.error(err);
+    }
 
     input.value = "";
   }
