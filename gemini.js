@@ -1,42 +1,34 @@
-// Import the latest Firebase AI Logic SDK (v12.8.0)
+// Firebase SDKs (v12.8.0)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAI, getGenerativeModel } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-ai.js";
 
-// Your Firebase Configuration (Keep these updated from your Firebase Console)
+// 🔹 REPLACE with your real Firebase details
 const firebaseConfig = {
-  apiKey: "AIza...", // 🔹 Replace with your actual API Key
+  apiKey: "AIza-REPLACE-THIS",
   authDomain: "zelvoraglobal.firebaseapp.com",
   projectId: "zelvoraglobal",
-  storageBucket: "zelvoraglobal.firebasestorage.app",
-  messagingSenderId: "...", 
-  appId: "1:..." // 🔹 Replace with your actual App ID
+  appId: "1:REPLACE_THIS"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize the AI Service using Google AI as the backend
+// Use Google AI (free tier)
 const ai = getAI(app, { backend: "google-ai" });
 
-// Configure the model with the Zelvora Mentor Persona
+// Gemini Model
 const model = getGenerativeModel(ai, {
   model: "gemini-3-flash-preview",
-  systemInstruction: "You are Zelvora, a world-class academic and business mentor. Provide clear, encouraging, and practical advice for students (Classes 5-12) and entrepreneurs. Keep responses helpful and professional."
+  systemInstruction:
+    "You are Zelvora, a world-class academic and business mentor. " +
+    "Help students (Classes 5–12) and entrepreneurs with clear, practical, encouraging advice."
 });
 
-/**
- * Sends a message to the AI and returns the text response.
- * @param {string} prompt - The user's question.
- */
+// Main function
 export async function askZelvora(prompt) {
-  try {
-    const result = await model.generateContent(prompt);
-    return result.response.text();
-  } catch (error) {
-    console.error("Zelvora AI Error:", error);
-    throw error;
-  }
+  const result = await model.generateContent(prompt);
+  return result.response.text();
 }
 
-// ✅ IMPORTANT: Expose to the global window object so index.html can find it
+// Expose globally for index.html
 window.askZelvora = askZelvora;
