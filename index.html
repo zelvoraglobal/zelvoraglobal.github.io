@@ -1,285 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Zelvora – Online Academy & Mentoring</title>
+  <meta charset="UTF-8" />
+  <title>Zelvora – Online Academy & Business Mentoring</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Zelvora – Online tuition, skills training and business mentoring. Serving students, learners and entrepreneurs worldwide." />
 
-<style>
-:root{
-  --primary:#0c2340;
-  --accent:#1f7aff;
-  --success:#22c55e;
-  --bg:#f6f7fb;
-  --card:#ffffff;
-  --text:#111827;
-  --muted:#6b7280;
-}
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+      background: #f5f7fb;
+      color: #111;
+    }
 
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
+    header {
+      background: #0b1c3d;
+      color: #fff;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-/* ---------- HEADER ---------- */
-header{
-  background:white;
-  padding:14px 20px;
-  box-shadow:0 2px 10px rgba(0,0,0,.05);
-}
-.nav{
-  max-width:1100px;
-  margin:auto;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.logo-area {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.nav a{
-  text-decoration:none;
-  color:#374151;
-  margin-left:16px;
-  font-size:14px;
-  font-weight: 500;
-}
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 1px;
+    }
 
-/* ---------- HERO ---------- */
-.hero{
-  max-width:1100px;
-  margin:40px auto;
-  background:linear-gradient(135deg, var(--primary), #1a3a5f);
-  color:white;
-  border-radius:22px;
-  padding:60px 40px;
-  border-bottom: 6px solid var(--success);
-}
-.hero h1{
-  font-size:38px;
-  margin-bottom:16px;
-  line-height: 1.2;
-}
-.hero p{
-  max-width:600px;
-  color:#dbeafe;
-  font-size: 18px;
-}
+    nav a {
+      color: #cfe1ff;
+      text-decoration: none;
+      margin-left: 16px;
+      font-size: 14px;
+    }
 
-/* ---------- SECTIONS ---------- */
-.section{
-  max-width:1100px;
-  margin:60px auto;
-}
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:20px;
-}
-.card{
-  background:var(--card);
-  padding:30px;
-  border-radius:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,.05);
-  transition: transform 0.3s ease;
-}
-.card:hover {
-  transform: translateY(-5px);
-  border-left: 4px solid var(--success);
-}
+    .hero {
+      padding: 40px 24px;
+      background: linear-gradient(135deg, #0b1c3d, #122e6d);
+      color: #fff;
+      text-align: center;
+    }
 
-/* ---------- AI CHAT WIDGET ---------- */
-#ai-btn{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  width:64px;
-  height:64px;
-  border-radius:50%;
-  background:var(--success);
-  color:white;
-  font-size:30px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  z-index:9999;
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
-}
+    .hero h2 {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
 
-#ai-box{
-  position:fixed;
-  bottom:95px;
-  right:20px;
-  width:340px;
-  height: 480px;
-  background:white;
-  border-radius:18px;
-  box-shadow:0 20px 50px rgba(0,0,0,.2);
-  display:none;
-  flex-direction:column;
-  overflow:hidden;
-  z-index:9999;
-  border: 1px solid #e5e7eb;
-}
+    .hero p {
+      max-width: 700px;
+      margin: auto;
+      opacity: 0.9;
+    }
 
-#ai-header{
-  background:var(--primary);
-  color:white;
-  padding:15px;
-  font-weight: 600;
-  display: flex;
-  justify-content: space-between;
-}
+    .search-box {
+      margin: 30px auto 0;
+      max-width: 500px;
+      display: flex;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+    }
 
-#ai-output{
-  padding:15px;
-  font-size:14px;
-  flex: 1;
-  overflow-y:auto;
-  background: #f9fafb;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+    .search-box input {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      font-size: 15px;
+      outline: none;
+    }
 
-.msg { padding: 10px 14px; border-radius: 14px; max-width: 85%; line-height: 1.5; }
-.user-msg { background: var(--accent); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-.ai-msg { background: white; color: var(--text); align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .search-box button {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      padding: 0 20px;
+      cursor: pointer;
+      font-size: 15px;
+    }
 
-#ai-input-area {
-  display: flex;
-  border-top:1px solid #e5e7eb;
-  padding:10px;
-}
+    .response {
+      max-width: 700px;
+      margin: 20px auto 0;
+      background: #ffffff;
+      padding: 16px;
+      border-radius: 8px;
+      display: none;
+    }
 
-#ai-input{
-  border:none;
-  padding:10px;
-  flex: 1;
-  outline:none;
-}
+    section {
+      padding: 40px 24px;
+      max-width: 1100px;
+      margin: auto;
+    }
 
-#ai-send{
-  border:none;
-  background:var(--accent);
-  color:white;
-  padding:8px 16px;
-  border-radius: 8px;
-  cursor:pointer;
-}
-</style>
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+
+    footer {
+      background: #0b1c3d;
+      color: #cbd5f5;
+      text-align: center;
+      padding: 20px;
+      font-size: 13px;
+    }
+  </style>
 </head>
 
 <body>
 
 <header>
-  <div class="nav">
-    <div class="logo-area">
-      <img src="logo.png" alt="Z" style="height: 32px; width: auto; display: none;" onload="this.style.display='block'">
-      <strong style="font-size: 20px; color: var(--primary); letter-spacing: 1px;">ZELVORA</strong>
-    </div>
-    <nav>
-      <a href="#">Students</a>
-      <a href="#">Business</a>
-      <a href="#">Mentoring</a>
-      <a href="#" style="background: var(--primary); color: white; padding: 8px 16px; border-radius: 8px;">Enquire</a>
-    </nav>
-  </div>
+  <h1>ZELVORA</h1>
+  <nav>
+    <a href="#students">Students</a>
+    <a href="#business">Business</a>
+    <a href="#contact">Contact</a>
+  </nav>
 </header>
 
-<section class="hero">
-  <h1>Empowering Minds Through <br/>Strategic Mentoring</h1>
-  <p>Zelvora Global: Your partner in academic excellence and business growth.</p>
-</section>
+<div class="hero">
+  <h2>One platform for tuition, skills and business mentoring</h2>
+  <p>
+    Zelvora supports students, learners and entrepreneurs with clear guidance,
+    practical learning and step-by-step mentoring — fully online.
+  </p>
 
-<section class="section">
-  <div class="cards">
-    <div class="card">
-      <h3>Academic Tuition</h3>
-      <p>Classes 5-12 focused on mastery and confidence.</p>
-    </div>
-    <div class="card">
-      <h3>Business Mentoring</h3>
-      <p>Practical steps to launch and scale your venture.</p>
-    </div>
-    <div class="card">
-      <h3>Spoken English</h3>
-      <p>Professional communication training for the global stage.</p>
-    </div>
+  <!-- SEARCH / ASK BAR -->
+  <div class="search-box">
+    <input id="userInput" type="text" placeholder="Ask Zelvora anything…" />
+    <button onclick="ask()">Ask</button>
   </div>
-</section>
 
-<div id="ai-btn">💬</div>
-
-<div id="ai-box">
-  <div id="ai-header">
-    <span>Zelvora AI Mentor</span>
-    <span style="cursor:pointer" onclick="document.getElementById('ai-box').style.display='none'">✕</span>
-  </div>
-  <div id="ai-output">
-    <div class="ai-msg">Hi 👋 I’m Zelvora AI. How can I help you today?</div>
-  </div>
-  <div id="ai-input-area">
-    <input id="ai-input" placeholder="Type your question…" autocomplete="off" />
-    <button id="ai-send">Send</button>
-  </div>
+  <div id="response" class="response"></div>
 </div>
 
-<script type="module">
-  // IMPORT MUST USE LOWERCASE FILENAME FOR GITHUB PAGES
-  import { askZelvora } from "./gemini.js";
+<section id="students">
+  <h3>For Students & Learners</h3>
+  <div class="cards">
+    <div class="card">
+      <h4>School Tuition (Classes 5–12)</h4>
+      <p>Concept-based teaching, exam preparation and doubt clearing.</p>
+    </div>
+    <div class="card">
+      <h4>Skill Development</h4>
+      <p>Spoken English, confidence building and digital basics.</p>
+    </div>
+    <div class="card">
+      <h4>Study Mentoring</h4>
+      <p>Guidance, planning and consistent academic support.</p>
+    </div>
+  </div>
+</section>
 
-  const btn = document.getElementById("ai-btn");
-  const box = document.getElementById("ai-box");
-  const input = document.getElementById("ai-input");
-  const output = document.getElementById("ai-output");
-  const sendBtn = document.getElementById("ai-send");
+<section id="business">
+  <h3>For Entrepreneurs & Professionals</h3>
+  <div class="cards">
+    <div class="card">
+      <h4>Business Mentoring</h4>
+      <p>One-to-one clarity sessions and structured growth guidance.</p>
+    </div>
+    <div class="card">
+      <h4>Online Service Setup</h4>
+      <p>From idea to simple online presence and enquiry flow.</p>
+    </div>
+    <div class="card">
+      <h4>Productivity Coaching</h4>
+      <p>Build habits, routines and focus that actually work.</p>
+    </div>
+  </div>
+</section>
 
-  btn.onclick = () => {
-    box.style.display = box.style.display === "flex" ? "none" : "flex";
-    if(box.style.display === "flex") input.focus();
-  };
+<section id="contact">
+  <h3>Contact & Enquiry</h3>
+  <p>
+    📞 +91 73067 70117 <br />
+    ✉️ zelvora.global@gmail.com
+  </p>
+</section>
 
-  function addMsg(text, isUser) {
-    const d = document.createElement("div");
-    d.className = isUser ? "msg user-msg" : "msg ai-msg";
-    d.innerHTML = text;
-    output.appendChild(d);
-    output.scrollTop = output.scrollHeight;
-  }
+<footer>
+  © 2026 Zelvora. All rights reserved. <br />
+  Online academy & mentoring — serving worldwide.
+</footer>
 
-  async function handleChat() {
-    const p = input.value.trim();
-    if (!p || sendBtn.disabled) return;
+<script>
+  function ask() {
+    const input = document.getElementById("userInput");
+    const responseBox = document.getElementById("response");
 
-    addMsg(`<b>You:</b> ${p}`, true);
+    if (!input.value.trim()) return;
+
+    responseBox.style.display = "block";
+    responseBox.innerText =
+      "🤖 Zelvora AI will be connected here. You asked:\n\n" +
+      input.value;
+
     input.value = "";
-    sendBtn.disabled = true;
-
-    const load = document.createElement("div");
-    load.className = "msg ai-msg";
-    load.innerHTML = "<i>Zelvora is thinking...</i>";
-    output.appendChild(load);
-
-    try {
-      const res = await askZelvora(p);
-      load.remove();
-      addMsg(`<b>Zelvora:</b> ${res}`, false);
-    } catch (e) {
-      load.innerHTML = "⚠️ I am having trouble connecting. Check your internet.";
-      console.error(e);
-    } finally {
-      sendBtn.disabled = false;
-    }
   }
-
-  sendBtn.onclick = handleChat;
-  input.onkeypress = (e) => { if(e.key === "Enter") handleChat(); };
 </script>
 
 </body>
