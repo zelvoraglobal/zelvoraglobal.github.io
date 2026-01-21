@@ -2,10 +2,27 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebas
 import { getAI, getGenerativeModel } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-ai.js";
 
 // Even for the free version, Firebase needs the project ID to host the site
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIza...", // 🔹 GET YOUR FREE KEY FROM: https://aistudio.google.com/app/apikey
-  projectId: "zelvoraglobal",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDZIxV_3OsFYBCGch6OYHiGL-aUkBPUre0",
+  authDomain: "zelvora.firebaseapp.com",
+  projectId: "zelvora",
+  storageBucket: "zelvora.firebasestorage.app",
+  messagingSenderId: "784709435771",
+  appId: "1:784709435771:web:1898111582c0c798e3fdde",
+  measurementId: "G-1H25LVSJR9"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 };
 
 const app = initializeApp(firebaseConfig);
