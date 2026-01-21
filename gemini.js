@@ -3,35 +3,29 @@ const API_KEY = "AIzaSyDi3Vdh26eTJlunDleQMzurTAvqK2-J71c";
 export async function askZelvora(prompt) {
   try {
     const res = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + API_KEY,
+      // Updated to Gemini 3 Flash
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=" + API_KEY,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [
-            {
-              parts: [{ text: prompt }]
-            }
-          ]
+          contents: [{ parts: [{ text: prompt }] }]
         })
       }
     );
 
-    if (!res.ok) {
-      const err = await res.text();
-      console.error("Gemini error:", err);
-      return "⚠️ AI temporarily unavailable. Please try again.";
+    const data = await res.json();
+
+    if (res.status === 403) {
+      console.error("403 Error: Please check if 'Generative Language API' is enabled in Cloud Console.");
+      return "⚠️ Mentor access restricted. (Error 403)";
     }
 
-    const data = await res.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text
-      || "⚠️ No response from AI.";
+    if (!res.ok) return "⚠️ Connection issue.";
 
-  } catch (e) {
-    console.error("Network error:", e);
-    return "⚠️ Network error. Please try again.";
+    return data.candidates[0].content.parts[0].text;
+  } catch (error) {
+    return "⚠️ Network error.";
   }
 }
 
