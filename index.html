@@ -1,257 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zelvora AI</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zelvora AI</title>
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1f7aff">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1f7aff">
 
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-
-    body {
-      margin: 0;
-      background: radial-gradient(circle at top, #0b1a3a, #020409);
-      color: #fff;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    header {
-      padding: 14px 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: linear-gradient(to bottom, #0d1e45, transparent);
-    }
-
-    header h1 {
-      font-size: 18px;
-      margin: 0;
-    }
-
-    #status {
-      font-size: 12px;
-      opacity: 0.8;
-    }
-
-    .modes {
-      display: flex;
-      gap: 8px;
-      padding: 10px;
-      overflow-x: auto;
-    }
-
-    .mode {
-      padding: 8px 16px;
-      border-radius: 20px;
-      background: rgba(255,255,255,0.08);
-      cursor: pointer;
-      white-space: nowrap;
-      font-size: 14px;
-    }
-
-    .mode.active {
-      background: linear-gradient(135deg, #3fb3ff, #1f7aff);
-    }
-
-    .container {
-      flex: 1;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 110px;
-      background: rgba(255,255,255,0.06);
-      border: none;
-      border-radius: 14px;
-      padding: 14px;
-      color: white;
-      resize: none;
-      font-size: 15px;
-      outline: none;
-    }
-
-    button {
-      border: none;
-      border-radius: 14px;
-      padding: 14px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    #askBtn {
-      background: linear-gradient(135deg, #3fb3ff, #1f7aff);
-      color: white;
-    }
-
-    #response {
-      background: rgba(255,255,255,0.06);
-      border-radius: 14px;
-      padding: 14px;
-      min-height: 80px;
-      font-size: 15px;
-    }
-
-    #error {
-      background: rgba(255,50,50,0.15);
-      color: #ff9a9a;
-      padding: 10px;
-      border-radius: 12px;
-      display: none;
-    }
-
-    .voice-wrap {
-      display: flex;
-      justify-content: center;
-      margin-top: auto;
-      margin-bottom: 12px;
-    }
-
-    #micBtn {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #3fb3ff, #1f7aff);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 28px;
-      box-shadow: 0 0 30px rgba(63,179,255,0.6);
-    }
-
-    footer {
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 0;
-      font-size: 13px;
-      background: linear-gradient(to top, #0b1a3a, transparent);
-      opacity: 0.85;
-    }
-  </style>
+<style>
+body{margin:0;background:#050b18;color:#fff;font-family:system-ui}
+header{padding:16px;font-weight:700;display:flex;justify-content:space-between}
+.tabs{display:flex;gap:8px;padding:10px;overflow-x:auto}
+.tab{padding:8px 14px;border-radius:20px;background:#111a3a}
+.tab.active{background:#1f7aff}
+.box{padding:16px}
+textarea{width:100%;min-height:90px;background:#111a3a;border:none;color:#fff;padding:12px;border-radius:14px}
+button{width:100%;padding:14px;margin-top:10px;border:none;border-radius:14px;background:#1f7aff;color:#fff;font-size:16px}
+#reply{margin-top:12px;padding:14px;background:#111a3a;border-radius:14px}
+.mic{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+width:80px;height:80px;border-radius:50%;background:#1f7aff;
+display:flex;align-items:center;justify-content:center;font-size:30px}
+footer{position:fixed;bottom:0;width:100%;display:flex;justify-content:space-around;
+background:#070d20;padding:10px}
+</style>
 </head>
 
 <body>
 
 <header>
-  <h1>Zelvora AI</h1>
+  <div>Zelvora AI</div>
   <div id="status">Online</div>
 </header>
 
-<div class="modes">
-  <div class="mode active" data-mode="general">General</div>
-  <div class="mode" data-mode="english">English</div>
-  <div class="mode" data-mode="academic">Academic</div>
-  <div class="mode" data-mode="exam">Exam</div>
-  <div class="mode" data-mode="startup">Startup</div>
+<div class="tabs">
+  <div class="tab active" data-m="general">General</div>
+  <div class="tab" data-m="english">English</div>
+  <div class="tab" data-m="academic">Academic</div>
+  <div class="tab" data-m="exam">Exam</div>
+  <div class="tab" data-m="startup">Startup</div>
 </div>
 
-<div class="container">
-  <textarea id="input" placeholder="Ask or speak naturally..."></textarea>
-
-  <button id="askBtn">Ask AI</button>
-
-  <div id="error">AI unavailable. Please try again.</div>
-
-  <div id="response"></div>
-
-  <div class="voice-wrap">
-    <div id="micBtn">🎤</div>
-  </div>
+<div class="box">
+  <textarea id="q" placeholder="Ask or speak..."></textarea>
+  <button onclick="ask()">Ask AI</button>
+  <div id="reply"></div>
 </div>
+
+<div class="mic" onclick="toggleMic()">🎤</div>
 
 <footer>
-  <div>Home</div>
-  <div>Tutor</div>
-  <div>Voice</div>
-  <div>Profile</div>
+  <div>Home</div><div>Tutor</div><div>Voice</div><div>Profile</div>
 </footer>
 
 <script>
-  const workerURL = "https://zelvora-ai.zelvora-global.workers.dev";
+const API="https://zelvora-ai.zelvora-global.workers.dev";
+let mode="general",rec,listen=false,txt="";
 
-  let currentMode = "general";
-  let listening = false;
-  let recognition;
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  t.classList.add("active");mode=t.dataset.m;}
+});
 
-  const input = document.getElementById("input");
-  const responseEl = document.getElementById("response");
-  const errorEl = document.getElementById("error");
-  const statusEl = document.getElementById("status");
+async function ask(){
+  const q=document.getElementById("q").value.trim();
+  if(!q)return;
+  status.textContent="Thinking...";
+  try{
+    const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({prompt:q,mode})});
+    const d=await r.json();
+    reply.innerText=d.reply;
+    speak(d.reply);
+    status.textContent="Online";
+  }catch{status.textContent="Offline";}
+}
 
-  document.querySelectorAll(".mode").forEach(btn => {
-    btn.onclick = () => {
-      document.querySelectorAll(".mode").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      currentMode = btn.dataset.mode;
-    };
-  });
+function speak(t){
+  const u=new SpeechSynthesisUtterance(t);
+  speechSynthesis.speak(u);
+}
 
-  document.getElementById("askBtn").onclick = askAI;
-
-  async function askAI() {
-    const text = input.value.trim();
-    if (!text) return;
-
-    statusEl.textContent = "Thinking...";
-    errorEl.style.display = "none";
-
-    try {
-      const res = await fetch(workerURL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: text, mode: currentMode })
-      });
-
-      const data = await res.json();
-      responseEl.innerText = data.reply;
-      statusEl.textContent = "Online";
-
-    } catch (e) {
-      errorEl.style.display = "block";
-      statusEl.textContent = "Offline";
-    }
-  }
-
-  // 🎤 Voice input
-  if ("webkitSpeechRecognition" in window) {
-    recognition = new webkitSpeechRecognition();
-    recognition.continuous = false;
-    recognition.lang = "en-US";
-
-    recognition.onresult = e => {
-      input.value = e.results[0][0].transcript;
-      askAI();
-    };
-
-    recognition.onerror = () => {
-      statusEl.textContent = "Mic error";
+function toggleMic(){
+  if(!("webkitSpeechRecognition"in window))return alert("No mic");
+  if(!rec){
+    rec=new webkitSpeechRecognition();
+    rec.continuous=true;
+    rec.interimResults=true;
+    rec.onresult=e=>{
+      let s="";
+      for(let i=e.resultIndex;i<e.results.length;i++)
+        s+=e.results[i][0].transcript;
+      q.value=s;
     };
   }
-
-  document.getElementById("micBtn").onclick = () => {
-    if (!recognition) return alert("Voice not supported");
-    recognition.start();
-    statusEl.textContent = "Listening...";
-  };
-
-  // Service Worker
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js");
-  }
+  listen?rec.stop():rec.start();
+  listen=!listen;
+}
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");
 </script>
-
 </body>
 </html>
