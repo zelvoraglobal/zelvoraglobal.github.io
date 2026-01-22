@@ -2,229 +2,303 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Zelvora AI</title>
 
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0b1220">
+<meta name="theme-color" content="#0a1020">
 
 <style>
 :root{
-  --bg:#0b1220;
-  --panel:#121a2f;
-  --card:#16203a;
+  --bg:#050b18;
+  --panel:#0b1328;
+  --glass:rgba(255,255,255,.06);
+  --border:rgba(255,255,255,.12);
   --accent:#3bb3ff;
-  --text:#e6edff;
-  --muted:#9aa4c7;
+  --accent-soft:rgba(59,179,255,.25);
+  --text:#e6ecff;
+  --muted:#8fa0c9;
 }
+
 *{box-sizing:border-box}
 body{
   margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto;
-  background:linear-gradient(180deg,#050b18,#0b1220);
+  background:radial-gradient(1200px 600px at top,#0d1a38,#050b18);
   color:var(--text);
-  height:100vh;
-  overflow:hidden;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  min-height:100vh;
 }
 
 /* Top bar */
 header{
-  height:56px;
-  padding:0 16px;
+  position:fixed;
+  top:0;
+  width:100%;
+  padding:16px;
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  background:rgba(10,15,35,.7);
+  align-items:center;
+  background:linear-gradient(to bottom,rgba(5,11,24,.95),rgba(5,11,24,.6));
   backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(255,255,255,.06);
+  border-bottom:1px solid var(--border);
+  z-index:10;
 }
-header h1{
-  font-size:18px;
-  margin:0;
-}
-header span{
-  font-size:13px;
-  color:var(--muted);
-}
+header b{font-size:18px}
+.status{color:var(--muted);font-size:13px}
 
 /* Main */
 main{
-  padding:16px;
-  padding-bottom:90px;
-  overflow-y:auto;
-  height:calc(100vh - 56px);
+  padding:90px 16px 120px;
+  max-width:700px;
+  margin:auto;
 }
 
-/* Mode tabs */
+/* Mode pills */
 .modes{
   display:flex;
-  gap:8px;
+  gap:10px;
   overflow-x:auto;
-  margin-bottom:14px;
+  padding-bottom:8px;
 }
-.modes button{
-  background:transparent;
-  border:1px solid rgba(255,255,255,.1);
+.mode{
+  padding:10px 16px;
+  border-radius:999px;
+  background:var(--glass);
+  border:1px solid var(--border);
   color:var(--muted);
-  padding:8px 14px;
-  border-radius:20px;
-  font-size:14px;
   white-space:nowrap;
+  cursor:pointer;
+  user-select:none;
 }
-.modes button.active{
+.mode.active{
   background:var(--accent);
-  color:#00111f;
-  border:none;
+  color:#001428;
   font-weight:600;
 }
 
 /* Prompt box */
 .card{
-  background:var(--card);
-  border-radius:18px;
-  padding:14px;
-  margin-bottom:14px;
-  box-shadow:0 10px 30px rgba(0,0,0,.35);
+  margin-top:16px;
+  background:linear-gradient(180deg,#0e1833,#0a1328);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
 }
 textarea{
   width:100%;
-  background:transparent;
+  background:none;
   border:none;
+  outline:none;
+  resize:none;
   color:var(--text);
   font-size:16px;
-  resize:none;
-  outline:none;
+  min-height:80px;
 }
-button.ask{
+
+/* Buttons */
+.btn{
   width:100%;
-  margin-top:10px;
+  margin-top:12px;
   padding:14px;
-  border-radius:14px;
   border:none;
-  background:var(--accent);
-  color:#00111f;
+  border-radius:16px;
+  background:linear-gradient(135deg,#3bb3ff,#1f6fff);
+  color:#001428;
   font-size:16px;
   font-weight:700;
+  cursor:pointer;
 }
+.btn:disabled{opacity:.6}
 
 /* Response */
 .response{
-  margin-top:12px;
-  line-height:1.6;
-  color:var(--text);
+  margin-top:14px;
+  padding:14px;
+  border-radius:16px;
+  background:rgba(59,179,255,.08);
+  border:1px solid var(--accent-soft);
+  display:none;
 }
-.thinking{
-  color:var(--muted);
-  font-style:italic;
+
+/* Error */
+.error{
+  margin-top:14px;
+  padding:14px;
+  border-radius:16px;
+  background:rgba(255,100,100,.1);
+  border:1px solid rgba(255,100,100,.3);
+  color:#ffb4b4;
+  display:none;
+}
+
+/* Voice ring */
+.voice-wrap{
+  position:fixed;
+  bottom:72px;
+  left:50%;
+  transform:translateX(-50%);
+}
+.voice{
+  width:74px;
+  height:74px;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#7dd3ff,#1f6fff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  color:#001428;
+  box-shadow:0 0 0 0 rgba(59,179,255,.5);
+  animation:pulse 2s infinite;
+  cursor:pointer;
+}
+.voice.listening{
+  animation:pulse-fast 1s infinite;
+}
+
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(59,179,255,.5)}
+  70%{box-shadow:0 0 0 20px rgba(59,179,255,0)}
+  100%{box-shadow:0 0 0 0 rgba(59,179,255,0)}
+}
+@keyframes pulse-fast{
+  0%{box-shadow:0 0 0 0 rgba(59,179,255,.7)}
+  70%{box-shadow:0 0 0 30px rgba(59,179,255,0)}
+  100%{box-shadow:0 0 0 0 rgba(59,179,255,0)}
 }
 
 /* Bottom nav */
 nav{
   position:fixed;
   bottom:0;
-  left:0;
-  right:0;
-  height:70px;
-  background:rgba(10,15,35,.85);
-  backdrop-filter:blur(14px);
+  width:100%;
+  background:rgba(5,11,24,.95);
+  border-top:1px solid var(--border);
   display:flex;
   justify-content:space-around;
-  align-items:center;
-  border-top:1px solid rgba(255,255,255,.08);
+  padding:10px 0;
 }
-nav div{
-  font-size:12px;
-  color:var(--muted);
-}
-nav div.active{
-  color:var(--accent);
-  font-weight:600;
-}
+nav span{color:var(--muted);font-size:13px}
+nav .active{color:var(--accent)}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>Zelvora AI</h1>
-  <span id="status">Ready</span>
+  <b>Zelvora AI</b>
+  <span id="status" class="status">Online</span>
 </header>
 
 <main>
 
-  <!-- Tutor Modes -->
-  <div class="modes">
-    <button class="active" onclick="setMode('general',this)">General</button>
-    <button onclick="setMode('english',this)">English</button>
-    <button onclick="setMode('academic',this)">Academic</button>
-    <button onclick="setMode('exam',this)">Exam</button>
-    <button onclick="setMode('startup',this)">Startup</button>
-  </div>
+<div class="modes">
+  <div class="mode active" data-mode="general">General</div>
+  <div class="mode" data-mode="english">English</div>
+  <div class="mode" data-mode="academic">Academic</div>
+  <div class="mode" data-mode="exam">Exam</div>
+  <div class="mode" data-mode="startup">Startup</div>
+</div>
 
-  <!-- Input -->
-  <div class="card">
-    <textarea id="prompt" rows="3" placeholder="Ask Zelvora anything…"></textarea>
-    <button class="ask" onclick="askAI()">Ask AI</button>
-  </div>
+<div class="card">
+  <textarea id="prompt" placeholder="Ask or speak naturally…"></textarea>
+  <button id="ask" class="btn">Ask AI</button>
+</div>
 
-  <!-- Output -->
-  <div class="card">
-    <div id="response" class="response thinking">Waiting for input…</div>
-  </div>
+<div id="response" class="response"></div>
+<div id="error" class="error"></div>
 
 </main>
 
+<div class="voice-wrap">
+  <div id="voiceBtn" class="voice">🎙️</div>
+</div>
+
 <nav>
-  <div class="active">Home</div>
-  <div>Tutor</div>
-  <div>Voice</div>
-  <div>Profile</div>
+  <span class="active">Home</span>
+  <span>Tutor</span>
+  <span>Voice</span>
+  <span>Profile</span>
 </nav>
 
 <script>
-let MODE="general";
+/* MODE */
+let mode="general";
+document.querySelectorAll(".mode").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll(".mode").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    mode=b.dataset.mode;
+  }
+});
 
-function setMode(mode,btn){
-  MODE=mode;
-  document.querySelectorAll(".modes button").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-}
+/* AI CALL */
+const askBtn=document.getElementById("ask");
+const promptEl=document.getElementById("prompt");
+const resBox=document.getElementById("response");
+const errBox=document.getElementById("error");
 
-async function askAI(){
-  const q=document.getElementById("prompt").value.trim();
-  const resBox=document.getElementById("response");
-  const status=document.getElementById("status");
+askBtn.onclick=async()=>{
+  const text=promptEl.value.trim();
+  if(!text) return;
 
-  if(!q) return;
-
-  resBox.innerHTML="Thinking…";
-  resBox.className="response thinking";
-  status.textContent="Thinking";
+  askBtn.disabled=true;
+  askBtn.textContent="Thinking…";
+  errBox.style.display="none";
+  resBox.style.display="block";
+  resBox.textContent="Zelvora is thinking…";
 
   try{
     const r=await fetch("https://zelvora-ai.zelvora-global.workers.dev",{
       method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({
-        mode:MODE,
-        prompt:q
-      })
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({prompt:text,mode})
     });
-
-    const data=await r.json();
-    resBox.className="response";
-    resBox.innerHTML=data.reply || "No response";
-    status.textContent="Ready";
-
+    const d=await r.json();
+    resBox.textContent=d.reply;
   }catch(e){
-    resBox.innerHTML="⚠️ AI unavailable. Please try again.";
-    status.textContent="Offline";
+    resBox.style.display="none";
+    errBox.style.display="block";
+    errBox.textContent="AI unavailable. Please try again.";
+    document.getElementById("status").textContent="Offline";
   }
+
+  askBtn.disabled=false;
+  askBtn.textContent="Ask AI";
+};
+
+/* CONTINUOUS VOICE */
+let listening=false;
+let recog;
+if("webkitSpeechRecognition"in window){
+  recog=new webkitSpeechRecognition();
+  recog.continuous=true;
+  recog.interimResults=true;
+  recog.lang="en-US";
+
+  recog.onresult=e=>{
+    let t="";
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      t+=e.results[i][0].transcript;
+    }
+    promptEl.value=t;
+  };
+
+  recog.onend=()=>{ if(listening) recog.start(); };
 }
 
-/* Service worker */
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("/sw.js");
+document.getElementById("voiceBtn").onclick=()=>{
+  if(!recog) return alert("Voice not supported");
+  listening=!listening;
+  document.getElementById("voiceBtn").classList.toggle("listening",listening);
+  if(listening) recog.start(); else recog.stop();
+};
+</script>
+
+<script>
+if("serviceWorker"in navigator){
+  navigator.serviceWorker.register("sw.js");
 }
 </script>
 
