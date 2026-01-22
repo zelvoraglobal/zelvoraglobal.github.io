@@ -10,7 +10,7 @@
 
 <style>
 body{margin:0;background:#050b18;color:#fff;font-family:system-ui}
-header{padding:16px;font-weight:700;display:flex;justify-content:space-between}
+header{padding:16px;display:flex;justify-content:space-between;font-weight:700}
 .tabs{display:flex;gap:8px;padding:10px;overflow-x:auto}
 .tab{padding:8px 14px;border-radius:20px;background:#111a3a}
 .tab.active{background:#1f7aff}
@@ -55,25 +55,33 @@ background:#070d20;padding:10px}
 
 <script>
 const API="https://zelvora-ai.zelvora-global.workers.dev";
-let mode="general",rec,listen=false,txt="";
+let mode="general",rec,listen=false;
 
 document.querySelectorAll(".tab").forEach(t=>{
-  t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-  t.classList.add("active");mode=t.dataset.m;}
+  t.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    mode=t.dataset.m;
+  };
 });
 
 async function ask(){
-  const q=document.getElementById("q").value.trim();
-  if(!q)return;
+  const text=q.value.trim();
+  if(!text)return;
   status.textContent="Thinking...";
   try{
-    const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({prompt:q,mode})});
+    const r=await fetch(API,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({prompt:text,mode})
+    });
     const d=await r.json();
     reply.innerText=d.reply;
     speak(d.reply);
     status.textContent="Online";
-  }catch{status.textContent="Offline";}
+  }catch{
+    status.textContent="Offline";
+  }
 }
 
 function speak(t){
@@ -82,7 +90,7 @@ function speak(t){
 }
 
 function toggleMic(){
-  if(!("webkitSpeechRecognition"in window))return alert("No mic");
+  if(!("webkitSpeechRecognition"in window))return alert("Mic not supported");
   if(!rec){
     rec=new webkitSpeechRecognition();
     rec.continuous=true;
@@ -97,7 +105,9 @@ function toggleMic(){
   listen?rec.stop():rec.start();
   listen=!listen;
 }
+
 if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");
 </script>
+
 </body>
 </html>
