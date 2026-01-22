@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zelvora</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Zelvora AI</title>
 
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1f7aff">
+<meta name="theme-color" content="#0a1020">
 
 <style>
 :root{
   --bg:#050a15;
   --card:#0b1224;
+  --border:#1e293b;
   --accent:#1f7aff;
-  --text:#e2e8f0;
+  --text:#e5e7eb;
   --muted:#94a3b8;
 }
 *{box-sizing:border-box}
@@ -23,74 +24,90 @@ body{
   color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto;
 }
-.screen{
-  display:none;
+header{
+  padding:14px 16px;
+  background:#0a1020;
+  border-bottom:1px solid var(--border);
+  font-weight:700;
+}
+main{
   padding:16px;
   padding-bottom:90px;
 }
-.screen.active{display:block}
-header{
-  padding:14px 16px;
-  font-weight:700;
-  font-size:18px;
-}
-.card{
-  background:var(--card);
-  padding:16px;
-  border-radius:14px;
+.modes{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
   margin-bottom:14px;
 }
-.card button{
-  width:100%;
-  background:var(--accent);
-  border:none;
-  color:white;
-  padding:12px;
-  border-radius:10px;
-  font-weight:600;
+.mode{
+  padding:8px 14px;
+  border-radius:20px;
+  border:1px solid var(--border);
+  background:var(--card);
+  cursor:pointer;
+  white-space:nowrap;
+  font-size:14px;
 }
-input,textarea{
-  width:100%;
-  background:#020617;
-  border:1px solid #1e293b;
-  color:white;
+.mode.active{
+  background:var(--accent);
+  border-color:var(--accent);
+}
+.chat-box{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:14px;
+  min-height:140px;
+  margin-bottom:12px;
+}
+.message{
+  margin-bottom:10px;
+  font-size:15px;
+}
+.message.ai{color:#dbeafe}
+.message.user{color:#a5f3fc}
+.controls{
+  display:flex;
+  gap:10px;
+}
+input{
+  flex:1;
   padding:12px;
-  border-radius:10px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:#020617;
+  color:white;
+}
+button{
+  padding:12px 16px;
+  border:none;
+  border-radius:12px;
+  background:var(--accent);
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+.mic{
+  background:#16a34a;
+}
+.mic.listening{
+  background:#dc2626;
 }
 .bottom-nav{
   position:fixed;
   bottom:0;
   left:0;
   right:0;
-  height:70px;
   background:#020617;
+  border-top:1px solid var(--border);
   display:flex;
-  border-top:1px solid #1e293b;
-}
-.bottom-nav button{
-  flex:1;
-  background:none;
-  border:none;
-  color:var(--muted);
+  justify-content:space-around;
+  padding:10px 0;
   font-size:12px;
 }
-.bottom-nav button.active{
-  color:var(--accent);
-  font-weight:600;
-}
-.chips button{
-  background:#020617;
-  border:1px solid #1e293b;
-  color:white;
-  padding:8px 12px;
-  border-radius:20px;
-  margin:4px;
-}
-.response{
-  background:#020617;
-  padding:12px;
-  border-radius:10px;
-  margin-top:10px;
+.bottom-nav div{
+  color:var(--muted);
 }
 </style>
 </head>
@@ -99,130 +116,140 @@ input,textarea{
 
 <header>Zelvora AI</header>
 
-<!-- HOME -->
-<div id="home" class="screen active">
-  <div class="card">
-    <h3>What do you want to improve today?</h3>
-    <button onclick="go('tutor')">🤖 Ask AI Tutor</button>
+<main>
+  <div class="modes" id="modes">
+    <div class="mode active" data-mode="general">General</div>
+    <div class="mode" data-mode="english">English</div>
+    <div class="mode" data-mode="academic">Academic</div>
+    <div class="mode" data-mode="exam">Exam</div>
+    <div class="mode" data-mode="startup">Startup</div>
   </div>
 
-  <div class="card"><button onclick="go('english')">🗣 Spoken English</button></div>
-  <div class="card"><button onclick="go('academics')">🎓 Academics</button></div>
-  <div class="card"><button onclick="go('exam')">🧪 Exam Mentor</button></div>
-  <div class="card"><button onclick="go('startup')">🚀 Startup Mentor</button></div>
-</div>
-
-<!-- AI TUTOR -->
-<div id="tutor" class="screen">
-  <h3>AI Tutor</h3>
-  <div class="chips">
-    <button onclick="setMode('general')">General</button>
-    <button onclick="setMode('english')">English</button>
-    <button onclick="setMode('academic')">Academic</button>
-    <button onclick="setMode('exam')">Exam</button>
-    <button onclick="setMode('startup')">Startup</button>
-  </div>
-  <textarea id="question" placeholder="Ask anything..."></textarea>
-  <button onclick="askAI()">Ask</button>
-  <div id="reply" class="response"></div>
-</div>
-
-<!-- SPOKEN ENGLISH -->
-<div id="english" class="screen">
-  <h3>Spoken English</h3>
-
-  <div class="card">
-    <h4>Daily Practice</h4>
-    <p>Speak 5 sentences about your day.</p>
-    <button onclick="fill('Correct my spoken English')">Start</button>
+  <div class="chat-box" id="chat">
+    <div class="message ai">👋 Hi, I’m Zelvora AI. Speak or type to start.</div>
   </div>
 
-  <div class="card">
-    <h4>Grammar Fix</h4>
-    <button onclick="fill('Correct this sentence')">Practice</button>
+  <div class="controls">
+    <input id="input" placeholder="Ask or speak..." />
+    <button id="ask">Ask</button>
+    <button id="mic" class="mic">🎤</button>
   </div>
+</main>
 
-  <div class="card">
-    <h4>Vocabulary Builder</h4>
-    <button onclick="fill('Teach me 5 useful English words')">Learn</button>
-  </div>
-
-  <div class="card">
-    <h4>Confidence Booster</h4>
-    <button onclick="fill('Help me speak confidently in English')">Boost</button>
-  </div>
-</div>
-
-<!-- ACADEMICS -->
-<div id="academics" class="screen">
-  <h3>Academics</h3>
-  <div class="card"><button onclick="fill('Explain this concept for class 10')">Class 9–10</button></div>
-  <div class="card"><button onclick="fill('Help me study better for exams')">Study Help</button></div>
-</div>
-
-<!-- EXAM -->
-<div id="exam" class="screen">
-  <h3>Exam Mentor</h3>
-  <div class="card"><button onclick="fill('Create a study plan')">Study Plan</button></div>
-  <div class="card"><button onclick="fill('Give exam revision tips')">Revision</button></div>
-</div>
-
-<!-- STARTUP -->
-<div id="startup" class="screen">
-  <h3>Startup Mentor</h3>
-  <div class="card"><button onclick="fill('Validate my startup idea')">Idea Validation</button></div>
-  <div class="card"><button onclick="fill('How to grow my business')">Growth</button></div>
-</div>
-
-<!-- PROFILE -->
-<div id="profile" class="screen">
-  <h3>Profile</h3>
-  <p>Zelvora AI Learning App</p>
-</div>
-
-<!-- BOTTOM NAV -->
 <div class="bottom-nav">
-  <button onclick="go('home')" class="active">Home</button>
-  <button onclick="go('tutor')">Tutor</button>
-  <button onclick="go('english')">English</button>
-  <button onclick="go('academics')">Academics</button>
-  <button onclick="go('profile')">Me</button>
+  <div>Home</div>
+  <div>Tutor</div>
+  <div>English</div>
+  <div>Academics</div>
+  <div>Me</div>
 </div>
 
 <script>
-let mode="general";
+/* ---------------- MODE HANDLING ---------------- */
+let currentMode = "general";
+document.querySelectorAll(".mode").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".mode").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    currentMode = btn.dataset.mode;
+  }
+});
 
-function go(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active'));
+/* ---------------- CHAT UI ---------------- */
+const chat = document.getElementById("chat");
+function addMsg(text,type){
+  const div=document.createElement("div");
+  div.className="message "+type;
+  div.innerHTML=text;
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
 }
 
-function setMode(m){
-  mode=m;
-  alert("Tutor mode: "+m);
+/* ---------------- AI REQUEST ---------------- */
+async function askAI(text){
+  addMsg(text,"user");
+  addMsg("Thinking…","ai");
+
+  try{
+    const res = await fetch(
+      "https://zelvora-ai.zelvora-global.workers.dev",
+      {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({
+          prompt:text,
+          mode:currentMode
+        })
+      }
+    );
+    const data = await res.json();
+    chat.lastChild.remove();
+    addMsg(data.reply,"ai");
+    speak(data.reply);
+  }catch{
+    chat.lastChild.remove();
+    addMsg("⚠️ AI unavailable","ai");
+  }
 }
 
-function fill(text){
-  go('tutor');
-  document.getElementById('question').value=text;
+/* ---------------- TEXT INPUT ---------------- */
+document.getElementById("ask").onclick=()=>{
+  const v=input.value.trim();
+  if(v) askAI(v);
+  input.value="";
+};
+
+/* ---------------- VOICE (CONTINUOUS) ---------------- */
+let recognition;
+let listening=false;
+let silenceTimer;
+
+if("webkitSpeechRecognition" in window){
+  recognition=new webkitSpeechRecognition();
+  recognition.continuous=true;
+  recognition.interimResults=true;
+  recognition.lang="en-US";
+
+  recognition.onresult=(e)=>{
+    clearTimeout(silenceTimer);
+    let text="";
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      text+=e.results[i][0].transcript;
+    }
+    input.value=text;
+
+    silenceTimer=setTimeout(()=>{
+      recognition.stop();
+      if(text.trim()) askAI(text.trim());
+      listening=false;
+      mic.classList.remove("listening");
+    },1200);
+  };
 }
 
-async function askAI(){
-  const q=document.getElementById('question').value;
-  if(!q) return;
-  document.getElementById('reply').innerHTML="Thinking...";
-  const res=await fetch("https://zelvora-ai.zelvora-global.workers.dev",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ prompt:`(${mode} tutor) ${q}` })
-  });
-  const data=await res.json();
-  document.getElementById('reply').innerHTML=data.reply||"No response";
+document.getElementById("mic").onclick=()=>{
+  if(!recognition) return alert("Voice not supported");
+  if(!listening){
+    recognition.start();
+    listening=true;
+    mic.classList.add("listening");
+  }else{
+    recognition.stop();
+    listening=false;
+    mic.classList.remove("listening");
+  }
+};
+
+/* ---------------- AI VOICE OUTPUT ---------------- */
+function speak(text){
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate=0.9;
+  speechSynthesis.speak(u);
 }
 
+/* ---------------- SERVICE WORKER ---------------- */
 if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("/sw.js");
+  navigator.serviceWorker.register("sw.js");
 }
 </script>
 
