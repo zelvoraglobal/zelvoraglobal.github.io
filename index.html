@@ -1,175 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="manifest" href="manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zelvora</title>
+
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1f7aff">
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Zelvora Global | Premium Mentoring</title>
 
 <style>
-:root {
+:root{
   --bg:#050a15;
-  --glass:rgba(255,255,255,.04);
-  --border:rgba(255,255,255,.12);
+  --card:#0b1224;
   --accent:#1f7aff;
   --text:#e2e8f0;
+  --muted:#94a3b8;
 }
+*{box-sizing:border-box}
 body{
   margin:0;
   background:var(--bg);
   color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto;
 }
+.screen{
+  display:none;
+  padding:16px;
+  padding-bottom:90px;
+}
+.screen.active{display:block}
 header{
-  display:flex;
-  justify-content:space-between;
-  padding:16px 6%;
-  border-bottom:1px solid var(--border);
-  backdrop-filter:blur(12px);
+  padding:14px 16px;
+  font-weight:700;
+  font-size:18px;
 }
-.logo{font-weight:800;font-size:22px}
-.hero{
-  text-align:center;
-  padding:100px 6% 60px;
-  max-width:900px;
-  margin:auto;
-}
-.hero h1{
-  font-size:clamp(2.5rem,7vw,4rem);
-  line-height:1.1;
-}
-.hero p{color:#94a3b8}
-
-.ai-box{
-  max-width:600px;
-  margin:40px auto;
-}
-.ai-bar{
-  display:flex;
-  background:var(--glass);
-  border:1px solid var(--border);
+.card{
+  background:var(--card);
+  padding:16px;
   border-radius:14px;
-  padding:8px;
+  margin-bottom:14px;
 }
-.ai-bar input{
+.card button{
+  width:100%;
+  background:var(--accent);
+  border:none;
+  color:white;
+  padding:12px;
+  border-radius:10px;
+  font-weight:600;
+}
+input,textarea{
+  width:100%;
+  background:#020617;
+  border:1px solid #1e293b;
+  color:white;
+  padding:12px;
+  border-radius:10px;
+}
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:70px;
+  background:#020617;
+  display:flex;
+  border-top:1px solid #1e293b;
+}
+.bottom-nav button{
   flex:1;
   background:none;
   border:none;
-  color:white;
-  font-size:16px;
-  padding:12px;
-  outline:none;
+  color:var(--muted);
+  font-size:12px;
 }
-.ai-bar button{
-  background:var(--accent);
-  color:white;
-  border:none;
-  padding:12px 24px;
-  border-radius:10px;
+.bottom-nav button.active{
+  color:var(--accent);
   font-weight:600;
-  cursor:pointer;
 }
-.ai-response{
-  margin-top:16px;
-  padding:16px;
-  border-radius:12px;
-  background:rgba(31,122,255,.1);
-  display:none;
-}
-
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:20px;
-}
-.card{
-  background:var(--glass);
-  border:1px solid var(--border);
+.chips button{
+  background:#020617;
+  border:1px solid #1e293b;
+  color:white;
+  padding:8px 12px;
   border-radius:20px;
-  padding:30px;
+  margin:4px;
 }
-footer{
-  text-align:center;
-  padding:40px;
-  color:#64748b;
-  border-top:1px solid var(--border);
+.response{
+  background:#020617;
+  padding:12px;
+  border-radius:10px;
+  margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <div class="logo">ZELVORA GLOBAL</div>
-  <div>Academy · Mentoring · Contact</div>
-</header>
+<header>Zelvora AI</header>
 
-<section class="hero">
-  <h1>Shape Your Future<br>with Elite Mentoring</h1>
-  <p>Expert-led tuition, spoken English, and startup mentoring worldwide.</p>
-
-  <div class="ai-box">
-    <div class="ai-bar">
-      <input id="prompt" placeholder="Ask Zelvora anything..." />
-      <button id="ask">Ask AI</button>
-    </div>
-    <div id="response" class="ai-response"></div>
+<!-- HOME -->
+<div id="home" class="screen active">
+  <div class="card">
+    <h3>What do you want to improve today?</h3>
+    <button onclick="go('tutor')">🤖 Ask AI Tutor</button>
   </div>
 
-  <div class="cards">
-    <div class="card"><h3>Academic Excellence</h3><p>Classes 5–12, exam focused coaching.</p></div>
-    <div class="card"><h3>Business Mentoring</h3><p>Startup & founder guidance.</p></div>
-    <div class="card"><h3>Communication Mastery</h3><p>Spoken English & soft skills.</p></div>
-  </div>
-</section>
+  <div class="card"><button onclick="go('english')">🗣 Spoken English</button></div>
+  <div class="card"><button onclick="go('academics')">🎓 Academics</button></div>
+  <div class="card"><button onclick="go('exam')">🧪 Exam Mentor</button></div>
+  <div class="card"><button onclick="go('startup')">🚀 Startup Mentor</button></div>
+</div>
 
-<footer>
-© 2026 Zelvora Global · Empowering Minds
-</footer>
+<!-- AI TUTOR -->
+<div id="tutor" class="screen">
+  <h3>AI Tutor</h3>
+  <div class="chips">
+    <button onclick="setMode('general')">General</button>
+    <button onclick="setMode('english')">English</button>
+    <button onclick="setMode('academic')">Academic</button>
+    <button onclick="setMode('exam')">Exam</button>
+    <button onclick="setMode('startup')">Startup</button>
+  </div>
+  <textarea id="question" placeholder="Ask anything..."></textarea>
+  <button onclick="askAI()">Ask</button>
+  <div id="reply" class="response"></div>
+</div>
+
+<!-- SPOKEN ENGLISH -->
+<div id="english" class="screen">
+  <h3>Spoken English</h3>
+
+  <div class="card">
+    <h4>Daily Practice</h4>
+    <p>Speak 5 sentences about your day.</p>
+    <button onclick="fill('Correct my spoken English')">Start</button>
+  </div>
+
+  <div class="card">
+    <h4>Grammar Fix</h4>
+    <button onclick="fill('Correct this sentence')">Practice</button>
+  </div>
+
+  <div class="card">
+    <h4>Vocabulary Builder</h4>
+    <button onclick="fill('Teach me 5 useful English words')">Learn</button>
+  </div>
+
+  <div class="card">
+    <h4>Confidence Booster</h4>
+    <button onclick="fill('Help me speak confidently in English')">Boost</button>
+  </div>
+</div>
+
+<!-- ACADEMICS -->
+<div id="academics" class="screen">
+  <h3>Academics</h3>
+  <div class="card"><button onclick="fill('Explain this concept for class 10')">Class 9–10</button></div>
+  <div class="card"><button onclick="fill('Help me study better for exams')">Study Help</button></div>
+</div>
+
+<!-- EXAM -->
+<div id="exam" class="screen">
+  <h3>Exam Mentor</h3>
+  <div class="card"><button onclick="fill('Create a study plan')">Study Plan</button></div>
+  <div class="card"><button onclick="fill('Give exam revision tips')">Revision</button></div>
+</div>
+
+<!-- STARTUP -->
+<div id="startup" class="screen">
+  <h3>Startup Mentor</h3>
+  <div class="card"><button onclick="fill('Validate my startup idea')">Idea Validation</button></div>
+  <div class="card"><button onclick="fill('How to grow my business')">Growth</button></div>
+</div>
+
+<!-- PROFILE -->
+<div id="profile" class="screen">
+  <h3>Profile</h3>
+  <p>Zelvora AI Learning App</p>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button onclick="go('home')" class="active">Home</button>
+  <button onclick="go('tutor')">Tutor</button>
+  <button onclick="go('english')">English</button>
+  <button onclick="go('academics')">Academics</button>
+  <button onclick="go('profile')">Me</button>
+</div>
 
 <script>
-const btn = document.getElementById("ask");
-const input = document.getElementById("prompt");
-const box = document.getElementById("response");
+let mode="general";
 
-async function askAI(){
-  const text = input.value.trim();
-  if(!text) return;
-
-  btn.disabled = true;
-  btn.innerText = "Thinking...";
-  box.style.display="block";
-  box.innerHTML="Zelvora is thinking...";
-
-  try{
-    const res = await fetch(
-      "https://zelvora-ai.zelvora-global.workers.dev",
-      {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body:JSON.stringify({ prompt:text })
-      }
-    );
-    const data = await res.json();
-    box.innerHTML = "<b>Zelvora AI:</b><br>"+data.reply;
-  }catch(e){
-    box.innerHTML="⚠️ AI temporarily unavailable.";
-  }
-
-  btn.disabled=false;
-  btn.innerText="Ask AI";
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active'));
 }
 
-btn.onclick=askAI;
-input.addEventListener("keydown",e=>{
-  if(e.key==="Enter") askAI();
-});
-</script>
-<script>
-if ("serviceWorker" in navigator) {
+function setMode(m){
+  mode=m;
+  alert("Tutor mode: "+m);
+}
+
+function fill(text){
+  go('tutor');
+  document.getElementById('question').value=text;
+}
+
+async function askAI(){
+  const q=document.getElementById('question').value;
+  if(!q) return;
+  document.getElementById('reply').innerHTML="Thinking...";
+  const res=await fetch("https://zelvora-ai.zelvora-global.workers.dev",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ prompt:`(${mode} tutor) ${q}` })
+  });
+  const data=await res.json();
+  document.getElementById('reply').innerHTML=data.reply||"No response";
+}
+
+if("serviceWorker" in navigator){
   navigator.serviceWorker.register("/sw.js");
 }
 </script>
+
 </body>
 </html>
