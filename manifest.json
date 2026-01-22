@@ -1,33 +1,29 @@
 {
-  "name": "Zelvora Global – Elite Mentoring & AI Tutor",
+  "name": "Zelvora Global",
   "short_name": "Zelvora",
-  "description": "Zelvora Global offers elite mentoring, AI-powered tutoring, spoken English training, exam preparation, and startup guidance.",
-  "id": "/",
+  "description": "AI-powered mentoring, spoken English training, exam preparation, and business guidance.",
   "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "fullscreen"],
   "orientation": "portrait",
   "background_color": "#050a15",
   "theme_color": "#1f7aff",
+  "categories": ["education", "productivity"],
   "lang": "en",
-  "dir": "ltr",
-
   "icons": [
     {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
-
   "screenshots": [
     {
       "src": "/screenshots/home.png",
@@ -35,13 +31,5 @@
       "type": "image/png",
       "form_factor": "narrow"
     }
-  ],
-
-  "categories": [
-    "education",
-    "business",
-    "productivity"
-  ],
-
-  "prefer_related_applications": false
+  ]
 }
