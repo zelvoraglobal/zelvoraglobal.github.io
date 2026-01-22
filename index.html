@@ -1,167 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Zelvora AI</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zelvora AI</title>
 
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0b1220">
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1f7aff">
 
-<style>
-:root {
-  --bg:#060b18;
-  --card:#0e1730;
-  --accent:#4bb7ff;
-  --accent2:#1f7aff;
-  --text:#e5edff;
-  --muted:#8ea0c8;
-  --danger:#ff6b6b;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
 
-*{box-sizing:border-box}
-body{
-  margin:0;
-  background:radial-gradient(120% 120% at 50% 0%, #0f1a3a, var(--bg));
-  color:var(--text);
-  font-family:system-ui,-apple-system,Segoe UI,Roboto;
-  min-height:100vh;
-}
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #0b1a3a, #020409);
+      color: #fff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-header{
-  padding:18px 16px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-size:18px;
-  font-weight:700;
-}
+    header {
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to bottom, #0d1e45, transparent);
+    }
 
-.status{
-  font-size:13px;
-  color:var(--muted);
-}
+    header h1 {
+      font-size: 18px;
+      margin: 0;
+    }
 
-.tabs{
-  display:flex;
-  gap:10px;
-  overflow-x:auto;
-  padding:10px 14px;
-}
+    #status {
+      font-size: 12px;
+      opacity: 0.8;
+    }
 
-.tab{
-  padding:10px 16px;
-  border-radius:999px;
-  background:#0b1430;
-  color:var(--muted);
-  white-space:nowrap;
-  font-size:14px;
-}
+    .modes {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      overflow-x: auto;
+    }
 
-.tab.active{
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#fff;
-}
+    .mode {
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.08);
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 14px;
+    }
 
-.card{
-  background:linear-gradient(180deg,#0f1b3f,#0b1228);
-  border-radius:20px;
-  padding:18px;
-  margin:14px;
-  box-shadow:0 10px 40px rgba(0,0,0,.4);
-}
+    .mode.active {
+      background: linear-gradient(135deg, #3fb3ff, #1f7aff);
+    }
 
-textarea{
-  width:100%;
-  min-height:80px;
-  background:transparent;
-  border:none;
-  outline:none;
-  color:#fff;
-  font-size:16px;
-  resize:none;
-}
+    .container {
+      flex: 1;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  font-size:16px;
-  font-weight:700;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#fff;
-}
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      background: rgba(255,255,255,0.06);
+      border: none;
+      border-radius: 14px;
+      padding: 14px;
+      color: white;
+      resize: none;
+      font-size: 15px;
+      outline: none;
+    }
 
-.response{
-  margin-top:14px;
-  padding:14px;
-  border-radius:14px;
-  background:#0c1635;
-  display:none;
-}
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
 
-.error{
-  background:rgba(255,107,107,.12);
-  color:var(--danger);
-}
+    #askBtn {
+      background: linear-gradient(135deg, #3fb3ff, #1f7aff);
+      color: white;
+    }
 
-.voice-wrap{
-  display:flex;
-  justify-content:center;
-  margin:30px 0 80px;
-}
+    #response {
+      background: rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 14px;
+      min-height: 80px;
+      font-size: 15px;
+    }
 
-.voice{
-  width:76px;
-  height:76px;
-  border-radius:50%;
-  background:radial-gradient(circle,var(--accent),var(--accent2));
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:30px;
-  box-shadow:0 0 40px rgba(79,160,255,.6);
-}
+    #error {
+      background: rgba(255,50,50,0.15);
+      color: #ff9a9a;
+      padding: 10px;
+      border-radius: 12px;
+      display: none;
+    }
 
-footer{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  background:#070d1e;
-  display:flex;
-  justify-content:space-around;
-  padding:12px 0;
-  font-size:13px;
-  color:var(--muted);
-}
-</style>
+    .voice-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: auto;
+      margin-bottom: 12px;
+    }
+
+    #micBtn {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3fb3ff, #1f7aff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      box-shadow: 0 0 30px rgba(63,179,255,0.6);
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      font-size: 13px;
+      background: linear-gradient(to top, #0b1a3a, transparent);
+      opacity: 0.85;
+    }
+  </style>
 </head>
 
 <body>
 
 <header>
-  <div>Zelvora AI</div>
-  <div id="status" class="status">Connecting…</div>
+  <h1>Zelvora AI</h1>
+  <div id="status">Online</div>
 </header>
 
-<div class="tabs" id="tabs">
-  <div class="tab active" data-mode="general">General</div>
-  <div class="tab" data-mode="english">English</div>
-  <div class="tab" data-mode="academic">Academic</div>
-  <div class="tab" data-mode="exam">Exam</div>
-  <div class="tab" data-mode="startup">Startup</div>
+<div class="modes">
+  <div class="mode active" data-mode="general">General</div>
+  <div class="mode" data-mode="english">English</div>
+  <div class="mode" data-mode="academic">Academic</div>
+  <div class="mode" data-mode="exam">Exam</div>
+  <div class="mode" data-mode="startup">Startup</div>
 </div>
 
-<div class="card">
-  <textarea id="input" placeholder="Ask or speak naturally…"></textarea>
-  <button onclick="askAI()">Ask AI</button>
+<div class="container">
+  <textarea id="input" placeholder="Ask or speak naturally..."></textarea>
 
-  <div id="response" class="response"></div>
-</div>
+  <button id="askBtn">Ask AI</button>
 
-<div class="voice-wrap">
-  <div class="voice" onclick="toggleVoice()">🎤</div>
+  <div id="error">AI unavailable. Please try again.</div>
+
+  <div id="response"></div>
+
+  <div class="voice-wrap">
+    <div id="micBtn">🎤</div>
+  </div>
 </div>
 
 <footer>
@@ -172,104 +180,77 @@ footer{
 </footer>
 
 <script>
-/* ================= CONFIG ================= */
-const API = "https://zelvora-ai.zelvora-global.workers.dev";
+  const workerURL = "https://zelvora-ai.zelvora-global.workers.dev";
 
-/* ================= STATE ================= */
-let mode = "general";
-let listening = false;
-let recognition;
+  let currentMode = "general";
+  let listening = false;
+  let recognition;
 
-/* ================= TABS ================= */
-document.querySelectorAll(".tab").forEach(t=>{
-  t.onclick=()=>{
-    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-    t.classList.add("active");
-    mode = t.dataset.mode;
-  }
-});
-
-/* ================= STATUS ================= */
-async function checkOnline(){
-  try{
-    await fetch(API);
-    status.textContent="Online";
-  }catch{
-    status.textContent="Offline";
-  }
-}
-checkOnline();
-
-/* ================= AI ================= */
-async function askAI(){
   const input = document.getElementById("input");
-  const box = document.getElementById("response");
-  const text = input.value.trim();
-  if(!text) return;
+  const responseEl = document.getElementById("response");
+  const errorEl = document.getElementById("error");
+  const statusEl = document.getElementById("status");
 
-  box.style.display="block";
-  box.textContent="Thinking…";
-  box.className="response";
+  document.querySelectorAll(".mode").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll(".mode").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentMode = btn.dataset.mode;
+    };
+  });
 
-  try{
-    const r = await fetch(API,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ prompt:text, mode })
-    });
-    const d = await r.json();
-    box.textContent=d.reply;
-    speak(d.reply);
-  }catch{
-    box.textContent="AI unavailable. Please try again.";
-    box.classList.add("error");
+  document.getElementById("askBtn").onclick = askAI;
+
+  async function askAI() {
+    const text = input.value.trim();
+    if (!text) return;
+
+    statusEl.textContent = "Thinking...";
+    errorEl.style.display = "none";
+
+    try {
+      const res = await fetch(workerURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: text, mode: currentMode })
+      });
+
+      const data = await res.json();
+      responseEl.innerText = data.reply;
+      statusEl.textContent = "Online";
+
+    } catch (e) {
+      errorEl.style.display = "block";
+      statusEl.textContent = "Offline";
+    }
   }
-}
 
-/* ================= VOICE ================= */
-function toggleVoice(){
-  if(!("webkitSpeechRecognition" in window)){
-    alert("Voice not supported");
-    return;
-  }
-
-  if(!recognition){
+  // 🎤 Voice input
+  if ("webkitSpeechRecognition" in window) {
     recognition = new webkitSpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
+    recognition.continuous = false;
     recognition.lang = "en-US";
 
-    recognition.onresult = e=>{
-      let t="";
-      for(let i=e.resultIndex;i<e.results.length;i++){
-        t+=e.results[i][0].transcript;
-      }
-      input.value=t;
+    recognition.onresult = e => {
+      input.value = e.results[0][0].transcript;
+      askAI();
+    };
+
+    recognition.onerror = () => {
+      statusEl.textContent = "Mic error";
     };
   }
 
-  if(listening){
-    recognition.stop();
-    listening=false;
-  }else{
+  document.getElementById("micBtn").onclick = () => {
+    if (!recognition) return alert("Voice not supported");
     recognition.start();
-    listening=true;
+    statusEl.textContent = "Listening...";
+  };
+
+  // Service Worker
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js");
   }
-}
-
-/* ================= TTS ================= */
-function speak(text){
-  if(!("speechSynthesis" in window)) return;
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate=1;
-  u.pitch=1;
-  speechSynthesis.speak(u);
-}
-
-/* ================= SW ================= */
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("/sw.js");
-}
 </script>
 
 </body>
