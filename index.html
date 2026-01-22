@@ -6,251 +6,264 @@
 <title>Zelvora AI</title>
 
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0a1020">
+<meta name="theme-color" content="#0b1024">
 
 <style>
+/* ================= ROOT THEME ================= */
 :root{
-  --bg:#050a15;
-  --card:#0b1224;
-  --border:#1e293b;
-  --accent:#1f7aff;
+  --bg-main: radial-gradient(circle at top,#0b1024 0%,#050814 60%,#020409 100%);
+  --glass: rgba(255,255,255,.04);
+  --accent:#3b82f6;
+  --accent-glow: 0 0 40px rgba(59,130,246,.45);
   --text:#e5e7eb;
   --muted:#94a3b8;
+  --radius:18px;
+  --speed:.35s;
 }
+
+/* MODE COLORS */
+body[data-mode="english"]{--accent:#22c55e}
+body[data-mode="academic"]{--accent:#38bdf8}
+body[data-mode="exam"]{--accent:#f97316}
+body[data-mode="startup"]{--accent:#a855f7}
+
+/* ================= BASE ================= */
 *{box-sizing:border-box}
 body{
   margin:0;
-  background:var(--bg);
+  background:var(--bg-main);
   color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  overflow:hidden;
 }
 header{
-  padding:14px 16px;
-  background:#0a1020;
-  border-bottom:1px solid var(--border);
-  font-weight:700;
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 18px;
+  backdrop-filter:blur(16px);
+  background:rgba(2,4,9,.6);
+  border-bottom:1px solid rgba(255,255,255,.06);
 }
-main{
+header span{font-weight:700;letter-spacing:.4px}
+
+/* ================= CONTEXT ZONE ================= */
+#context{
+  height:110px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  color:var(--muted);
+  transition:var(--speed);
+}
+
+/* ================= RESPONSE BLOCKS ================= */
+#response{
+  height:calc(100vh - 260px);
+  padding:18px;
+  overflow-y:auto;
+}
+.block{
+  background:var(--glass);
+  border-radius:var(--radius);
   padding:16px;
-  padding-bottom:90px;
+  margin-bottom:14px;
+  animation:slideUp .4s ease;
+  border:1px solid rgba(255,255,255,.06);
 }
-.modes{
+.block h4{
+  margin:0 0 6px;
+  font-size:13px;
+  color:var(--accent);
+}
+.block p{margin:0;font-size:15px;line-height:1.5}
+
+/* ================= AI ACTION RING ================= */
+#ringWrap{
+  position:fixed;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  width:92px;
+  height:92px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+#ring{
+  width:82px;
+  height:82px;
+  border-radius:50%;
+  background:radial-gradient(circle at top,var(--accent),#020409);
+  box-shadow:var(--accent-glow);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  cursor:pointer;
+  transition:var(--speed);
+}
+#ring.listening{animation:pulse 1.3s infinite}
+#ring.thinking{animation:spin 1.6s linear infinite}
+#ring.speaking{animation:wave 1.2s infinite}
+
+/* ================= MODE STRIP ================= */
+#modes{
+  position:fixed;
+  bottom:140px;
+  left:50%;
+  transform:translateX(-50%);
   display:flex;
   gap:10px;
-  overflow-x:auto;
-  margin-bottom:14px;
 }
 .mode{
-  padding:8px 14px;
-  border-radius:20px;
-  border:1px solid var(--border);
-  background:var(--card);
+  padding:6px 14px;
+  border-radius:999px;
+  background:var(--glass);
+  font-size:12px;
+  border:1px solid rgba(255,255,255,.08);
   cursor:pointer;
-  white-space:nowrap;
-  font-size:14px;
 }
 .mode.active{
   background:var(--accent);
-  border-color:var(--accent);
+  color:#020409;
 }
-.chat-box{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:14px;
-  min-height:140px;
-  margin-bottom:12px;
+
+/* ================= ANIMATIONS ================= */
+@keyframes pulse{
+  0%{box-shadow:0 0 0 rgba(0,0,0,0)}
+  70%{box-shadow:0 0 40px rgba(255,255,255,.35)}
+  100%{box-shadow:0 0 0 rgba(0,0,0,0)}
 }
-.message{
-  margin-bottom:10px;
-  font-size:15px;
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes wave{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.07)}
+  100%{transform:scale(1)}
 }
-.message.ai{color:#dbeafe}
-.message.user{color:#a5f3fc}
-.controls{
-  display:flex;
-  gap:10px;
-}
-input{
-  flex:1;
-  padding:12px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  background:#020617;
-  color:white;
-}
-button{
-  padding:12px 16px;
-  border:none;
-  border-radius:12px;
-  background:var(--accent);
-  color:white;
-  font-weight:600;
-  cursor:pointer;
-}
-.mic{
-  background:#16a34a;
-}
-.mic.listening{
-  background:#dc2626;
-}
-.bottom-nav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:#020617;
-  border-top:1px solid var(--border);
-  display:flex;
-  justify-content:space-around;
-  padding:10px 0;
-  font-size:12px;
-}
-.bottom-nav div{
-  color:var(--muted);
+@keyframes slideUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
 }
 </style>
 </head>
 
-<body>
+<body data-mode="general">
 
-<header>Zelvora AI</header>
+<header>
+  <span>Zelvora AI</span>
+  <span id="status">Idle</span>
+</header>
 
-<main>
-  <div class="modes" id="modes">
-    <div class="mode active" data-mode="general">General</div>
-    <div class="mode" data-mode="english">English</div>
-    <div class="mode" data-mode="academic">Academic</div>
-    <div class="mode" data-mode="exam">Exam</div>
-    <div class="mode" data-mode="startup">Startup</div>
-  </div>
+<div id="context">Tap the ring and speak naturally</div>
 
-  <div class="chat-box" id="chat">
-    <div class="message ai">👋 Hi, I’m Zelvora AI. Speak or type to start.</div>
-  </div>
+<div id="response"></div>
 
-  <div class="controls">
-    <input id="input" placeholder="Ask or speak..." />
-    <button id="ask">Ask</button>
-    <button id="mic" class="mic">🎤</button>
-  </div>
-</main>
+<div id="modes">
+  <div class="mode active" data-mode="general">General</div>
+  <div class="mode" data-mode="english">English</div>
+  <div class="mode" data-mode="academic">Academic</div>
+  <div class="mode" data-mode="exam">Exam</div>
+  <div class="mode" data-mode="startup">Startup</div>
+</div>
 
-<div class="bottom-nav">
-  <div>Home</div>
-  <div>Tutor</div>
-  <div>English</div>
-  <div>Academics</div>
-  <div>Me</div>
+<div id="ringWrap">
+  <div id="ring">🎙</div>
 </div>
 
 <script>
-/* ---------------- MODE HANDLING ---------------- */
-let currentMode = "general";
-document.querySelectorAll(".mode").forEach(btn=>{
-  btn.onclick=()=>{
-    document.querySelectorAll(".mode").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    currentMode = btn.dataset.mode;
+/* ================= MODE ================= */
+let mode="general";
+document.querySelectorAll(".mode").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll(".mode").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    mode=b.dataset.mode;
+    document.body.dataset.mode=mode;
   }
 });
 
-/* ---------------- CHAT UI ---------------- */
-const chat = document.getElementById("chat");
-function addMsg(text,type){
-  const div=document.createElement("div");
-  div.className="message "+type;
-  div.innerHTML=text;
-  chat.appendChild(div);
-  chat.scrollTop=chat.scrollHeight;
+/* ================= AI FLOW ================= */
+const ring=document.getElementById("ring");
+const status=document.getElementById("status");
+const response=document.getElementById("response");
+let listening=false, recog, silence;
+
+function block(title,text){
+  const d=document.createElement("div");
+  d.className="block";
+  d.innerHTML=`<h4>${title}</h4><p>${text}</p>`;
+  response.appendChild(d);
+  response.scrollTop=response.scrollHeight;
 }
 
-/* ---------------- AI REQUEST ---------------- */
-async function askAI(text){
-  addMsg(text,"user");
-  addMsg("Thinking…","ai");
+/* ================= SPEECH ================= */
+if("webkitSpeechRecognition"in window){
+  recog=new webkitSpeechRecognition();
+  recog.continuous=true;
+  recog.interimResults=true;
+  recog.lang="en-IN";
 
-  try{
-    const res = await fetch(
-      "https://zelvora-ai.zelvora-global.workers.dev",
-      {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body:JSON.stringify({
-          prompt:text,
-          mode:currentMode
-        })
-      }
-    );
-    const data = await res.json();
-    chat.lastChild.remove();
-    addMsg(data.reply,"ai");
-    speak(data.reply);
-  }catch{
-    chat.lastChild.remove();
-    addMsg("⚠️ AI unavailable","ai");
-  }
-}
-
-/* ---------------- TEXT INPUT ---------------- */
-document.getElementById("ask").onclick=()=>{
-  const v=input.value.trim();
-  if(v) askAI(v);
-  input.value="";
-};
-
-/* ---------------- VOICE (CONTINUOUS) ---------------- */
-let recognition;
-let listening=false;
-let silenceTimer;
-
-if("webkitSpeechRecognition" in window){
-  recognition=new webkitSpeechRecognition();
-  recognition.continuous=true;
-  recognition.interimResults=true;
-  recognition.lang="en-US";
-
-  recognition.onresult=(e)=>{
-    clearTimeout(silenceTimer);
-    let text="";
+  recog.onresult=e=>{
+    clearTimeout(silence);
+    let t="";
     for(let i=e.resultIndex;i<e.results.length;i++){
-      text+=e.results[i][0].transcript;
+      t+=e.results[i][0].transcript;
     }
-    input.value=text;
-
-    silenceTimer=setTimeout(()=>{
-      recognition.stop();
-      if(text.trim()) askAI(text.trim());
-      listening=false;
-      mic.classList.remove("listening");
+    silence=setTimeout(()=>{
+      recog.stop();
+      askAI(t.trim());
     },1200);
   };
 }
 
-document.getElementById("mic").onclick=()=>{
-  if(!recognition) return alert("Voice not supported");
-  if(!listening){
-    recognition.start();
-    listening=true;
-    mic.classList.add("listening");
-  }else{
-    recognition.stop();
-    listening=false;
-    mic.classList.remove("listening");
-  }
-};
+/* ================= ASK AI ================= */
+async function askAI(text){
+  if(!text)return;
+  ring.className="thinking";
+  status.innerText="Thinking";
 
-/* ---------------- AI VOICE OUTPUT ---------------- */
-function speak(text){
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate=0.9;
+  try{
+    const r=await fetch("https://zelvora-ai.zelvora-global.workers.dev",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({prompt:text,mode})
+    });
+    const d=await r.json();
+    ring.className="speaking";
+    status.innerText="Speaking";
+    block("Zelvora",d.reply);
+    speak(d.reply);
+  }catch{
+    block("Error","AI unavailable");
+  }
+}
+
+/* ================= SPEAK ================= */
+function speak(t){
+  const u=new SpeechSynthesisUtterance(t);
+  u.lang="en-IN";
+  u.rate=.9;
+  u.onend=()=>{status.innerText="Listening";ring.className="listening";recog.start()};
   speechSynthesis.speak(u);
 }
 
-/* ---------------- SERVICE WORKER ---------------- */
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
-}
+/* ================= RING ================= */
+ring.onclick=()=>{
+  if(!recog)return alert("Voice not supported");
+  listening=!listening;
+  if(listening){
+    ring.className="listening";
+    status.innerText="Listening";
+    recog.start();
+  }else{
+    recog.stop();
+    ring.className="";
+    status.innerText="Idle";
+  }
+};
 </script>
 
 </body>
