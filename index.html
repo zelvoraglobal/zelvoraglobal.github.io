@@ -1,95 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zelvora AI</title>
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1f7aff">
 
 <style>
+:root{
+  --bg:#050b18;
+  --card:#0f1b3d;
+  --blue:#1f7aff;
+  --muted:#9bb4ff;
+}
+
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:system-ui,-apple-system;
-  background:radial-gradient(circle at top,#0b1d46,#050b18 60%);
+  background:linear-gradient(180deg,#050b18,#020615);
   color:#fff;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
 }
+
 header{
   padding:16px;
   display:flex;
   justify-content:space-between;
-  font-weight:700;
+  align-items:center;
+  font-weight:600;
 }
+
+#status{
+  font-size:14px;
+  color:var(--muted);
+}
+
 .tabs{
   display:flex;
   gap:10px;
   padding:12px;
   overflow-x:auto;
 }
+
 .tab{
   padding:8px 16px;
   border-radius:20px;
-  background:#111a3a;
+  background:#0b1535;
+  font-size:14px;
+  cursor:pointer;
   white-space:nowrap;
 }
-.tab.active{background:#1f7aff}
-.box{padding:16px}
+
+.tab.active{
+  background:var(--blue);
+}
+
+.box{
+  padding:16px;
+}
+
 textarea{
   width:100%;
-  min-height:90px;
-  background:#0f1a3a;
+  min-height:110px;
+  background:var(--card);
   border:none;
   color:#fff;
   padding:14px;
-  border-radius:16px;
-  font-size:16px;
+  border-radius:18px;
+  font-size:15px;
+  outline:none;
 }
+
 button{
   width:100%;
-  padding:16px;
-  margin-top:12px;
+  margin-top:14px;
+  padding:14px;
   border:none;
-  border-radius:16px;
-  background:#1f7aff;
+  border-radius:18px;
+  background:linear-gradient(135deg,#1f7aff,#4aa3ff);
   color:#fff;
-  font-size:17px;
+  font-size:16px;
   font-weight:600;
 }
+
 #reply{
   margin-top:14px;
-  padding:16px;
-  background:#0f1a3a;
-  border-radius:16px;
-  min-height:40px;
-  line-height:1.5;
+  padding:14px;
+  background:var(--card);
+  border-radius:18px;
+  font-size:15px;
+  white-space:pre-wrap;
 }
+
 .mic{
   position:fixed;
-  bottom:86px;
+  bottom:90px;
   left:50%;
   transform:translateX(-50%);
-  width:78px;
-  height:78px;
+  width:84px;
+  height:84px;
   border-radius:50%;
-  background:#1f7aff;
+  background:var(--blue);
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:32px;
+  font-size:34px;
   box-shadow:0 0 30px rgba(31,122,255,.6);
+  cursor:pointer;
 }
-.mic.listening{background:#ff3b3b}
+
+.mic.listening{
+  background:#ff3b3b;
+  box-shadow:0 0 35px rgba(255,59,59,.7);
+}
+
 footer{
   position:fixed;
   bottom:0;
   width:100%;
   display:flex;
   justify-content:space-around;
-  background:#060d22;
+  background:#070d20;
   padding:12px 0;
-  font-size:14px;
-  opacity:.9;
+  font-size:13px;
+  color:#c9d6ff;
 }
 </style>
 </head>
@@ -125,25 +161,30 @@ footer{
 </footer>
 
 <script>
+/* ================= CONFIG ================= */
 const API = "https://zelvora-ai.zelvora-global.workers.dev";
-let mode = "general";
-let rec, listening = false;
 
+/* ================= STATE ================= */
+let mode = "general";
+let recognition = null;
+let listening = false;
+
+/* ================= ELEMENTS ================= */
 const q = document.getElementById("q");
 const reply = document.getElementById("reply");
 const statusEl = document.getElementById("status");
 const micBtn = document.getElementById("micBtn");
 
-// ---- Tabs ----
-document.querySelectorAll(".tab").forEach(t=>{
-  t.onclick = ()=>{
-    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-    t.classList.add("active");
-    mode = t.dataset.m;
+/* ================= TABS ================= */
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+    mode = tab.dataset.m;
   };
 });
 
-// ---- Ask AI ----
+/* ================= AI CALL ================= */
 async function ask(){
   const text = q.value.trim();
   if(!text) return;
@@ -152,81 +193,98 @@ async function ask(){
   statusEl.textContent = "Thinking...";
 
   try{
-    const controller = new AbortController();
-    setTimeout(()=>controller.abort(),15000);
-
     const res = await fetch(API,{
       method:"POST",
       headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({ prompt:text, mode }),
-      signal:controller.signal
+      body:JSON.stringify({ prompt:text, mode })
     });
 
-    if(!res.ok){
-      throw new Error("HTTP "+res.status);
+    const raw = await res.text();
+    console.log("RAW AI RESPONSE:", raw);
+
+    let data;
+    try{
+      data = JSON.parse(raw);
+    }catch{
+      reply.textContent = raw;
+      statusEl.textContent = "Online";
+      speak(raw);
+      return;
     }
 
-    const data = await res.json();
-    console.log("AI RAW:", data);
+    const aiText =
+      data.reply ||
+      data.text ||
+      data.output ||
+      data.message ||
+      (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text);
 
-    const textReply = data?.reply?.trim();
-    reply.textContent = textReply || "Zelvora AI returned an empty reply.";
-    speak(reply.textContent);
+    if(aiText){
+      reply.textContent = aiText;
+      speak(aiText);
+      statusEl.textContent = "Online";
+    }else{
+      reply.textContent =
+        "AI responded, but format is unsupported:\n\n" +
+        JSON.stringify(data,null,2);
+      statusEl.textContent = "Online";
+    }
 
-    statusEl.textContent = "Online";
-  }
-  catch(err){
+  }catch(err){
     console.error(err);
-    reply.textContent = "AI backend reachable but no valid reply received.";
+    reply.textContent = "AI backend not reachable.";
     statusEl.textContent = "Offline";
   }
 }
 
-// ---- Voice output ----
+/* ================= VOICE OUTPUT ================= */
 function speak(text){
-  if(!text) return;
-  speechSynthesis.cancel();
+  if(!("speechSynthesis" in window)) return;
   const u = new SpeechSynthesisUtterance(text);
   u.rate = 1;
   u.pitch = 1;
+  speechSynthesis.cancel();
   speechSynthesis.speak(u);
 }
 
-// ---- Voice input ----
+/* ================= VOICE INPUT ================= */
 function toggleMic(){
   if(!("webkitSpeechRecognition" in window)){
     alert("Speech recognition not supported");
     return;
   }
-  if(!rec){
-    rec = new webkitSpeechRecognition();
-    rec.continuous = true;
-    rec.interimResults = true;
-    rec.onresult = e=>{
-      let s="";
+
+  if(!recognition){
+    recognition = new webkitSpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onresult = e=>{
+      let text = "";
       for(let i=e.resultIndex;i<e.results.length;i++){
-        s += e.results[i][0].transcript;
+        text += e.results[i][0].transcript;
       }
-      q.value = s;
+      q.value = text;
     };
-    rec.onend = ()=> stopMic();
+
+    recognition.onend = ()=>{
+      if(listening) recognition.start();
+    };
   }
-  listening ? stopMic() : startMic();
+
+  if(listening){
+    recognition.stop();
+    micBtn.classList.remove("listening");
+  }else{
+    recognition.start();
+    micBtn.classList.add("listening");
+  }
+
+  listening = !listening;
 }
 
-function startMic(){
-  listening = true;
-  micBtn.classList.add("listening");
-  rec.start();
-}
-
-function stopMic(){
-  listening = false;
-  micBtn.classList.remove("listening");
-  rec.stop();
-}
-
-// ---- Service worker ----
+/* ================= PWA ================= */
 if("serviceWorker" in navigator){
   navigator.serviceWorker.register("sw.js");
 }
