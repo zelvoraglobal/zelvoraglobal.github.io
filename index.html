@@ -6,7 +6,7 @@
 <title>Zelvora Handfree Tutor</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{margin:0;padding:0;box-sizing:border-box}
 body{
   font-family:system-ui,-apple-system,BlinkMacSystemFont;
   background:linear-gradient(135deg,#0f1729,#1a2a4a);
@@ -14,21 +14,21 @@ body{
   min-height:100vh;
 }
 header{
+  background:rgba(15,23,41,.95);
   padding:18px;
   text-align:center;
-  background:rgba(15,23,41,.95);
-  border-bottom:1px solid rgba(31,122,255,.25)
+  border-bottom:1px solid rgba(31,122,255,.25);
 }
 .logo{
   font-size:26px;
   font-weight:700;
   background:linear-gradient(135deg,#1f7aff,#764ba2);
   -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent
+  -webkit-text-fill-color:transparent;
 }
 .status{
-  margin-top:8px;
-  font-weight:600
+  margin-top:6px;
+  font-weight:600;
 }
 .container{
   max-width:900px;
@@ -36,50 +36,48 @@ header{
   padding:20px;
   display:flex;
   flex-direction:column;
-  gap:18px
+  gap:18px;
 }
 .card{
   background:rgba(31,122,255,.08);
   border:1px solid rgba(31,122,255,.25);
   border-radius:14px;
-  padding:20px
+  padding:20px;
 }
 .center{text-align:center}
 .mic{
   font-size:70px;
-  margin-bottom:12px
+  margin-bottom:12px;
 }
 .detected{
   background:#0b122e;
   padding:14px;
   border-radius:10px;
   margin-top:10px;
-  min-height:48px
+  min-height:48px;
+}
+.note{
+  font-size:14px;
+  color:#94a3b8;
 }
 .controls{
   display:flex;
   justify-content:center;
   gap:12px;
-  flex-wrap:wrap
+  flex-wrap:wrap;
 }
 button{
   padding:12px 22px;
-  font-weight:600;
   border:none;
   border-radius:10px;
-  cursor:pointer
+  font-weight:600;
+  cursor:pointer;
 }
-.start{background:#1f7aff;color:#fff}
-.stop{background:#ff6b6b;color:#000}
-.reset{background:#334155;color:#fff}
-.feedback, .transcript{
-  max-height:220px;
-  overflow-y:auto;
-  font-size:14px
-}
-.note{color:#94a3b8;font-size:13px}
-.error{color:#ff6b6b}
+.start{background:#1f7aff;color:white}
+.stop{background:#ff6b6b;color:black}
+.reset{background:#334155;color:white}
 .success{color:#4ade80}
+.error{color:#ff6b6b}
 </style>
 </head>
 
@@ -87,7 +85,7 @@ button{
 
 <header>
   <div class="logo">🎙️ Zelvora Handfree Tutor</div>
-  <div class="status" id="status">Ready</div>
+  <div class="status" id="statusText">Ready</div>
 </header>
 
 <div class="container">
@@ -95,23 +93,23 @@ button{
   <div class="card center">
     <div class="mic" id="micIcon">🎧</div>
     <div>Click <b>Start Listening</b> and speak</div>
-    <div class="detected" id="detected">Waiting for speech…</div>
+    <div class="detected" id="detectedText">Waiting for speech…</div>
   </div>
 
   <div class="card">
-    <b>🔍 Real-Time Analysis</b>
-    <div class="feedback note" id="feedback">Feedback will appear here…</div>
+    <b>🔍 AI Feedback</b>
+    <div id="feedback" class="note">Feedback will appear here…</div>
   </div>
 
   <div class="card">
-    <b>📝 Session Transcript</b>
-    <div class="transcript note" id="transcript">Your spoken text will appear here…</div>
+    <b>📝 Transcript</b>
+    <div id="transcript" class="note">Your spoken text will appear here…</div>
   </div>
 
   <div class="controls">
-    <button class="start" onclick="tutor.start()">🎤 Start Listening</button>
-    <button class="stop" onclick="tutor.stop()">⏹ Stop</button>
-    <button class="reset" onclick="tutor.reset()">🔄 Reset</button>
+    <button class="start" onclick="startListening()">🎤 Start Listening</button>
+    <button class="stop" onclick="stopListening()">⏹ Stop</button>
+    <button class="reset" onclick="resetSession()">🔄 Reset</button>
   </div>
 
 </div>
@@ -122,90 +120,100 @@ const API_ENDPOINT = "https://zelvora-ai.zelvora-global.workers.dev";
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 
-const tutor = {
-  recognition: null,
-  listening: false,
+let recognition;
+let listening = false;
 
-  init(){
-    if(!SpeechRecognition){
-      status.textContent="Speech Recognition not supported";
-      return;
-    }
-    this.recognition=new SpeechRecognition();
-    this.recognition.continuous=true;
-    this.recognition.interimResults=true;
-    this.recognition.lang="en-US";
-
-    this.recognition.onstart=()=>{
-      status.textContent="🎙️ Listening…";
-      micIcon.textContent="🎤";
-    };
-
-    this.recognition.onend=()=>{
-      this.listening=false;
-      micIcon.textContent="🎧";
-      status.textContent="Ready";
-    };
-
-    this.recognition.onerror=e=>{
-      status.innerHTML=`<span class="error">❌ ${e.error}</span>`;
-    };
-
-    this.recognition.onresult=e=>{
-      let finalText="";
-      let interim="";
-      for(let i=e.resultIndex;i<e.results.length;i++){
-        const t=e.results[i][0].transcript;
-        e.results[i].isFinal ? finalText+=t+" " : interim+=t;
-      }
-      if(interim) detected.textContent=interim+"…";
-      if(finalText){
-        detected.textContent=finalText.trim();
-        this.send(finalText.trim());
-        transcript.innerHTML+=`<div>• ${finalText}</div>`;
-      }
-    };
-  },
-
-  start(){
-    if(this.listening) return;
-    this.listening=true;
-
-    // REQUIRED delay for mobile permission
-    setTimeout(()=>{
-      try{ this.recognition.start(); }
-      catch{}
-    },300);
-  },
-
-  stop(){
-    this.recognition?.stop();
-  },
-
-  reset(){
-    detected.textContent="Waiting for speech…";
-    feedback.textContent="Feedback will appear here…";
-    transcript.textContent="Your spoken text will appear here…";
-  },
-
-  async send(text){
-    try{
-      const res=await fetch(API_ENDPOINT,{
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body:JSON.stringify({
-          prompt:`Analyze this spoken English and give corrections:\n"${text}"`
-        })
-      });
-      const data=await res.json();
-      feedback.innerHTML=`<div class="success">${data.reply}</div>`;
-    }catch{
-      feedback.innerHTML=`<div class="error">AI error</div>`;
-    }
+function initSpeech() {
+  if (!SpeechRecognition) {
+    statusText.textContent = "Speech Recognition not supported";
+    return;
   }
-};
 
-document.addEventListener("DOMContentLoaded",()=>tutor.init());
+  recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = "en-US";
+
+  recognition.onstart = () => {
+    statusText.textContent = "🎙️ Listening…";
+    micIcon.textContent = "🎤";
+  };
+
+  recognition.onend = () => {
+    listening = false;
+    statusText.textContent = "Ready";
+    micIcon.textContent = "🎧";
+  };
+
+  recognition.onerror = (e) => {
+    let msg = e.error;
+    if (e.error === "not-allowed") {
+      msg = "❌ Microphone blocked. Allow mic in browser settings.";
+    }
+    statusText.textContent = msg;
+  };
+
+  recognition.onresult = async (event) => {
+    let interim = "";
+    let finalText = "";
+
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const t = event.results[i][0].transcript;
+      event.results[i].isFinal ? finalText += t + " " : interim += t;
+    }
+
+    if (interim) {
+      detectedText.textContent = interim + "...";
+    }
+
+    if (finalText) {
+      const clean = finalText.trim();
+      detectedText.textContent = clean;
+      transcript.innerHTML += `<div>• ${clean}</div>`;
+      feedback.textContent = "Analyzing…";
+
+      const aiReply = await sendToAI(clean);
+      feedback.innerHTML = `<div class="success">${aiReply}</div>`;
+    }
+  };
+}
+
+async function sendToAI(text) {
+  try {
+    const res = await fetch(API_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        prompt: `Analyze and improve this spoken English:\n"${text}"`,
+        mode: "general"
+      })
+    });
+    const data = await res.json();
+    return data.reply || "No AI response.";
+  } catch {
+    return "❌ Unable to reach Zelvora AI.";
+  }
+}
+
+function startListening() {
+  if (listening) return;
+  listening = true;
+  setTimeout(() => {
+    try { recognition.start(); } catch {}
+  }, 300);
+}
+
+function stopListening() {
+  recognition && recognition.stop();
+}
+
+function resetSession() {
+  detectedText.textContent = "Waiting for speech…";
+  feedback.textContent = "Feedback will appear here…";
+  transcript.textContent = "Your spoken text will appear here…";
+}
+
+document.addEventListener("DOMContentLoaded", initSpeech);
 </script>
 
 </body>
