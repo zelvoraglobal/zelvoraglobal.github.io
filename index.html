@@ -1,373 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Zelvora Handfree Tutor - Real-Time English Coaching</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Zelvora Handfree Tutor</title>
+
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #0f1729 0%, #1a2a4a 100%);
-  color: #e0e0e0;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+  background:linear-gradient(135deg,#0f1729,#1a2a4a);
+  color:#e5e7eb;
+  min-height:100vh;
 }
-
-header {
-  background: rgba(15, 23, 41, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 20px;
-  text-align: center;
-  border-bottom: 1px solid rgba(31, 122, 255, 0.2);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+header{
+  padding:18px;
+  text-align:center;
+  background:rgba(15,23,41,.95);
+  border-bottom:1px solid rgba(31,122,255,.25)
 }
-
-.logo { 
-  font-size: 28px; 
-  font-weight: 700; 
-  color: #1f7aff; 
-  margin-bottom: 8px; 
-  background: linear-gradient(135deg, #1f7aff 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.logo{
+  font-size:26px;
+  font-weight:700;
+  background:linear-gradient(135deg,#1f7aff,#764ba2);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent
 }
-
-.status-indicator {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+.status{
+  margin-top:8px;
+  font-weight:600
 }
-
-.status-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #4ade80;
-  animation: pulse 2s infinite;
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  gap:18px
 }
-
-.status-dot.listening {
-  background: #ff3b3b;
-  animation: micPulse 0.6s infinite;
+.card{
+  background:rgba(31,122,255,.08);
+  border:1px solid rgba(31,122,255,.25);
+  border-radius:14px;
+  padding:20px
 }
-
-@keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
-@keyframes micPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 59, 59, 0.7); } 50% { box-shadow: 0 0 0 12px rgba(255, 59, 59, 0); } }
-
-.mode-selector {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  flex-wrap: wrap;
+.center{text-align:center}
+.mic{
+  font-size:70px;
+  margin-bottom:12px
 }
-
-.mode-btn {
-  padding: 8px 16px;
-  border: 1px solid rgba(31, 122, 255, 0.3);
-  background: transparent;
-  color: #1f7aff;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.3s;
+.detected{
+  background:#0b122e;
+  padding:14px;
+  border-radius:10px;
+  margin-top:10px;
+  min-height:48px
 }
-
-.mode-btn.active {
-  background: linear-gradient(135deg, #1f7aff 0%, #1560d8 100%);
-  border-color: #1f7aff;
-  color: #fff;
+.controls{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap
 }
-
-.mode-btn:hover { border-color: #1f7aff; }
-
-.container {
-  flex: 1;
-  max-width: 1000px;
-  margin: 0 auto;
-  width: 100%;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
+button{
+  padding:12px 22px;
+  font-weight:600;
+  border:none;
+  border-radius:10px;
+  cursor:pointer
 }
-
-.stats-bar {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
-  margin-bottom: 20px;
+.start{background:#1f7aff;color:#fff}
+.stop{background:#ff6b6b;color:#000}
+.reset{background:#334155;color:#fff}
+.feedback, .transcript{
+  max-height:220px;
+  overflow-y:auto;
+  font-size:14px
 }
-
-.stat {
-  background: linear-gradient(135deg, rgba(31, 122, 255, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
-  border: 1px solid rgba(31, 122, 255, 0.3);
-  padding: 12px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-.stat-value {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1f7aff;
-}
-
-.stat-label {
-  font-size: 11px;
-  color: #888;
-  margin-top: 4px;
-}
-
-.listening-zone {
-  background: linear-gradient(135deg, rgba(31, 122, 255, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
-  border: 2px solid rgba(31, 122, 255, 0.3);
-  border-radius: 20px;
-  padding: 40px;
-  text-align: center;
-  margin-bottom: 20px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.listening-zone::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at center, rgba(31, 122, 255, 0.05) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.listening-content {
-  position: relative;
-  z-index: 2;
-}
-
-.listening-icon {
-  font-size: 80px;
-  margin-bottom: 20px;
-  animation: float 3s ease-in-out infinite;
-}
-
-.listening-icon.active {
-  animation: bounce 0.5s ease-in-out infinite;
-}
-
-@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
-@keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-
-.listening-status {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1f7aff;
-  margin-bottom: 12px;
-}
-
-.detected-text {
-  background: rgba(13, 22, 53, 0.8);
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 16px;
-  min-height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  line-height: 1.6;
-  border: 1px solid rgba(31, 122, 255, 0.2);
-}
-
-.interim-text {
-  color: #888;
-  font-style: italic;
-}
-
-.final-text {
-  color: #fff;
-  font-weight: 500;
-}
-
-.feedback-container {
-  background: rgba(20, 30, 50, 0.8);
-  border: 1px solid rgba(31, 122, 255, 0.2);
-  border-radius: 14px;
-  padding: 20px;
-  margin-bottom: 20px;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.feedback-title {
-  font-weight: 600;
-  color: #1f7aff;
-  margin-bottom: 12px;
-  font-size: 14px;
-  text-transform: uppercase;
-}
-
-.feedback-item {
-  background: rgba(31, 122, 255, 0.08);
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  border-left: 3px solid #1f7aff;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.feedback-item.error {
-  border-left-color: #ff6b6b;
-  background: rgba(255, 107, 107, 0.08);
-}
-
-.feedback-item.success {
-  border-left-color: #4ade80;
-  background: rgba(74, 222, 128, 0.08);
-}
-
-.feedback-item.warning {
-  border-left-color: #fbbf24;
-  background: rgba(251, 191, 36, 0.08);
-}
-
-.error-label { color: #ff6b6b; font-weight: 600; }
-.success-label { color: #4ade80; font-weight: 600; }
-.warning-label { color: #fbbf24; font-weight: 600; }
-
-.transcript-area {
-  background: rgba(13, 22, 53, 0.6);
-  border: 1px solid rgba(31, 122, 255, 0.2);
-  border-radius: 12px;
-  padding: 16px;
-  max-height: 250px;
-  overflow-y: auto;
-  margin-bottom: 20px;
-}
-
-.transcript-title {
-  font-weight: 600;
-  color: #1f7aff;
-  margin-bottom: 12px;
-  font-size: 13px;
-  text-transform: uppercase;
-}
-
-.sentence {
-  background: rgba(31, 122, 255, 0.05);
-  padding: 10px 12px;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  border-left: 3px solid rgba(31, 122, 255, 0.3);
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.sentence.has-error {
-  border-left-color: #ff6b6b;
-  background: rgba(255, 107, 107, 0.08);
-}
-
-.word {
-  display: inline;
-  padding: 2px 4px;
-  border-radius: 4px;
-  transition: all 0.3s;
-}
-
-.word.error {
-  background: rgba(255, 107, 107, 0.3);
-  color: #ffb3b3;
-  text-decoration: underline wavy #ff6b6b;
-}
-
-.word.correct {
-  color: #4ade80;
-}
-
-.control-panel {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-button {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #1f7aff 0%, #1560d8 100%);
-  color: #fff;
-}
-
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(31, 122, 255, 0.3); }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.btn-secondary {
-  background: rgba(31, 122, 255, 0.2);
-  color: #1f7aff;
-  border: 1px solid rgba(31, 122, 255, 0.3);
-}
-
-.btn-secondary:hover { background: rgba(31, 122, 255, 0.3); }
-
-.btn-danger {
-  background: rgba(255, 59, 59, 0.2);
-  color: #ff6b6b;
-  border: 1px solid rgba(255, 59, 59, 0.3);
-}
-
-.btn-danger:hover { background: rgba(255, 59, 59, 0.3); }
-
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(31, 122, 255, 0.05);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(31, 122, 255, 0.3);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(31, 122, 255, 0.5);
-}
-
-@media (max-width: 768px) {
-  .container { padding: 12px; }
-  .listening-zone { padding: 20px; }
-  .listening-icon { font-size: 60px; }
-  .detected-text { font-size: 16px; }
-  .stats-bar { grid-template-columns: repeat(2, 1fr); }
-}
+.note{color:#94a3b8;font-size:13px}
+.error{color:#ff6b6b}
+.success{color:#4ade80}
 </style>
 </head>
 
@@ -375,308 +87,125 @@ button {
 
 <header>
   <div class="logo">🎙️ Zelvora Handfree Tutor</div>
-  <div class="status-indicator">
-    <div class="status-dot" id="statusDot"></div>
-    <span id="statusText">Ready to listen</span>
-  </div>
-  <div class="mode-selector">
-    <button class="mode-btn active" data-mode="conversation">💬 Conversation</button>
-    <button class="mode-btn" data-mode="interview">🎤 Interview</button>
-    <button class="mode-btn" data-mode="presentation">📊 Presentation</button>
-    <button class="mode-btn" data-mode="storytelling">📖 Storytelling</button>
-  </div>
+  <div class="status" id="status">Ready</div>
 </header>
 
 <div class="container">
-  
-  <div class="stats-bar">
-    <div class="stat">
-      <div class="stat-value" id="statAccuracy">0%</div>
-      <div class="stat-label">Accuracy</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value" id="statWords">0</div>
-      <div class="stat-label">Words Spoken</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value" id="statErrors">0</div>
-      <div class="stat-label">Errors Found</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value" id="statScore">0</div>
-      <div class="stat-label">Fluency Score</div>
-    </div>
+
+  <div class="card center">
+    <div class="mic" id="micIcon">🎧</div>
+    <div>Click <b>Start Listening</b> and speak</div>
+    <div class="detected" id="detected">Waiting for speech…</div>
   </div>
 
-  <div class="listening-zone">
-    <div class="listening-content">
-      <div class="listening-icon" id="listeningIcon">🎧</div>
-      <div class="listening-status" id="listeningStatus">Click Start or say something...</div>
-      <div class="detected-text">
-        <span id="detectedText" class="interim-text">Waiting for speech...</span>
-      </div>
-    </div>
+  <div class="card">
+    <b>🔍 Real-Time Analysis</b>
+    <div class="feedback note" id="feedback">Feedback will appear here…</div>
   </div>
 
-  <div class="feedback-container">
-    <div class="feedback-title">🔍 Real-Time Analysis</div>
-    <div id="feedbackArea">
-      <div style="color: #888; font-size: 14px; text-align: center;">Feedback will appear here as you speak...</div>
-    </div>
+  <div class="card">
+    <b>📝 Session Transcript</b>
+    <div class="transcript note" id="transcript">Your spoken text will appear here…</div>
   </div>
 
-  <div class="transcript-area">
-    <div class="transcript-title">📝 Session Transcript</div>
-    <div id="transcriptArea">
-      <div style="color: #888; font-size: 13px;">Your spoken text and corrections will appear here...</div>
-    </div>
-  </div>
-
-  <div class="control-panel">
-    <button class="btn-primary" id="startBtn" onclick="window.tutor.startListening()">
-      <span id="startText">🎤 Start Listening</span>
-    </button>
-    <button class="btn-secondary" id="pauseBtn" onclick="window.tutor.pauseListening()" style="display: none;">
-      ⏸️ Pause
-    </button>
-    <button class="btn-secondary" onclick="window.tutor.resetSession()">🔄 Reset</button>
-    <button class="btn-danger" onclick="window.tutor.stopListening()">⏹️ Stop</button>
+  <div class="controls">
+    <button class="start" onclick="tutor.start()">🎤 Start Listening</button>
+    <button class="stop" onclick="tutor.stop()">⏹ Stop</button>
+    <button class="reset" onclick="tutor.reset()">🔄 Reset</button>
   </div>
 
 </div>
 
 <script>
-const API_ENDPOINT = "https://zelvora-handfree-tutor.YOUR_USERNAME.workers.dev";
-// OR use GitHub Pages with backend on Vercel:
-// const API_ENDPOINT = "https://zelvora-api.vercel.app";
+const API_ENDPOINT = "https://zelvora-ai.zelvora-global.workers.dev";
 
-window.tutor = {
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+const tutor = {
   recognition: null,
-  isListening: false,
-  sessionData: {
-    fullTranscript: [],
-    totalWords: 0,
-    errorCount: 0,
-    correctWords: 0,
-    currentMode: 'conversation'
-  },
+  listening: false,
 
-  modes: {
-    conversation: "Have a natural English conversation. Speak freely and naturally.",
-    interview: "Answer interview questions. Speak professionally and clearly.",
-    presentation: "Give a presentation. Speak with confidence and structure.",
-    storytelling: "Tell a story. Use descriptive language and narrative flow."
-  },
-
-  init() {
-    this.initRecognition();
-    this.setupEventListeners();
-  },
-
-  initRecognition() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    
-    if (!SpeechRecognition) {
-      alert('Speech Recognition not supported. Please use Chrome, Edge, or Safari.');
+  init(){
+    if(!SpeechRecognition){
+      status.textContent="Speech Recognition not supported";
       return;
     }
+    this.recognition=new SpeechRecognition();
+    this.recognition.continuous=true;
+    this.recognition.interimResults=true;
+    this.recognition.lang="en-US";
 
-    this.recognition = new SpeechRecognition();
-    this.recognition.continuous = true;
-    this.recognition.interimResults = true;
-    this.recognition.lang = 'en-US';
-
-    this.recognition.onstart = () => this.handleStart();
-    this.recognition.onresult = (event) => this.handleResult(event);
-    this.recognition.onerror = (event) => this.handleError(event);
-    this.recognition.onend = () => this.handleEnd();
-  },
-
-  setupEventListeners() {
-    document.querySelectorAll('.mode-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active');
-        this.sessionData.currentMode = e.target.dataset.mode;
-        this.resetSession();
-      });
-    });
-  },
-
-  handleStart() {
-    this.isListening = true;
-    document.getElementById('statusDot').classList.add('listening');
-    document.getElementById('statusText').textContent = '🎙️ Listening...';
-    document.getElementById('startBtn').style.display = 'none';
-    document.getElementById('pauseBtn').style.display = 'inline-flex';
-    document.getElementById('listeningIcon').classList.add('active');
-  },
-
-  async handleResult(event) {
-    let interimTranscript = '';
-    let finalTranscript = '';
-
-    for (let i = event.resultIndex; i < event.results.length; i++) {
-      const transcript = event.results[i][0].transcript;
-      
-      if (event.results[i].isFinal) {
-        finalTranscript += transcript + ' ';
-      } else {
-        interimTranscript += transcript;
-      }
-    }
-
-    if (interimTranscript) {
-      document.getElementById('detectedText').innerHTML = `<span class="interim-text">${interimTranscript}...</span>`;
-    }
-
-    if (finalTranscript) {
-      const cleanedText = finalTranscript.trim();
-      document.getElementById('detectedText').innerHTML = `<span class="final-text">${cleanedText}</span>`;
-      
-      this.sessionData.fullTranscript.push(cleanedText);
-      this.sessionData.totalWords += cleanedText.split(/\s+/).length;
-      
-      await this.analyzeSpeeches(cleanedText);
-      this.addToTranscript(cleanedText);
-      this.updateStats();
-    }
-  },
-
-  async analyzeSpeeches(text) {
-    try {
-      const res = await fetch(API_ENDPOINT + '/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, mode: this.sessionData.currentMode })
-      });
-
-      const data = await res.json();
-      const feedback = data.analysis;
-
-      this.displayFeedback(feedback);
-      
-      if (feedback.errors && feedback.errors.length > 0) {
-        this.sessionData.errorCount += feedback.errors.length;
-      } else {
-        this.sessionData.correctWords += text.split(/\s+/).length;
-      }
-
-    } catch (error) {
-      console.error('Analysis error:', error);
-    }
-  },
-
-  displayFeedback(feedback) {
-    const feedbackArea = document.getElementById('feedbackArea');
-    let html = '';
-
-    if (feedback.isCorrect) {
-      html += `<div class="feedback-item success">
-        <span class="success-label">✓ Great!</span> Clear and grammatically correct.
-      </div>`;
-    }
-
-    if (feedback.errors && feedback.errors.length > 0) {
-      html += `<div class="feedback-item error">
-        <span class="error-label">❌ Grammar:</span> ${feedback.errors.join(', ')}
-      </div>`;
-    }
-
-    if (feedback.grammarIssues && feedback.grammarIssues.length > 0) {
-      html += feedback.grammarIssues.map(issue => 
-        `<div class="feedback-item warning">
-          <span class="warning-label">⚠️ Note:</span> ${issue}
-        </div>`
-      ).join('');
-    }
-
-    if (feedback.suggestions && feedback.suggestions.length > 0) {
-      html += feedback.suggestions.map(s => 
-        `<div class="feedback-item">
-          <span style="color: #1f7aff; font-weight: 600;">💡 Tip:</span> ${s}
-        </div>`
-      ).join('');
-    }
-
-    feedbackArea.innerHTML = html;
-  },
-
-  addToTranscript(text) {
-    const transcriptArea = document.getElementById('transcriptArea');
-    const sentenceDiv = document.createElement('div');
-    sentenceDiv.className = 'sentence';
-    
-    const words = text.split(/\s+/);
-    const wordSpans = words.map(word => 
-      `<span class="word correct">${word}</span>`
-    ).join(' ');
-    
-    sentenceDiv.innerHTML = wordSpans;
-    transcriptArea.appendChild(sentenceDiv);
-    transcriptArea.scrollTop = transcriptArea.scrollHeight;
-  },
-
-  updateStats() {
-    const accuracy = this.sessionData.totalWords > 0 
-      ? Math.round((this.sessionData.correctWords / this.sessionData.totalWords) * 100)
-      : 0;
-    
-    const fluencyScore = Math.max(0, Math.min(100, accuracy - (this.sessionData.errorCount * 5)));
-
-    document.getElementById('statAccuracy').textContent = accuracy + '%';
-    document.getElementById('statWords').textContent = this.sessionData.totalWords;
-    document.getElementById('statErrors').textContent = this.sessionData.errorCount;
-    document.getElementById('statScore').textContent = Math.round(fluencyScore);
-  },
-
-  handleError(event) {
-    console.error('Speech recognition error:', event.error);
-    document.getElementById('statusText').textContent = `❌ Error: ${event.error}`;
-  },
-
-  handleEnd() {
-    this.isListening = false;
-    document.getElementById('statusDot').classList.remove('listening');
-    document.getElementById('statusText').textContent = 'Ready to listen';
-    document.getElementById('startBtn').style.display = 'inline-flex';
-    document.getElementById('pauseBtn').style.display = 'none';
-    document.getElementById('listeningIcon').classList.remove('active');
-  },
-
-  startListening() {
-    if (!this.recognition) this.initRecognition();
-    this.recognition.start();
-  },
-
-  pauseListening() {
-    this.recognition.stop();
-    document.getElementById('statusText').textContent = '⏸️ Paused';
-  },
-
-  stopListening() {
-    this.recognition.stop();
-    this.isListening = false;
-  },
-
-  resetSession() {
-    this.sessionData = {
-      fullTranscript: [],
-      totalWords: 0,
-      errorCount: 0,
-      correctWords: 0,
-      currentMode: this.sessionData.currentMode
+    this.recognition.onstart=()=>{
+      status.textContent="🎙️ Listening…";
+      micIcon.textContent="🎤";
     };
-    
-    document.getElementById('detectedText').textContent = 'Waiting for speech...';
-    document.getElementById('feedbackArea').innerHTML = '<div style="color: #888; font-size: 14px; text-align: center;">Feedback will appear here as you speak...</div>';
-    document.getElementById('transcriptArea').innerHTML = '<div style="color: #888; font-size: 13px;">Your spoken text and corrections will appear here...</div>';
-    this.updateStats();
+
+    this.recognition.onend=()=>{
+      this.listening=false;
+      micIcon.textContent="🎧";
+      status.textContent="Ready";
+    };
+
+    this.recognition.onerror=e=>{
+      status.innerHTML=`<span class="error">❌ ${e.error}</span>`;
+    };
+
+    this.recognition.onresult=e=>{
+      let finalText="";
+      let interim="";
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        const t=e.results[i][0].transcript;
+        e.results[i].isFinal ? finalText+=t+" " : interim+=t;
+      }
+      if(interim) detected.textContent=interim+"…";
+      if(finalText){
+        detected.textContent=finalText.trim();
+        this.send(finalText.trim());
+        transcript.innerHTML+=`<div>• ${finalText}</div>`;
+      }
+    };
+  },
+
+  start(){
+    if(this.listening) return;
+    this.listening=true;
+
+    // REQUIRED delay for mobile permission
+    setTimeout(()=>{
+      try{ this.recognition.start(); }
+      catch{}
+    },300);
+  },
+
+  stop(){
+    this.recognition?.stop();
+  },
+
+  reset(){
+    detected.textContent="Waiting for speech…";
+    feedback.textContent="Feedback will appear here…";
+    transcript.textContent="Your spoken text will appear here…";
+  },
+
+  async send(text){
+    try{
+      const res=await fetch(API_ENDPOINT,{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({
+          prompt:`Analyze this spoken English and give corrections:\n"${text}"`
+        })
+      });
+      const data=await res.json();
+      feedback.innerHTML=`<div class="success">${data.reply}</div>`;
+    }catch{
+      feedback.innerHTML=`<div class="error">AI error</div>`;
+    }
   }
 };
 
-// Initialize on load
-document.addEventListener('DOMContentLoaded', () => window.tutor.init());
+document.addEventListener("DOMContentLoaded",()=>tutor.init());
 </script>
 
 </body>
