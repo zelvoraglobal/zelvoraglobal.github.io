@@ -1,120 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Zelvora AI</title>
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1f7aff">
 
 <style>
-:root{
-  --bg:#050b18;
-  --card:#0d1636;
-  --accent:#1f7aff;
-  --text:#e5edff;
-  --muted:#9fb4ff;
-  --danger:#ff4d4d;
-}
-*{box-sizing:border-box}
 body{
   margin:0;
-  background:radial-gradient(circle at top,#0a1a3c,#050b18 60%);
-  color:var(--text);
-  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  font-family:system-ui,-apple-system;
+  background:radial-gradient(circle at top,#0b1d46,#050b18 60%);
+  color:#fff;
 }
 header{
   padding:16px;
   display:flex;
   justify-content:space-between;
-  align-items:center;
   font-weight:700;
 }
-#status{font-size:14px;color:var(--muted)}
 .tabs{
   display:flex;
   gap:10px;
-  padding:10px 14px;
+  padding:12px;
   overflow-x:auto;
 }
 .tab{
-  padding:10px 18px;
+  padding:8px 16px;
   border-radius:20px;
-  background:rgba(255,255,255,.06);
+  background:#111a3a;
   white-space:nowrap;
-  cursor:pointer;
 }
-.tab.active{background:var(--accent)}
-.main{
-  padding:16px;
-}
+.tab.active{background:#1f7aff}
+.box{padding:16px}
 textarea{
   width:100%;
-  min-height:110px;
-  background:var(--card);
+  min-height:90px;
+  background:#0f1a3a;
   border:none;
-  color:var(--text);
-  padding:16px;
-  border-radius:18px;
+  color:#fff;
+  padding:14px;
+  border-radius:16px;
   font-size:16px;
-  outline:none;
 }
 button{
   width:100%;
-  margin-top:14px;
   padding:16px;
+  margin-top:12px;
+  border:none;
+  border-radius:16px;
+  background:#1f7aff;
+  color:#fff;
   font-size:17px;
   font-weight:600;
-  border:none;
-  border-radius:18px;
-  background:linear-gradient(135deg,#3fa9ff,#1f7aff);
-  color:white;
 }
 #reply{
   margin-top:14px;
   padding:16px;
-  background:var(--card);
-  border-radius:18px;
+  background:#0f1a3a;
+  border-radius:16px;
+  min-height:40px;
   line-height:1.5;
-}
-#error{
-  margin-top:12px;
-  padding:14px;
-  background:rgba(255,77,77,.12);
-  border-radius:14px;
-  color:#ffb3b3;
-  display:none;
 }
 .mic{
   position:fixed;
-  bottom:90px;
+  bottom:86px;
   left:50%;
   transform:translateX(-50%);
-  width:86px;
-  height:86px;
+  width:78px;
+  height:78px;
   border-radius:50%;
-  background:linear-gradient(135deg,#4bb1ff,#1f7aff);
+  background:#1f7aff;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:34px;
-  box-shadow:0 0 40px rgba(31,122,255,.6);
+  font-size:32px;
+  box-shadow:0 0 30px rgba(31,122,255,.6);
 }
-.mic.active{
-  background:linear-gradient(135deg,#ff5c5c,#ff2b2b);
-  box-shadow:0 0 40px rgba(255,60,60,.7);
-}
+.mic.listening{background:#ff3b3b}
 footer{
   position:fixed;
   bottom:0;
   width:100%;
   display:flex;
   justify-content:space-around;
-  background:#070f28;
+  background:#060d22;
   padding:12px 0;
-  color:var(--muted);
   font-size:14px;
+  opacity:.9;
 }
 </style>
 </head>
@@ -127,21 +102,20 @@ footer{
 </header>
 
 <div class="tabs">
-  <div class="tab active" data-mode="general">General</div>
-  <div class="tab" data-mode="english">English</div>
-  <div class="tab" data-mode="academic">Academic</div>
-  <div class="tab" data-mode="exam">Exam</div>
-  <div class="tab" data-mode="startup">Startup</div>
+  <div class="tab active" data-m="general">General</div>
+  <div class="tab" data-m="english">English</div>
+  <div class="tab" data-m="academic">Academic</div>
+  <div class="tab" data-m="exam">Exam</div>
+  <div class="tab" data-m="startup">Startup</div>
 </div>
 
-<div class="main">
-  <textarea id="input" placeholder="Ask or speak naturally..."></textarea>
-  <button onclick="askAI()">Ask AI</button>
+<div class="box">
+  <textarea id="q" placeholder="Ask or speak naturally..."></textarea>
+  <button onclick="ask()">Ask AI</button>
   <div id="reply"></div>
-  <div id="error">AI backend is not responding.</div>
 </div>
 
-<div class="mic" id="mic" onclick="toggleMic()">🎤</div>
+<div class="mic" id="micBtn" onclick="toggleMic()">🎤</div>
 
 <footer>
   <div>Home</div>
@@ -151,99 +125,108 @@ footer{
 </footer>
 
 <script>
-/* ===== CONFIG ===== */
 const API = "https://zelvora-ai.zelvora-global.workers.dev";
-
-/* ===== STATE ===== */
 let mode = "general";
-let listening = false;
-let recognition;
+let rec, listening = false;
 
-/* ===== MODE TABS ===== */
-document.querySelectorAll(".tab").forEach(tab=>{
-  tab.onclick=()=>{
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-    tab.classList.add("active");
-    mode = tab.dataset.mode;
+const q = document.getElementById("q");
+const reply = document.getElementById("reply");
+const statusEl = document.getElementById("status");
+const micBtn = document.getElementById("micBtn");
+
+// ---- Tabs ----
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick = ()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    mode = t.dataset.m;
   };
 });
 
-/* ===== ASK AI ===== */
-async function askAI(){
-  const text = input.value.trim();
+// ---- Ask AI ----
+async function ask(){
+  const text = q.value.trim();
   if(!text) return;
 
-  error.style.display="none";
-  reply.textContent="";
-  status.textContent="Thinking…";
+  reply.textContent = "";
+  statusEl.textContent = "Thinking...";
 
   try{
+    const controller = new AbortController();
+    setTimeout(()=>controller.abort(),15000);
+
     const res = await fetch(API,{
       method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ prompt:text, mode })
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ prompt:text, mode }),
+      signal:controller.signal
     });
 
-    if(!res.ok) throw new Error("Network error");
+    if(!res.ok){
+      throw new Error("HTTP "+res.status);
+    }
 
     const data = await res.json();
-    reply.textContent = data.reply || "No response.";
-    speak(data.reply);
-    status.textContent="Online";
+    console.log("AI RAW:", data);
 
-  }catch(e){
-    status.textContent="Offline";
-    error.style.display="block";
+    const textReply = data?.reply?.trim();
+    reply.textContent = textReply || "Zelvora AI returned an empty reply.";
+    speak(reply.textContent);
+
+    statusEl.textContent = "Online";
+  }
+  catch(err){
+    console.error(err);
+    reply.textContent = "AI backend reachable but no valid reply received.";
+    statusEl.textContent = "Offline";
   }
 }
 
-/* ===== SPEAK ===== */
+// ---- Voice output ----
 function speak(text){
   if(!text) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang="en-US";
+  u.rate = 1;
+  u.pitch = 1;
   speechSynthesis.speak(u);
 }
 
-/* ===== MIC ===== */
+// ---- Voice input ----
 function toggleMic(){
   if(!("webkitSpeechRecognition" in window)){
-    alert("Voice input not supported");
+    alert("Speech recognition not supported");
     return;
   }
-  if(!recognition){
-    recognition = new webkitSpeechRecognition();
-    recognition.continuous=true;
-    recognition.interimResults=true;
-    recognition.lang="en-US";
-    recognition.onresult=e=>{
-      let t="";
+  if(!rec){
+    rec = new webkitSpeechRecognition();
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.onresult = e=>{
+      let s="";
       for(let i=e.resultIndex;i<e.results.length;i++){
-        t+=e.results[i][0].transcript;
+        s += e.results[i][0].transcript;
       }
-      input.value=t;
+      q.value = s;
     };
-    recognition.onend=()=>{ stopMic(); };
+    rec.onend = ()=> stopMic();
   }
   listening ? stopMic() : startMic();
 }
 
 function startMic(){
-  recognition.start();
-  listening=true;
-  mic.classList.add("active");
-  status.textContent="Listening…";
+  listening = true;
+  micBtn.classList.add("listening");
+  rec.start();
 }
 
 function stopMic(){
-  recognition.stop();
-  listening=false;
-  mic.classList.remove("active");
-  status.textContent="Online";
+  listening = false;
+  micBtn.classList.remove("listening");
+  rec.stop();
 }
 
-/* ===== SERVICE WORKER ===== */
+// ---- Service worker ----
 if("serviceWorker" in navigator){
   navigator.serviceWorker.register("sw.js");
 }
