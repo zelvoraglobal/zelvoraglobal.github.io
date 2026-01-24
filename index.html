@@ -8,23 +8,21 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+  font-family:system-ui,-apple-system;
   background:linear-gradient(135deg,#0f1729,#1a2a4a);
   color:#e5e7eb;
   min-height:100vh;
 }
 header{
-  background:rgba(15,23,41,.95);
-  padding:18px;
+  background:#0b122e;
+  padding:16px;
   text-align:center;
   border-bottom:1px solid rgba(31,122,255,.25);
 }
 .logo{
-  font-size:26px;
+  font-size:24px;
   font-weight:700;
-  background:linear-gradient(135deg,#1f7aff,#764ba2);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  color:#1f7aff;
 }
 .status{
   margin-top:6px;
@@ -46,32 +44,27 @@ header{
 }
 .center{text-align:center}
 .mic{
-  font-size:70px;
-  margin-bottom:12px;
+  font-size:64px;
+  margin-bottom:10px;
 }
 .detected{
   background:#0b122e;
   padding:14px;
   border-radius:10px;
   margin-top:10px;
-  min-height:48px;
+  min-height:44px;
 }
-.note{
-  font-size:14px;
-  color:#94a3b8;
-}
+.note{font-size:14px;color:#94a3b8}
 .controls{
   display:flex;
   justify-content:center;
   gap:12px;
-  flex-wrap:wrap;
 }
 button{
   padding:12px 22px;
   border:none;
   border-radius:10px;
   font-weight:600;
-  cursor:pointer;
 }
 .start{background:#1f7aff;color:white}
 .stop{background:#ff6b6b;color:black}
@@ -92,7 +85,7 @@ button{
 
   <div class="card center">
     <div class="mic" id="micIcon">🎧</div>
-    <div>Click <b>Start Listening</b> and speak</div>
+    <div><b>Click Start Listening → Allow Microphone → Speak</b></div>
     <div class="detected" id="detectedText">Waiting for speech…</div>
   </div>
 
@@ -123,6 +116,18 @@ const SpeechRecognition =
 let recognition;
 let listening = false;
 
+/* 🔑 ANDROID FIX: force mic permission */
+async function requestMicPermission() {
+  try {
+    await navigator.mediaDevices.getUserMedia({ audio: true });
+    return true;
+  } catch {
+    statusText.textContent =
+      "❌ Microphone blocked. Tap 🔒 → Site settings → Allow Microphone";
+    return false;
+  }
+}
+
 function initSpeech() {
   if (!SpeechRecognition) {
     statusText.textContent = "Speech Recognition not supported";
@@ -145,15 +150,14 @@ function initSpeech() {
     micIcon.textContent = "🎧";
   };
 
-  recognition.onerror = (e) => {
-    let msg = e.error;
-    if (e.error === "not-allowed") {
-      msg = "❌ Microphone blocked. Allow mic in browser settings.";
-    }
-    statusText.textContent = msg;
+  recognition.onerror = e => {
+    statusText.textContent =
+      e.error === "not-allowed"
+        ? "❌ Microphone blocked. Allow mic in browser settings."
+        : e.error;
   };
 
-  recognition.onresult = async (event) => {
+  recognition.onresult = async event => {
     let interim = "";
     let finalText = "";
 
@@ -162,9 +166,7 @@ function initSpeech() {
       event.results[i].isFinal ? finalText += t + " " : interim += t;
     }
 
-    if (interim) {
-      detectedText.textContent = interim + "...";
-    }
+    if (interim) detectedText.textContent = interim + "...";
 
     if (finalText) {
       const clean = finalText.trim();
@@ -189,15 +191,20 @@ async function sendToAI(text) {
       })
     });
     const data = await res.json();
-    return data.reply || "No AI response.";
+    return data.reply || "No response from AI.";
   } catch {
     return "❌ Unable to reach Zelvora AI.";
   }
 }
 
-function startListening() {
+async function startListening() {
   if (listening) return;
+
+  const allowed = await requestMicPermission();
+  if (!allowed) return;
+
   listening = true;
+
   setTimeout(() => {
     try { recognition.start(); } catch {}
   }, 300);
