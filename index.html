@@ -1,87 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Zelvora AI</title>
-
-<link rel="manifest" href="manifest.json" />
-<meta name="theme-color" content="#1f7aff" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zelvora AI – Spoken English Tutor</title>
 
 <style>
-*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:system-ui,-apple-system,Segoe UI;
-  background:linear-gradient(180deg,#050b18,#02050d);
+  font-family:system-ui;
+  background:#050b18;
   color:#fff;
 }
 header{
   padding:16px;
   display:flex;
   justify-content:space-between;
-  font-weight:600;
+  font-weight:700;
 }
-.tabs{
-  display:flex;
-  gap:10px;
-  padding:10px;
-  overflow-x:auto;
+.box{
+  padding:16px;
 }
-.tab{
-  padding:8px 16px;
-  border-radius:20px;
-  background:#101a3a;
-  cursor:pointer;
-  white-space:nowrap;
-}
-.tab.active{background:#1f7aff}
-.box{padding:16px}
 textarea{
   width:100%;
-  min-height:110px;
-  background:#0f1a38;
+  min-height:100px;
+  background:#111a3a;
   border:none;
-  border-radius:16px;
   color:#fff;
   padding:14px;
+  border-radius:14px;
   font-size:16px;
 }
 button{
   width:100%;
-  margin-top:14px;
-  padding:16px;
-  font-size:17px;
-  background:#1f7aff;
+  padding:14px;
+  margin-top:12px;
   border:none;
-  border-radius:18px;
+  border-radius:14px;
+  background:#1f7aff;
   color:#fff;
+  font-size:16px;
 }
 #reply{
   margin-top:14px;
+  background:#0d1635;
   padding:14px;
-  border-radius:16px;
-  background:#0f1a38;
-  min-height:50px;
+  border-radius:14px;
+  white-space:pre-wrap;
 }
 .mic{
   position:fixed;
-  bottom:90px;
+  bottom:80px;
   left:50%;
   transform:translateX(-50%);
-  width:84px;
-  height:84px;
+  width:80px;
+  height:80px;
   border-radius:50%;
   background:#1f7aff;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:34px;
-  box-shadow:0 0 30px #1f7aff88;
-}
-.mic.listening{
-  background:#ff3b3b;
-  box-shadow:0 0 35px #ff3b3b;
+  font-size:30px;
 }
 footer{
   position:fixed;
@@ -89,11 +68,9 @@ footer{
   width:100%;
   display:flex;
   justify-content:space-around;
-  background:#050b18;
-  padding:12px;
-  opacity:.9;
+  background:#070d20;
+  padding:10px;
 }
-.status{opacity:.7}
 </style>
 </head>
 
@@ -101,24 +78,16 @@ footer{
 
 <header>
   <div>Zelvora AI</div>
-  <div class="status" id="status">Idle</div>
+  <div id="status">Idle</div>
 </header>
 
-<div class="tabs">
-  <div class="tab active" data-mode="general">General</div>
-  <div class="tab" data-mode="english">English</div>
-  <div class="tab" data-mode="academic">Academic</div>
-  <div class="tab" data-mode="exam">Exam</div>
-  <div class="tab" data-mode="startup">Startup</div>
-</div>
-
 <div class="box">
-  <textarea id="q" placeholder="Ask or speak naturally..."></textarea>
+  <textarea id="q" placeholder="Speak or type in English..."></textarea>
   <button onclick="ask()">Ask AI</button>
   <div id="reply"></div>
 </div>
 
-<div class="mic" id="micBtn" onclick="startMic()">🎤</div>
+<div class="mic" onclick="toggleMic()">🎤</div>
 
 <footer>
   <div>Home</div>
@@ -128,41 +97,31 @@ footer{
 </footer>
 
 <script>
-const API = "https://zelvora-ai.zelvora-global.workers.dev"; // your worker
-let mode = "general";
+const API = "https://zelvora-ai.zelvora-global.workers.dev";
+let rec, listening=false;
 
-// Tabs
-document.querySelectorAll(".tab").forEach(tab=>{
-  tab.onclick=()=>{
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-    tab.classList.add("active");
-    mode = tab.dataset.mode;
-  };
-});
-
-// Ask AI
 async function ask(){
   const text = q.value.trim();
   if(!text) return;
 
-  reply.textContent = "";
   status.textContent = "Thinking...";
+  reply.textContent = "";
 
   try{
     const res = await fetch(API,{
       method:"POST",
       headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({ prompt:text, mode })
+      body: JSON.stringify({ prompt: text })
     });
 
     const raw = await res.text();
-    console.log("RAW:", raw);
-
     let data;
-    try{ data = JSON.parse(raw); }
-    catch{
+
+    try { data = JSON.parse(raw); }
+    catch {
       reply.textContent = raw;
-      status.textContent = "Idle";
+      speak(raw);
+      status.textContent="Online";
       return;
     }
 
@@ -171,71 +130,60 @@ async function ask(){
       data.text ||
       data.output ||
       data.message ||
-      data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      (data.candidates?.[0]?.content?.parts?.[0]?.text);
 
     if(aiText){
       reply.textContent = aiText;
       speak(aiText);
-      status.textContent = "Idle";
-    }else{
-      reply.textContent = "Zelvora AI could not generate a response.";
-      status.textContent = "Idle";
+      status.textContent="Online";
+    } else {
+      reply.textContent = "Please speak again. I am listening 🙂";
+      status.textContent="Idle";
     }
 
-  }catch(err){
-    console.error(err);
-    reply.textContent = "AI backend not reachable.";
-    status.textContent = "Offline";
+  } catch {
+    reply.textContent = "Connection issue. Please try again.";
+    status.textContent="Offline";
   }
 }
 
-// Voice Output (safe)
 function speak(text){
-  if(!window.speechSynthesis) return;
-  setTimeout(()=>{
-    speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "en-US";
-    speechSynthesis.speak(u);
-  },100);
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US";
+  speechSynthesis.speak(u);
 }
 
-// Voice Input (Android safe)
-function startMic(){
+function toggleMic(){
   if(!("webkitSpeechRecognition" in window)){
-    alert("Voice input not supported on this device");
+    alert("Voice not supported on this browser");
     return;
   }
 
-  const mic = document.getElementById("micBtn");
-  const rec = new webkitSpeechRecognition();
-  rec.lang = "en-US";
-  rec.continuous = false;
-  rec.interimResults = false;
+  if(!rec){
+    rec = new webkitSpeechRecognition();
+    rec.lang = "en-US";
+    rec.continuous = false;
+    rec.interimResults = false;
 
-  mic.classList.add("listening");
-  status.textContent = "Listening...";
+    rec.onresult = e => {
+      q.value = e.results[0][0].transcript;
+      ask();
+    };
 
-  rec.onresult = e=>{
-    q.value = e.results[0][0].transcript;
-  };
+    rec.onend = ()=> {
+      listening=false;
+      document.querySelector(".mic").style.background="#1f7aff";
+    };
+  }
 
-  rec.onerror = ()=>{
-    mic.classList.remove("listening");
-    status.textContent = "Idle";
-  };
-
-  rec.onend = ()=>{
-    mic.classList.remove("listening");
-    status.textContent = "Idle";
-  };
-
-  rec.start();
-}
-
-// PWA
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
+  if(listening){
+    rec.stop();
+  } else {
+    rec.start();
+    listening=true;
+    document.querySelector(".mic").style.background="#ff3b3b";
+    status.textContent="Listening...";
+  }
 }
 </script>
 
