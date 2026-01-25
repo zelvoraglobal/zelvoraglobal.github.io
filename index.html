@@ -2,55 +2,42 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Zelvora Handfree Tutor</title>
+<title>Zelvora Hands-Free Voice Tutor</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 body{
   margin:0;
-  background:radial-gradient(circle at top,#0b1d3a,#020617);
-  color:#fff;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont;
-  display:flex;
-  justify-content:center;
-  align-items:center;
   height:100vh;
+  background:radial-gradient(circle at top,#0b1d3a,#020617);
+  font-family:system-ui,-apple-system,sans-serif;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
-
 .card{
   width:90%;
   max-width:380px;
   background:rgba(255,255,255,.08);
-  backdrop-filter:blur(14px);
+  backdrop-filter:blur(16px);
   border-radius:22px;
   padding:26px;
   text-align:center;
   box-shadow:0 20px 40px rgba(0,0,0,.45);
 }
-
+h3{margin:0 0 8px}
+small{color:#94a3b8}
 .mic{
-  width:84px;height:84px;border-radius:50%;
+  width:84px;height:84px;
+  border-radius:50%;
   background:#2563eb;
   display:flex;
   align-items:center;
   justify-content:center;
   font-size:34px;
   margin:18px auto;
-  box-shadow:0 0 30px rgba(37,99,235,.6);
 }
-
-button{
-  padding:12px 18px;
-  border-radius:12px;
-  border:none;
-  font-weight:600;
-  margin:6px;
-  font-size:14px;
-}
-
-.start{background:#2563eb;color:#fff}
-.stop{background:#ef4444;color:#fff}
-
 pre{
   background:rgba(0,0,0,.28);
   padding:12px;
@@ -58,22 +45,29 @@ pre{
   font-size:13px;
   text-align:left;
   white-space:pre-wrap;
-  margin-top:10px;
+  min-height:46px;
 }
-
-small{color:#94a3b8}
+button{
+  padding:12px 16px;
+  border-radius:12px;
+  border:none;
+  font-weight:600;
+  margin:6px;
+  cursor:pointer;
+}
+.start{background:#2563eb;color:#fff}
+.stop{background:#ef4444;color:#fff}
 </style>
 </head>
 
 <body>
-
 <div class="card">
   <h3>🎧 Zelvora Handfree Tutor</h3>
-  <small id="status">Tap Start & Speak</small>
+  <small id="status">Tap Start & speak naturally</small>
 
   <div class="mic">🎤</div>
 
-  <pre id="transcript">Transcript will appear here…</pre>
+  <pre id="transcript">Your speech will appear here…</pre>
   <pre id="feedback">AI feedback will appear here…</pre>
 
   <button class="start" onclick="startMic()">Start Listening</button>
@@ -81,54 +75,65 @@ small{color:#94a3b8}
 </div>
 
 <script>
-/* 🔴 REPLACE WITH YOUR WORKER URL */
-const API = "https://YOUR-WORKER.workers.dev";
+/* 🔗 YOUR WORKING WORKER URL */
+const API = "https://zelvora-ai.zelvora-global.workers.dev";
 
+/* 🎙 Speech Recognition */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let rec, listening = false, timer;
+let recognition;
+let listening = false;
+let autoStopTimer;
 
-/* 🎤 START MIC */
+/* 🎧 Start Listening */
 function startMic(){
   if(listening) return;
 
-  if(!SR){
-    alert("Speech Recognition not supported on this browser");
-    return;
-  }
+  recognition = new SR();
+  recognition.lang = "en-US";
+  recognition.continuous = false;
+  recognition.interimResults = false;
 
-  rec = new SR();
-  rec.lang = "en-US";
-  rec.interimResults = false;
-  rec.continuous = false;
+  document.getElementById("transcript").textContent = "";
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("status").textContent = "Listening… speak now";
 
-  rec.onresult = e => {
+  recognition.onresult = e => {
     const text = e.results[0][0].transcript.trim();
     document.getElementById("transcript").textContent = text;
     sendToAI(text);
   };
 
-  rec.onerror = () => resetUI();
+  recognition.onerror = () => resetUI("Mic error. Tap Start again.");
 
-  rec.start();
+  recognition.onend = () => {
+    listening = false;
+  };
+
+  recognition.start();
   listening = true;
-  document.getElementById("status").textContent = "Listening… speak naturally";
 
-  /* ⏱️ AUTO STOP (CRITICAL FIX) */
-  timer = setTimeout(() => {
-    if(listening) rec.stop();
-  }, 5000);
+  /* ⏱ Auto stop after 6 seconds */
+  autoStopTimer = setTimeout(() => {
+    if(listening) recognition.stop();
+  }, 6000);
 }
 
-/* 🛑 STOP MIC */
+/* 🛑 Stop Listening */
 function stopMic(){
   if(!listening) return;
-  clearTimeout(timer);
-  rec.stop();
+  clearTimeout(autoStopTimer);
+  recognition.stop();
+  listening = false;
+  document.getElementById("status").textContent = "Stopped";
 }
 
-/* 🧠 SEND TO GEMINI */
+/* 🤖 Send to Gemini Worker */
 async function sendToAI(text){
-  listening = false;
+  if(text.length < 5){
+    resetUI("Please speak a full sentence.");
+    return;
+  }
+
   document.getElementById("status").textContent = "Thinking…";
 
   try{
@@ -138,42 +143,43 @@ async function sendToAI(text){
       body:JSON.stringify({ text })
     });
 
+    if(!res.ok) throw new Error("HTTP "+res.status);
+
     const data = await res.json();
-    const reply = data.reply || "Try speaking again.";
 
-    document.getElementById("feedback").textContent = reply;
-    speak(reply);
+    if(!data.reply) throw new Error("No AI reply");
 
-  }catch{
-    document.getElementById("feedback").textContent =
-      "AI server not responding. Please try again.";
-    resetUI();
+    document.getElementById("feedback").textContent = data.reply;
+    speak(data.reply);
+
+  }catch(err){
+    resetUI("AI error: "+err.message);
   }
 }
 
-/* 🔊 AI SPEAKS */
+/* 🔊 Speak AI Response */
 function speak(text){
   speechSynthesis.cancel();
-
   const u = new SpeechSynthesisUtterance(text);
   u.rate = 0.95;
-  u.pitch = 1;
 
   u.onstart = () => {
     document.getElementById("status").textContent = "AI speaking…";
   };
 
-  u.onend = resetUI;
+  u.onend = () => {
+    document.getElementById("status").textContent =
+      "Tap Start to continue speaking";
+  };
 
   speechSynthesis.speak(u);
 }
 
-/* 🔁 RESET */
-function resetUI(){
+/* 🔁 Reset UI */
+function resetUI(msg){
   listening = false;
-  document.getElementById("status").textContent = "Tap Start to speak again";
+  document.getElementById("status").textContent = msg;
 }
 </script>
-
 </body>
 </html>
