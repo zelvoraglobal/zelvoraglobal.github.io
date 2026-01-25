@@ -8,40 +8,50 @@
 <style>
 body{
   margin:0;
+  height:100vh;
   background:radial-gradient(circle at top,#0b1d3a,#020617);
   color:#fff;
-  font-family:system-ui;
+  font-family:system-ui,-apple-system;
   display:flex;
-  justify-content:center;
   align-items:center;
-  height:100vh;
+  justify-content:center;
 }
 .card{
   width:90%;
   max-width:380px;
   background:rgba(255,255,255,.07);
-  backdrop-filter:blur(14px);
-  border-radius:22px;
+  backdrop-filter:blur(16px);
+  border-radius:24px;
   padding:26px;
   text-align:center;
 }
 .mic{
-  width:80px;height:80px;border-radius:50%;
+  width:88px;height:88px;border-radius:50%;
   background:#2563eb;
   display:flex;align-items:center;justify-content:center;
-  font-size:32px;margin:20px auto;
+  font-size:34px;
+  margin:20px auto;
+  box-shadow:0 0 30px rgba(37,99,235,.5);
 }
 button{
-  padding:12px 16px;border-radius:12px;border:none;
-  font-weight:600;margin:6px;
+  padding:12px 18px;
+  border-radius:14px;
+  border:none;
+  font-weight:600;
+  margin:6px;
+  cursor:pointer;
 }
 .start{background:#2563eb;color:#fff}
 .stop{background:#ef4444;color:#fff}
 pre{
   background:rgba(0,0,0,.25);
-  padding:12px;border-radius:12px;
-  font-size:13px;text-align:left;
+  padding:12px;
+  border-radius:14px;
+  font-size:13px;
+  text-align:left;
   white-space:pre-wrap;
+  max-height:120px;
+  overflow:auto;
 }
 small{color:#94a3b8}
 </style>
@@ -54,68 +64,81 @@ small{color:#94a3b8}
 
   <div class="mic">🎤</div>
 
-  <pre id="transcript">Transcript will appear here…</pre>
-  <pre id="feedback">AI feedback will appear here…</pre>
+  <pre id="transcript">Your speech will appear here…</pre>
+  <pre id="feedback">AI correction will appear here…</pre>
 
-  <button class="start" onclick="startMic()">Start Listening</button>
-  <button class="stop" onclick="stopMic()">Stop</button>
+  <button class="start" onclick="startListening()">Start</button>
+  <button class="stop" onclick="stopListening()">Stop</button>
 </div>
 
 <script>
 const API = "https://YOUR-WORKER.workers.dev";
 
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let rec, listening = false, buffer = "";
+let recognition;
+let listening = false;
+let buffer = "";
 
-function initRec(){
-  rec = new SR();
-  rec.lang = "en-US";
-  rec.continuous = true;
-  rec.interimResults = false;
+function setupRecognition(){
+  recognition = new SR();
+  recognition.lang = "en-US";
+  recognition.continuous = false;     // 🔑 IMPORTANT
+  recognition.interimResults = false;
 
-  rec.onresult = e => {
-    const text = e.results[e.results.length - 1][0].transcript;
-    buffer += " " + text;
-    document.getElementById("transcript").textContent = buffer;
+  recognition.onresult = e => {
+    buffer = e.results[0][0].transcript.trim();
+    transcript.textContent = buffer;
   };
 
-  rec.onerror = e => {
-    document.getElementById("status").textContent = "Mic error – tap Start again";
+  recognition.onerror = () => {
+    status.textContent = "Mic error. Tap Start again.";
     listening = false;
   };
+
+  recognition.onend = () => {
+    if(listening) sendToAI(buffer);
+  };
 }
 
-async function startMic(){
+function startListening(){
   if(listening) return;
-  initRec();
   buffer = "";
-  rec.start();
+  transcript.textContent = "Listening…";
+  feedback.textContent = "—";
+  setupRecognition();
+  recognition.start();
   listening = true;
-  document.getElementById("status").textContent = "Listening… speak naturally";
+  status.textContent = "Listening… speak naturally";
 }
 
-function stopMic(){
+function stopListening(){
   if(!listening) return;
-  rec.stop();
   listening = false;
-  sendToAI(buffer);
+  recognition.stop();
+  status.textContent = "Processing…";
 }
 
 async function sendToAI(text){
-  if(!text.trim()) return;
+  if(!text) return;
 
-  document.getElementById("status").textContent = "Thinking…";
+  status.textContent = "Thinking…";
 
-  const res = await fetch(API,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ text })
-  });
+  try{
+    const res = await fetch(API,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ text })
+    });
 
-  const data = await res.json();
-  document.getElementById("feedback").textContent = data.reply;
+    const data = await res.json();
+    const reply = data.reply || "Please try again.";
 
-  speak(data.reply);
+    feedback.textContent = reply;
+    speak(reply);
+
+  }catch{
+    status.textContent = "AI unavailable";
+  }
 }
 
 function speak(text){
@@ -123,13 +146,8 @@ function speak(text){
   const u = new SpeechSynthesisUtterance(text);
   u.rate = 0.95;
 
-  u.onstart = () => {
-    document.getElementById("status").textContent = "AI speaking…";
-  };
-
-  u.onend = () => {
-    document.getElementById("status").textContent = "Tap Start to continue";
-  };
+  u.onstart = () => status.textContent = "AI speaking…";
+  u.onend = () => status.textContent = "Tap Start to continue";
 
   speechSynthesis.speak(u);
 }
