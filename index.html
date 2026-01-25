@@ -2,88 +2,169 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Zelvora Handsfree Tutor</title>
+<title>Zelvora AI — Spoken English</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
+:root{
+  --primary:#4f8cff;
+  --accent:#22d3ee;
+  --danger:#ef4444;
+}
+
+*{box-sizing:border-box}
+
 body{
   margin:0;
-  background:radial-gradient(circle at top,#0b1d3a,#020617);
-  color:#fff;
-  font-family:system-ui,-apple-system,sans-serif;
-  display:flex;
-  justify-content:center;
-  align-items:center;
   height:100vh;
+  background:
+    radial-gradient(circle at 20% 10%, #1e3a8a, transparent 40%),
+    radial-gradient(circle at 80% 80%, #0ea5e9, transparent 40%),
+    linear-gradient(180deg,#020617,#020617);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:Inter,system-ui,-apple-system,sans-serif;
+  color:#fff;
+  overflow:hidden;
+}
+
+/* floating particles */
+body::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle,rgba(255,255,255,.08) 1px,transparent 1px);
+  background-size:40px 40px;
+  opacity:.15;
+  animation: drift 60s linear infinite;
+}
+
+@keyframes drift{
+  from{background-position:0 0}
+  to{background-position:1000px 1000px}
 }
 
 .card{
-  width:90%;
-  max-width:360px;
-  background:rgba(255,255,255,.06);
-  backdrop-filter:blur(14px);
-  border-radius:22px;
+  position:relative;
+  width:92%;
+  max-width:380px;
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(20px);
+  border-radius:26px;
   padding:26px;
-  text-align:center;
-  border:1px solid rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 30px 80px rgba(0,0,0,.55);
+  animation: floatIn .8s ease;
+}
+
+@keyframes floatIn{
+  from{transform:translateY(30px) scale(.96);opacity:0}
+  to{transform:none;opacity:1}
+}
+
+h3{
+  margin:0 0 6px;
+  font-size:20px;
+  font-weight:700;
+  letter-spacing:.3px;
+}
+
+small{
+  color:#94a3b8;
+}
+
+/* MIC */
+.mic-wrap{
+  display:flex;
+  justify-content:center;
+  margin:24px 0;
 }
 
 .mic{
-  width:88px;
-  height:88px;
+  width:96px;
+  height:96px;
   border-radius:50%;
-  background:#2563eb;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:34px;
-  margin:20px auto;
+  font-size:36px;
+  position:relative;
+  box-shadow:0 0 0 0 rgba(79,140,255,.6);
+}
+
+.mic.listening{
   animation:pulse 1.8s infinite;
 }
 
 @keyframes pulse{
-  0%{box-shadow:0 0 0 0 rgba(37,99,235,.5)}
-  70%{box-shadow:0 0 0 20px rgba(37,99,235,0)}
-  100%{box-shadow:0 0 0 0 rgba(37,99,235,0)}
+  0%{box-shadow:0 0 0 0 rgba(79,140,255,.6)}
+  70%{box-shadow:0 0 0 28px rgba(79,140,255,0)}
+  100%{box-shadow:0 0 0 0 rgba(79,140,255,0)}
 }
 
-pre{
-  background:rgba(0,0,0,.25);
+/* OUTPUT */
+.output{
+  background:rgba(0,0,0,.35);
+  border-radius:16px;
   padding:14px;
-  border-radius:14px;
-  text-align:left;
-  font-size:13px;
-  margin-top:12px;
+  font-size:14px;
+  line-height:1.5;
+  min-height:64px;
   white-space:pre-wrap;
+  transition:.3s;
 }
 
-small{color:#94a3b8}
+/* BUTTONS */
+.buttons{
+  display:flex;
+  gap:10px;
+  margin-top:18px;
+}
 
 button{
+  flex:1;
   border:none;
-  padding:10px 16px;
-  border-radius:12px;
-  margin:6px;
-  cursor:pointer;
+  border-radius:14px;
+  padding:12px;
   font-weight:600;
+  cursor:pointer;
+  transition:.25s;
 }
 
-.start{background:#2563eb;color:#fff}
-.stop{background:#dc2626;color:#fff}
+.start{
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#001b2e;
+}
+
+.stop{
+  background:rgba(239,68,68,.15);
+  color:#fecaca;
+  border:1px solid rgba(239,68,68,.4);
+}
+
+button:hover{transform:translateY(-1px)}
+button:active{transform:scale(.97)}
 </style>
 </head>
 
 <body>
 <div class="card">
-  <h3>🎧 Zelvora Handsfree Tutor</h3>
+  <h3>🎧 Zelvora AI</h3>
   <small id="status">Tap Start to speak</small>
 
-  <div class="mic">🎤</div>
+  <div class="mic-wrap">
+    <div class="mic" id="mic">🎤</div>
+  </div>
 
-  <pre id="output">Waiting…</pre>
+  <div class="output" id="output">Waiting for your voice…</div>
 
-  <button class="start" onclick="restart()">Start Listening</button>
-  <button class="stop" onclick="stopAll()">Stop</button>
+  <div class="buttons">
+    <button class="start" onclick="restart()">Start</button>
+    <button class="stop" onclick="stopAll()">Stop</button>
+  </div>
 </div>
 
 <script>
@@ -93,7 +174,6 @@ const API = "https://YOUR-WORKER-NAME.workers.dev";
 /* ================= STATE ================= */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 const rec = new SR();
-
 rec.continuous = true;
 rec.interimResults = false;
 rec.lang = "en-US";
@@ -107,8 +187,9 @@ let lastUserText = "";
 /* ================= UI ================= */
 const statusEl = document.getElementById("status");
 const outputEl = document.getElementById("output");
+const micEl = document.getElementById("mic");
 
-/* ================= SPEECH INPUT ================= */
+/* ================= INPUT ================= */
 rec.onresult = e => {
   if (speaking || blocked) return;
 
@@ -118,18 +199,20 @@ rec.onresult = e => {
   lastUserText = text;
   buffer += " " + text;
   statusEl.textContent = "Listening…";
+  micEl.classList.add("listening");
 
   clearTimeout(sendTimer);
   sendTimer = setTimeout(sendToAI, 1600);
 };
 
-/* ================= SEND TO AI ================= */
+/* ================= BACKEND ================= */
 async function sendToAI(){
   if (!buffer.trim()) return;
 
   const sendText = buffer.trim();
   buffer = "";
   statusEl.textContent = "Thinking…";
+  micEl.classList.remove("listening");
 
   try{
     const res = await fetch(API,{
@@ -138,23 +221,18 @@ async function sendToAI(){
       body:JSON.stringify({ text: sendText })
     });
 
-    if (!res.ok) throw new Error("network");
+    if (!res.ok) throw new Error();
 
     const data = await res.json();
-
-    if (!data.reply) {
-      blocked = true;
-      statusEl.textContent = "AI did not respond. Tap Start to retry.";
-      return;
-    }
+    if (!data.reply) throw new Error();
 
     outputEl.textContent = data.reply;
     speak(data.reply);
 
   }catch{
     blocked = true;
-    buffer = "";
-    statusEl.textContent = "Connection issue. Tap Start to retry.";
+    outputEl.textContent = "Connection issue. Tap Start to retry.";
+    statusEl.textContent = "Stopped";
   }
 }
 
@@ -162,14 +240,15 @@ async function sendToAI(){
 function speak(text){
   speechSynthesis.cancel();
   speaking = true;
-  statusEl.textContent = "Speaking…";
+  statusEl.textContent = "AI speaking…";
 
   const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.95;
+  u.rate = .95;
 
   u.onend = () => {
     speaking = false;
-    statusEl.textContent = "Listening… speak freely";
+    statusEl.textContent = "Listening…";
+    micEl.classList.add("listening");
   };
 
   speechSynthesis.speak(u);
@@ -180,16 +259,13 @@ rec.onend = () => {
   if (!speaking && !blocked) rec.start();
 };
 
-rec.onerror = () => {
-  statusEl.textContent = "Mic error";
-};
-
 /* ================= CONTROLS ================= */
 function restart(){
   blocked = false;
   buffer = "";
   lastUserText = "";
-  statusEl.textContent = "Listening… speak freely";
+  statusEl.textContent = "Listening…";
+  micEl.classList.add("listening");
   rec.start();
 }
 
@@ -198,6 +274,7 @@ function stopAll(){
   buffer = "";
   speechSynthesis.cancel();
   rec.stop();
+  micEl.classList.remove("listening");
   statusEl.textContent = "Stopped";
 }
 </script>
