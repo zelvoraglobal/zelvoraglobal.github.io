@@ -1,190 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Zelvora Handfree Tutor</title>
+<meta charset="UTF-8">
+<title>Zelvora Handsfree Tutor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body {
-  margin: 0;
-  height: 100vh;
-  background: radial-gradient(circle at top, #0b1d3a, #020617);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: system-ui, -apple-system, sans-serif;
-  color: #fff;
+body{
+  margin:0;
+  background:radial-gradient(circle at top,#0b1d3a,#020617);
+  color:#fff;
+  font-family:system-ui,-apple-system,sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
 }
 
-.card {
-  width: 90%;
-  max-width: 360px;
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(16px);
-  border-radius: 22px;
-  padding: 24px;
-  text-align: center;
+.card{
+  width:90%;
+  max-width:360px;
+  background:rgba(255,255,255,.06);
+  backdrop-filter:blur(14px);
+  border-radius:22px;
+  padding:26px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,.12);
 }
 
-.mic {
-  width: 72px;
-  height: 72px;
-  background: #2563eb;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 30px;
-  margin: 14px auto;
+.mic{
+  width:88px;
+  height:88px;
+  border-radius:50%;
+  background:#2563eb;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+  margin:20px auto;
+  animation:pulse 1.8s infinite;
 }
 
-.status {
-  font-size: 13px;
-  color: #94a3b8;
-  margin-bottom: 10px;
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(37,99,235,.5)}
+  70%{box-shadow:0 0 0 20px rgba(37,99,235,0)}
+  100%{box-shadow:0 0 0 0 rgba(37,99,235,0)}
 }
 
-.box {
-  background: rgba(0,0,0,0.25);
-  border-radius: 12px;
-  padding: 10px;
-  font-size: 13px;
-  min-height: 42px;
-  margin: 8px 0;
-  text-align: left;
-  white-space: pre-wrap;
+pre{
+  background:rgba(0,0,0,.25);
+  padding:14px;
+  border-radius:14px;
+  text-align:left;
+  font-size:13px;
+  margin-top:12px;
+  white-space:pre-wrap;
 }
 
-.buttons {
-  margin-top: 12px;
+small{color:#94a3b8}
+
+button{
+  border:none;
+  padding:10px 16px;
+  border-radius:12px;
+  margin:6px;
+  cursor:pointer;
+  font-weight:600;
 }
 
-button {
-  border: none;
-  border-radius: 12px;
-  padding: 10px 14px;
-  font-weight: 600;
-  margin: 4px;
-  cursor: pointer;
-}
-
-.start { background: #2563eb; color: #fff; }
-.stop  { background: #ef4444; color: #fff; }
+.start{background:#2563eb;color:#fff}
+.stop{background:#dc2626;color:#fff}
 </style>
 </head>
 
 <body>
 <div class="card">
-  <h3>🎧 Zelvora Handfree Tutor</h3>
-  <div class="status" id="status">Tap Start to speak</div>
+  <h3>🎧 Zelvora Handsfree Tutor</h3>
+  <small id="status">Tap Start to speak</small>
 
   <div class="mic">🎤</div>
 
-  <div class="box" id="transcript">Your speech will appear here…</div>
-  <div class="box" id="feedback">AI feedback will appear here…</div>
+  <pre id="output">Waiting…</pre>
 
-  <div class="buttons">
-    <button class="start" onclick="startListening()">Start Listening</button>
-    <button class="stop" onclick="stopListening()">Stop</button>
-  </div>
+  <button class="start" onclick="restart()">Start Listening</button>
+  <button class="stop" onclick="stopAll()">Stop</button>
 </div>
 
 <script>
 /* ================= CONFIG ================= */
-const API_URL = "https://zelvora-ai.zelvora-global.workers.dev";
+const API = "https://YOUR-WORKER-NAME.workers.dev";
 
 /* ================= STATE ================= */
-let recognition;
-let listening = false;
-let autoLoop = true;
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const rec = new SR();
 
-/* ================= SPEECH RECOGNITION ================= */
-const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+rec.continuous = true;
+rec.interimResults = false;
+rec.lang = "en-US";
 
-function startListening() {
-  if (listening || !SpeechRec) return;
+let buffer = "";
+let sendTimer = null;
+let speaking = false;
+let blocked = false;
+let lastUserText = "";
 
-  recognition = new SpeechRec();
-  recognition.lang = "en-US";
-  recognition.interimResults = false;
-  recognition.continuous = false;
+/* ================= UI ================= */
+const statusEl = document.getElementById("status");
+const outputEl = document.getElementById("output");
 
-  recognition.onstart = () => {
-    listening = true;
-    status.textContent = "Listening… speak naturally";
-  };
+/* ================= SPEECH INPUT ================= */
+rec.onresult = e => {
+  if (speaking || blocked) return;
 
-  recognition.onresult = e => {
-    const text = e.results[0][0].transcript.trim();
-    transcript.textContent = text;
-    listening = false;
-    sendToAI(text);
-  };
+  const text = e.results[e.results.length - 1][0].transcript.trim();
+  if (!text || text === lastUserText) return;
 
-  recognition.onerror = () => {
-    listening = false;
-    status.textContent = "Tap Start to try again";
-  };
+  lastUserText = text;
+  buffer += " " + text;
+  statusEl.textContent = "Listening…";
 
-  recognition.start();
-}
+  clearTimeout(sendTimer);
+  sendTimer = setTimeout(sendToAI, 1600);
+};
 
-function stopListening() {
-  autoLoop = false;
-  if (recognition) recognition.stop();
-  status.textContent = "Stopped";
-}
+/* ================= SEND TO AI ================= */
+async function sendToAI(){
+  if (!buffer.trim()) return;
 
-/* ================= BACKEND CALL ================= */
-async function sendToAI(text) {
-  if (text.length < 4) {
-    feedback.textContent =
-      "Please say a full sentence, for example: I want to improve my English.";
-    return;
-  }
+  const sendText = buffer.trim();
+  buffer = "";
+  statusEl.textContent = "Thinking…";
 
-  status.textContent = "Thinking…";
-
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text })
+  try{
+    const res = await fetch(API,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ text: sendText })
     });
 
+    if (!res.ok) throw new Error("network");
+
     const data = await res.json();
-    feedback.textContent = data.reply || "Try again.";
-    speak(data.reply || "");
-  } catch {
-    feedback.textContent =
-      "Let’s try again. Say a full sentence slowly.";
-    status.textContent = "Tap Start to continue";
+
+    if (!data.reply) {
+      blocked = true;
+      statusEl.textContent = "AI did not respond. Tap Start to retry.";
+      return;
+    }
+
+    outputEl.textContent = data.reply;
+    speak(data.reply);
+
+  }catch{
+    blocked = true;
+    buffer = "";
+    statusEl.textContent = "Connection issue. Tap Start to retry.";
   }
 }
 
-/* ================= TEXT TO SPEECH ================= */
-function speak(text) {
-  if (!text) return;
-
+/* ================= SPEAK ================= */
+function speak(text){
   speechSynthesis.cancel();
+  speaking = true;
+  statusEl.textContent = "Speaking…";
+
   const u = new SpeechSynthesisUtterance(text);
   u.rate = 0.95;
 
-  u.onstart = () => {
-    status.textContent = "AI speaking…";
-  };
-
   u.onend = () => {
-    status.textContent = "Tap Start to continue";
-
-    // ✅ SAFE CONTINUOUS LOOP
-    if (autoLoop && !text.includes("Let’s try again")) {
-      setTimeout(() => startListening(), 900);
-    }
+    speaking = false;
+    statusEl.textContent = "Listening… speak freely";
   };
 
   speechSynthesis.speak(u);
+}
+
+/* ================= SAFETY ================= */
+rec.onend = () => {
+  if (!speaking && !blocked) rec.start();
+};
+
+rec.onerror = () => {
+  statusEl.textContent = "Mic error";
+};
+
+/* ================= CONTROLS ================= */
+function restart(){
+  blocked = false;
+  buffer = "";
+  lastUserText = "";
+  statusEl.textContent = "Listening… speak freely";
+  rec.start();
+}
+
+function stopAll(){
+  blocked = true;
+  buffer = "";
+  speechSynthesis.cancel();
+  rec.stop();
+  statusEl.textContent = "Stopped";
 }
 </script>
 </body>
