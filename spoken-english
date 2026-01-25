@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Spoken English AI</title>
+<title>Zelvora Handsfree Tutor</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
@@ -52,20 +52,36 @@ pre{
   white-space:pre-wrap;
 }
 small{color:#94a3b8}
+button{
+  border:none;
+  padding:10px 16px;
+  border-radius:12px;
+  margin:6px;
+  cursor:pointer;
+}
+.start{background:#2563eb;color:#fff}
+.stop{background:#dc2626;color:#fff}
 </style>
 </head>
 
 <body>
 <div class="card">
-  <h3>Spoken English AI</h3>
-  <small id="status">Listening… speak freely</small>
+  <h3>Zelvora Handsfree Tutor</h3>
+  <small id="status">Tap Start to speak</small>
+
   <div class="mic">🎤</div>
-  <pre id="output">Waiting for speech…</pre>
+
+  <pre id="output">Waiting…</pre>
+
+  <button class="start" onclick="restart()">Start Listening</button>
+  <button class="stop" onclick="stopAll()">Stop</button>
 </div>
 
 <script>
+/* ================= CONFIG ================= */
 const API = "https://YOUR-WORKER-NAME.workers.dev";
 
+/* ============== STATE ==================== */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 const rec = new SR();
 
@@ -74,46 +90,104 @@ rec.interimResults = false;
 rec.lang = "en-US";
 
 let buffer = "";
-let lastSend = Date.now();
+let sendTimer = null;
 let speaking = false;
+let blocked = false;
+let lastUserText = "";
 
-rec.onresult = async e => {
+/* ============== UI ======================= */
+const statusEl = document.getElementById("status");
+const outputEl = document.getElementById("output");
+
+/* ============== SPEECH INPUT ============= */
+rec.onresult = e => {
+  if (speaking || blocked) return;
+
   const text = e.results[e.results.length - 1][0].transcript.trim();
+  if (!text || text === lastUserText) return;
+
+  lastUserText = text;
   buffer += " " + text;
+  statusEl.textContent = "Listening…";
 
-  if (Date.now() - lastSend > 8000) {
-    lastSend = Date.now();
-    const sendText = buffer;
-    buffer = "";
+  clearTimeout(sendTimer);
+  sendTimer = setTimeout(sendToAI, 1600); // silence based
+};
 
-    document.getElementById("status").textContent = "Thinking…";
+/* ============== SEND TO AI ================ */
+async function sendToAI(){
+  if (!buffer.trim()) return;
 
+  const sendText = buffer.trim();
+  buffer = "";
+  statusEl.textContent = "Thinking…";
+
+  try{
     const res = await fetch(API,{
       method:"POST",
       headers:{ "Content-Type":"application/json" },
       body:JSON.stringify({ text: sendText })
     });
 
-    const data = await res.json();
-    speak(data.reply);
-    document.getElementById("output").textContent = data.reply;
-  }
-};
+    if (!res.ok) throw new Error("network");
 
+    const data = await res.json();
+    outputEl.textContent = data.reply;
+    speak(data.reply);
+
+  }catch{
+    // ❌ NEVER SPEAK ERRORS
+    blocked = true;
+    statusEl.textContent = "Connection issue. Tap Start to retry.";
+  }
+}
+
+/* ============== SPEAK ===================== */
 function speak(text){
   speechSynthesis.cancel();
+  speaking = true;
+  statusEl.textContent = "Speaking…";
+
   const u = new SpeechSynthesisUtterance(text);
   u.rate = 0.95;
-  u.onstart = ()=>{ speaking=true; rec.stop(); };
-  u.onend = ()=>{ speaking=false; rec.start(); };
+
+  u.onend = () => {
+    speaking = false;
+    statusEl.textContent = "Listening… speak freely";
+  };
+
   speechSynthesis.speak(u);
 }
 
-rec.onerror = e => {
-  document.getElementById("status").textContent = "Mic error";
+/* ============== SAFETY =================== */
+rec.onend = () => {
+  if (!speaking && !blocked) rec.start();
 };
 
-rec.start();
+rec.onerror = () => {
+  statusEl.textContent = "Mic error";
+};
+
+/* ============== CONTROLS ================= */
+function restart(){
+  blocked = false;
+  buffer = "";
+  lastUserText = "";
+  statusEl.textContent = "Listening… speak freely";
+  rec.start();
+}
+
+function stopAll(){
+  blocked = true;
+  buffer = "";
+  speechSynthesis.cancel();
+  rec.stop();
+  statusEl.textContent = "Stopped";
+}
+
+/* ============== AUTO START ================ */
+// optional: comment this if you want manual only
+// rec.start();
 </script>
 </body>
 </html>
