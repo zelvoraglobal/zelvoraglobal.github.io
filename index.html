@@ -1,96 +1,188 @@
-export default {
-  async fetch(req) {
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zelvora Handfree Spoken English</title>
 
-    /* CORS */
-    if (req.method === "OPTIONS") {
-      return new Response(null, {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
-        }
-      });
-    }
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#0f172a,#020617);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  color:#e5e7eb;
+}
+.card{
+  width:320px;
+  background:rgba(255,255,255,.06);
+  backdrop-filter:blur(16px);
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 20px 50px rgba(0,0,0,.4);
+  text-align:center;
+}
+h1{
+  font-size:18px;
+  margin:0 0 6px;
+}
+#status{
+  font-size:13px;
+  opacity:.8;
+  margin-bottom:12px;
+}
+.mic{
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  margin:10px auto;
+  background:#2563eb;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+}
+.box{
+  background:#020617;
+  border-radius:10px;
+  padding:10px;
+  font-size:14px;
+  min-height:40px;
+  margin-bottom:8px;
+  text-align:left;
+}
+.buttons{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+button{
+  flex:1;
+  border:none;
+  padding:10px;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+}
+.start{background:#2563eb;color:#fff}
+.stop{background:#dc2626;color:#fff}
+footer{
+  margin-top:12px;
+  font-size:11px;
+  opacity:.6;
+}
+</style>
+</head>
 
-    if (req.method !== "POST") {
-      return json({
-        status: "ok",
-        message: "Zelvora Spoken English (No AI API)",
-        timestamp: new Date().toISOString()
-      });
-    }
+<body>
 
-    try {
-      const { text } = await req.json();
+<div class="card">
+  <h1>🎧 Zelvora Handfree Tutor</h1>
+  <div id="status">Tap Start to speak</div>
 
-      if (!text || text.trim().length < 3) {
-        return reply("Please speak a complete sentence.");
-      }
+  <div class="mic">🎤</div>
 
-      const cleaned = cleanGrammar(text);
-      const improved = improveFluency(cleaned);
-      const tip = randomTip();
+  <div class="box" id="userText">—</div>
+  <div class="box" id="aiReply">—</div>
 
-      return reply(
-`Correction:
-${cleaned}
+  <div class="buttons">
+    <button class="start" onclick="startListening()">Start Listening</button>
+    <button class="stop" onclick="stopListening()">Stop</button>
+  </div>
 
-Improved Sentence:
-${improved}
+  <footer>No AI API • Cloudflare Worker</footer>
+</div>
 
-Tip:
-${tip}`
-      );
+<script>
+/* 🔗 YOUR WORKER URL */
+const API = "https://elvora-global.workers.dev";
 
-    } catch (e) {
-      return reply("Please repeat your sentence clearly.");
-    }
+/* 🎙 Speech Recognition */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition;
+let listening = false;
+let autoRestart = false;
+
+function startListening(){
+  if(listening || !SR) return;
+
+  recognition = new SR();
+  recognition.lang = "en-US";
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onstart = ()=>{
+    listening = true;
+    autoRestart = true;
+    setStatus("Listening… speak naturally");
+  };
+
+  recognition.onresult = e=>{
+    const text = e.results[0][0].transcript;
+    document.getElementById("userText").textContent = text;
+    sendToBackend(text);
+  };
+
+  recognition.onend = ()=>{
+    listening = false;
+    if(autoRestart) startListening();
+  };
+
+  recognition.onerror = ()=>{
+    listening = false;
+    autoRestart = false;
+    setStatus("Tap Start to speak");
+  };
+
+  recognition.start();
+}
+
+function stopListening(){
+  autoRestart = false;
+  listening = false;
+  if(recognition) recognition.stop();
+  setStatus("Stopped");
+}
+
+/* 🌐 Backend Call */
+async function sendToBackend(text){
+  setStatus("Processing…");
+  try{
+    const res = await fetch(API,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({text})
+    });
+    const data = await res.json();
+    document.getElementById("aiReply").textContent = data.reply;
+    speak(data.reply);
+  }catch{
+    document.getElementById("aiReply").textContent =
+      "Please repeat your sentence.";
+    setStatus("Tap Start to speak");
   }
-};
-
-/* ---------- Helpers ---------- */
-
-function reply(message) {
-  return json({ reply: message });
 }
 
-function json(data) {
-  return new Response(JSON.stringify(data), {
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-    }
-  });
+/* 🔊 Speech Synthesis */
+function speak(text){
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.95;
+
+  u.onstart = ()=> setStatus("AI speaking…");
+  u.onend = ()=> setStatus("Tap Start to continue");
+
+  speechSynthesis.speak(u);
 }
 
-function cleanGrammar(text) {
-  return text
-    .replace(/\bi am not confident\b/i, "I am not confident")
-    .replace(/\bi cant\b/i, "I can't")
-    .replace(/\bhow can i help you\b/i, "How can I help you?")
-    .replace(/\bi need job\b/i, "I need a job")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/^[a-z]/, c => c.toUpperCase());
+function setStatus(msg){
+  document.getElementById("status").textContent = msg;
 }
+</script>
 
-function improveFluency(text) {
-  if (text.toLowerCase().includes("not confident")) {
-    return "I am not confident speaking English yet, but I am learning.";
-  }
-  if (text.toLowerCase().includes("need a job")) {
-    return "I am currently looking for a suitable job opportunity.";
-  }
-  return text;
-}
-
-function randomTip() {
-  const tips = [
-    "Speak slowly and clearly.",
-    "Do not worry about mistakes.",
-    "Practice speaking every day.",
-    "Listen to English conversations.",
-    "Focus on complete sentences."
-  ];
-  return tips[Math.floor(Math.random() * tips.length)];
-}
+</body>
+</html>
