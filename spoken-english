@@ -1,193 +1,207 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Zelvora Handsfree Tutor</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zelvora AI English Tutor</title>
 
 <style>
+*{box-sizing:border-box;margin:0;padding:0}
 body{
-  margin:0;
-  background:radial-gradient(circle at top,#0b1d3a,#020617);
-  color:#fff;
-  font-family:system-ui;
+  min-height:100vh;
   display:flex;
-  justify-content:center;
   align-items:center;
-  height:100vh;
+  justify-content:center;
+  background:linear-gradient(135deg,#020617,#0f172a,#1e1b4b);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  color:#e5e7eb;
+  padding:20px;
 }
-.card{
-  width:90%;
-  max-width:360px;
-  background:rgba(255,255,255,.06);
-  backdrop-filter:blur(14px);
+.container{
+  width:100%;
+  max-width:420px;
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(18px);
   border-radius:22px;
-  padding:26px;
-  text-align:center;
-  border:1px solid rgba(255,255,255,.12);
+  padding:22px;
+  box-shadow:0 25px 60px rgba(0,0,0,.45);
 }
+.header{text-align:center;margin-bottom:18px}
+h1{
+  font-size:22px;
+  background:linear-gradient(135deg,#60a5fa,#a78bfa);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+#status{font-size:13px;color:#cbd5e1;margin-top:6px}
+
+.mic-wrap{display:flex;justify-content:center;margin:18px 0}
 .mic{
-  width:88px;height:88px;
-  border-radius:50%;
-  background:#2563eb;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:34px;
-  margin:20px auto;
-  animation:pulse 1.8s infinite;
+  width:78px;height:78px;border-radius:50%;
+  background:linear-gradient(135deg,#2563eb,#7c3aed);
+  display:flex;align-items:center;justify-content:center;
+  font-size:34px;cursor:pointer;
+}
+.mic.active{
+  background:linear-gradient(135deg,#dc2626,#ef4444);
+  animation:pulse 1.4s infinite;
 }
 @keyframes pulse{
-  0%{box-shadow:0 0 0 0 rgba(37,99,235,.5)}
-  70%{box-shadow:0 0 0 20px rgba(37,99,235,0)}
-  100%{box-shadow:0 0 0 0 rgba(37,99,235,0)}
+  0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.6)}
+  50%{box-shadow:0 0 0 18px rgba(239,68,68,0)}
 }
-pre{
-  background:rgba(0,0,0,.25);
-  padding:14px;
+
+.chat{
+  background:rgba(0,0,0,.35);
   border-radius:14px;
-  text-align:left;
-  font-size:13px;
-  margin-top:12px;
-  white-space:pre-wrap;
+  padding:12px;
+  max-height:260px;
+  overflow-y:auto;
+  font-size:14px;
 }
-small{color:#94a3b8}
+.msg{margin-bottom:12px;padding:10px;border-radius:10px}
+.user{background:rgba(37,99,235,.25)}
+.ai{background:rgba(124,58,237,.25)}
+.label{font-size:11px;opacity:.7;margin-bottom:4px}
+
+.controls{display:flex;gap:10px;margin-top:14px}
 button{
-  border:none;
-  padding:10px 16px;
-  border-radius:12px;
-  margin:6px;
-  cursor:pointer;
+  flex:1;padding:11px;border:none;border-radius:10px;
+  font-weight:600;font-size:14px;cursor:pointer
 }
 .start{background:#2563eb;color:#fff}
 .stop{background:#dc2626;color:#fff}
+.clear{background:rgba(255,255,255,.12);color:#e5e7eb}
+button:disabled{opacity:.5}
+
+.footer{text-align:center;font-size:11px;opacity:.6;margin-top:12px}
 </style>
 </head>
 
 <body>
-<div class="card">
-  <h3>Zelvora Handsfree Tutor</h3>
-  <small id="status">Tap Start to speak</small>
 
-  <div class="mic">🎤</div>
+<div class="container">
+  <div class="header">
+    <h1>🎧 Zelvora AI Tutor</h1>
+    <div id="status">Tap the microphone to speak</div>
+  </div>
 
-  <pre id="output">Waiting…</pre>
+  <div class="mic-wrap">
+    <div class="mic" id="mic" onclick="toggleMic()">🎤</div>
+  </div>
 
-  <button class="start" onclick="restart()">Start Listening</button>
-  <button class="stop" onclick="stopAll()">Stop</button>
+  <div class="chat" id="chat">
+    <div class="msg ai">
+      <div class="label">Tutor</div>
+      Hello! Speak English and I’ll respond. Tap the mic to begin.
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="start" onclick="start()">Start</button>
+    <button class="stop" onclick="stop()">Stop</button>
+    <button class="clear" onclick="clearChat()">Clear</button>
+  </div>
+
+  <div class="footer">Zelvora • Voice Practice • No AI API</div>
 </div>
 
 <script>
-/* ================= CONFIG ================= */
-const API = "https://YOUR-WORKER-NAME.workers.dev";
+/* 🔗 Cloudflare Worker URL */
+const API = "https://elvora-global.workers.dev";
 
-/* ============== STATE ==================== */
+/* 🎙 Speech Recognition */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-const rec = new SR();
+let rec = null;
+let listening = false;
 
-rec.continuous = true;
-rec.interimResults = false;
-rec.lang = "en-US";
-
-let buffer = "";
-let sendTimer = null;
-let speaking = false;
-let blocked = false;
-let lastUserText = "";
-
-/* ============== UI ======================= */
-const statusEl = document.getElementById("status");
-const outputEl = document.getElementById("output");
-
-/* ============== SPEECH INPUT ============= */
-rec.onresult = e => {
-  if (speaking || blocked) return;
-
-  const text = e.results[e.results.length - 1][0].transcript.trim();
-  if (!text || text === lastUserText) return;
-
-  lastUserText = text;
-  buffer += " " + text;
-  statusEl.textContent = "Listening…";
-
-  clearTimeout(sendTimer);
-  sendTimer = setTimeout(sendToAI, 1600); // silence based
-};
-
-/* ============== SEND TO AI ================ */
-async function sendToAI(){
-  if (!buffer.trim()) return;
-
-  const sendText = buffer.trim();
-  buffer = "";
-  statusEl.textContent = "Thinking…";
-
-  try{
-    const res = await fetch(API,{
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({ text: sendText })
-    });
-
-    if (!res.ok) throw new Error("network");
-
-    const data = await res.json();
-    outputEl.textContent = data.reply;
-    speak(data.reply);
-
-  }catch{
-    // ❌ NEVER SPEAK ERRORS
-    blocked = true;
-    statusEl.textContent = "Connection issue. Tap Start to retry.";
-  }
+function toggleMic(){
+  listening ? stop() : start();
 }
 
-/* ============== SPEAK ===================== */
-function speak(text){
-  speechSynthesis.cancel();
-  speaking = true;
-  statusEl.textContent = "Speaking…";
+function start(){
+  if(!SR || listening) return;
 
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.95;
+  rec = new SR();
+  rec.lang = "en-US";
+  rec.continuous = false;
+  rec.interimResults = false;
 
-  u.onend = () => {
-    speaking = false;
-    statusEl.textContent = "Listening… speak freely";
+  rec.onstart = () => {
+    listening = true;
+    mic.classList.add("active");
+    setStatus("Listening… speak now");
   };
 
-  speechSynthesis.speak(u);
-}
+  rec.onresult = e => {
+    const text = e.results[0][0].transcript;
+    add("You", text);
+    send(text);
+  };
 
-/* ============== SAFETY =================== */
-rec.onend = () => {
-  if (!speaking && !blocked) rec.start();
-};
+  rec.onend = () => {
+    listening = false;
+    mic.classList.remove("active");
+    setStatus("Tap mic to speak again");
+  };
 
-rec.onerror = () => {
-  statusEl.textContent = "Mic error";
-};
+  rec.onerror = () => {
+    stop();
+    setStatus("No speech detected");
+  };
 
-/* ============== CONTROLS ================= */
-function restart(){
-  blocked = false;
-  buffer = "";
-  lastUserText = "";
-  statusEl.textContent = "Listening… speak freely";
   rec.start();
 }
 
-function stopAll(){
-  blocked = true;
-  buffer = "";
-  speechSynthesis.cancel();
-  rec.stop();
-  statusEl.textContent = "Stopped";
+function stop(){
+  listening = false;
+  rec && rec.stop();
+  mic.classList.remove("active");
+  setStatus("Stopped");
 }
 
-/* ============== AUTO START ================ */
-// optional: comment this if you want manual only
-// rec.start();
+async function send(text){
+  setStatus("Processing…");
+  try{
+    const r = await fetch(API,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ text })
+    });
+    const d = await r.json();
+    add("Tutor", d.reply);
+    speak(d.reply);
+    setStatus("Tap mic to continue");
+  }catch{
+    add("Tutor","Please repeat your sentence.");
+    setStatus("Tap mic to retry");
+  }
+}
+
+function add(who,text){
+  const div=document.createElement("div");
+  div.className="msg "+(who==="You"?"user":"ai");
+  div.innerHTML=`<div class="label">${who}</div>${text}`;
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function speak(text){
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=0.9;
+  speechSynthesis.speak(u);
+}
+
+function clearChat(){
+  chat.innerHTML="";
+  setStatus("Tap the microphone to speak");
+}
+
+function setStatus(t){
+  status.innerText=t;
+}
 </script>
+
 </body>
 </html>
