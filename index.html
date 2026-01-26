@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Zelvora AI English Tutor</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎧</text></svg>">
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -91,6 +92,11 @@ h1{
   padding:10px 12px;
   border-radius:12px;
   line-height:1.5;
+  animation:fadeIn .3s ease;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
 }
 .user{
   background:rgba(37,99,235,.2);
@@ -110,6 +116,8 @@ h1{
   border-left:3px solid #22c55e;
   font-size:13px;
   margin-top:6px;
+  padding:8px 10px;
+  border-radius:8px;
 }
 .label{
   font-size:11px;
@@ -138,6 +146,7 @@ button{
 }
 .start-btn:hover{
   background:linear-gradient(135deg,#1d4ed8,#1e40af);
+  transform:translateY(-2px);
 }
 .stop-btn{
   background:linear-gradient(135deg,#dc2626,#b91c1c);
@@ -145,6 +154,7 @@ button{
 }
 .stop-btn:hover{
   background:linear-gradient(135deg,#b91c1c,#991b1b);
+  transform:translateY(-2px);
 }
 .clear-btn{
   background:rgba(255,255,255,.1);
@@ -152,10 +162,12 @@ button{
 }
 .clear-btn:hover{
   background:rgba(255,255,255,.15);
+  transform:translateY(-2px);
 }
 button:disabled{
   opacity:.5;
   cursor:not-allowed;
+  transform:none!important;
 }
 .footer{
   margin-top:16px;
@@ -182,9 +194,35 @@ button:disabled{
   border-radius:50%;
   animation:spin .8s linear infinite;
   margin-left:6px;
+  vertical-align:middle;
 }
 @keyframes spin{
   to{transform:rotate(360deg)}
+}
+.empty-state{
+  text-align:center;
+  padding:40px 20px;
+  opacity:.6;
+}
+.empty-state-icon{
+  font-size:48px;
+  margin-bottom:10px;
+}
+@media (max-width:480px){
+  .container{
+    padding:20px;
+  }
+  h1{
+    font-size:20px;
+  }
+  .mic{
+    width:70px;
+    height:70px;
+    font-size:32px;
+  }
+  .conversation{
+    max-height:280px;
+  }
 }
 </style>
 </head>
@@ -198,7 +236,7 @@ button:disabled{
   </div>
 
   <div class="mic-container">
-    <div class="mic" id="micBtn" onclick="toggleListening()">🎤</div>
+    <div class="mic" id="micBtn" onclick="toggleListening()" title="Click to start/stop">🎤</div>
   </div>
 
   <div class="conversation" id="conversation">
@@ -232,11 +270,14 @@ let conversationContext = [];
 
 /* Initialize */
 if (!SR) {
-  setStatus("❌ Speech recognition not supported. Use Chrome/Edge.");
+  setStatus("❌ Speech recognition not supported. Use Chrome/Edge/Safari.");
   document.getElementById("startBtn").disabled = true;
+  document.getElementById("micBtn").style.cursor = "not-allowed";
+  document.getElementById("micBtn").style.opacity = "0.5";
 }
 
 function toggleListening() {
+  if (!SR) return;
   if (isListening) {
     stopListening();
   } else {
@@ -282,6 +323,9 @@ function startListening() {
     console.error("Recognition error:", event.error);
     if (event.error === 'no-speech') {
       setStatus("No speech detected. Click mic to try again.");
+    } else if (event.error === 'not-allowed') {
+      setStatus("❌ Microphone access denied. Please allow microphone.");
+      document.getElementById("startBtn").disabled = true;
     } else {
       setStatus("Error occurred. Click Start to retry.");
     }
@@ -342,7 +386,7 @@ async function processWithAI(text) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ 
         text,
-        context: conversationContext.slice(-5) // Last 5 exchanges for context
+        context: conversationContext.slice(-5)
       })
     });
 
@@ -365,6 +409,8 @@ async function processWithAI(text) {
     console.error("AI Error:", error);
     addMessage("ai", "Sorry, I couldn't process that. Please try again.");
     setStatus("Error. Click mic to continue.");
+    autoRestart = false;
+    stopListening();
   }
 }
 
@@ -385,6 +431,10 @@ function speak(text) {
     }
   };
   
+  utterance.onerror = (e) => {
+    console.error("Speech synthesis error:", e);
+  };
+  
   speechSynthesis.speak(utterance);
 }
 
@@ -398,10 +448,25 @@ function clearChat() {
   `;
   conversationContext = [];
   setStatus("Click the microphone to start");
+  if (isListening) {
+    stopListening();
+  }
 }
 
 function setStatus(html) {
   document.getElementById("status").innerHTML = html;
+}
+
+// Request microphone permission on page load
+if (SR) {
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(() => {
+      console.log("Microphone access granted");
+    })
+    .catch((err) => {
+      console.warn("Microphone access denied:", err);
+      setStatus("⚠️ Please allow microphone access to use this app");
+    });
 }
 </script>
 
