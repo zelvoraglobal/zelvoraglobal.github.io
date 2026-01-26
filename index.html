@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Zelvora AI English Tutor</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎧</text></svg>">
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -13,217 +12,69 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  background:linear-gradient(135deg,#0f172a,#1e1b4b,#020617);
+  background:linear-gradient(135deg,#020617,#0f172a,#1e1b4b);
   font-family:system-ui,-apple-system,Segoe UI,Roboto;
   color:#e5e7eb;
   padding:20px;
 }
 .container{
   width:100%;
-  max-width:440px;
+  max-width:420px;
   background:rgba(255,255,255,.08);
-  backdrop-filter:blur(20px);
-  border-radius:24px;
-  padding:24px;
-  box-shadow:0 25px 60px rgba(0,0,0,.5);
+  backdrop-filter:blur(18px);
+  border-radius:22px;
+  padding:22px;
+  box-shadow:0 25px 60px rgba(0,0,0,.45);
 }
-.header{
-  text-align:center;
-  margin-bottom:20px;
-}
+.header{text-align:center;margin-bottom:18px}
 h1{
   font-size:22px;
-  margin-bottom:6px;
   background:linear-gradient(135deg,#60a5fa,#a78bfa);
   -webkit-background-clip:text;
-  background-clip:text;
   color:transparent;
 }
-#status{
-  font-size:13px;
-  opacity:.85;
-  color:#cbd5e1;
-}
-.mic-container{
-  display:flex;
-  justify-content:center;
-  margin:20px 0;
-}
+#status{font-size:13px;color:#cbd5e1;margin-top:6px}
+
+.mic-wrap{display:flex;justify-content:center;margin:18px 0}
 .mic{
-  width:80px;
-  height:80px;
-  border-radius:50%;
+  width:78px;height:78px;border-radius:50%;
   background:linear-gradient(135deg,#2563eb,#7c3aed);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:36px;
-  cursor:pointer;
-  transition:all .3s ease;
-  box-shadow:0 10px 30px rgba(37,99,235,.4);
-}
-.mic:hover{
-  transform:scale(1.05);
+  display:flex;align-items:center;justify-content:center;
+  font-size:34px;cursor:pointer;
 }
 .mic.active{
-  animation:pulse 1.5s ease-in-out infinite;
   background:linear-gradient(135deg,#dc2626,#ef4444);
+  animation:pulse 1.4s infinite;
 }
 @keyframes pulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.7)}
-  50%{box-shadow:0 0 0 20px rgba(220,38,38,0)}
+  0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.6)}
+  50%{box-shadow:0 0 0 18px rgba(239,68,68,0)}
 }
-.conversation{
-  max-height:320px;
-  overflow-y:auto;
-  margin:16px 0;
-  padding:12px;
-  background:rgba(0,0,0,.3);
+
+.chat{
+  background:rgba(0,0,0,.35);
   border-radius:14px;
-  font-size:14px;
-}
-.conversation::-webkit-scrollbar{width:6px}
-.conversation::-webkit-scrollbar-thumb{
-  background:rgba(255,255,255,.2);
-  border-radius:3px;
-}
-.message{
-  margin-bottom:14px;
-  padding:10px 12px;
-  border-radius:12px;
-  line-height:1.5;
-  animation:fadeIn .3s ease;
-}
-@keyframes fadeIn{
-  from{opacity:0;transform:translateY(10px)}
-  to{opacity:1;transform:translateY(0)}
-}
-.user{
-  background:rgba(37,99,235,.2);
-  border-left:3px solid #2563eb;
-}
-.ai{
-  background:rgba(124,58,237,.2);
-  border-left:3px solid #7c3aed;
-}
-.error{
-  background:rgba(220,38,38,.15);
-  border-left:3px solid #dc2626;
-  font-size:13px;
-}
-.correction{
-  background:rgba(34,197,94,.15);
-  border-left:3px solid #22c55e;
-  font-size:13px;
-  margin-top:6px;
-  padding:8px 10px;
-  border-radius:8px;
-}
-.label{
-  font-size:11px;
-  font-weight:600;
-  text-transform:uppercase;
-  opacity:.7;
-  margin-bottom:4px;
-}
-.controls{
-  display:flex;
-  gap:10px;
-}
-button{
-  flex:1;
-  border:none;
   padding:12px;
-  border-radius:12px;
-  font-weight:600;
+  max-height:260px;
+  overflow-y:auto;
   font-size:14px;
-  cursor:pointer;
-  transition:all .2s;
 }
-.start-btn{
-  background:linear-gradient(135deg,#2563eb,#1d4ed8);
-  color:#fff;
+.msg{margin-bottom:12px;padding:10px;border-radius:10px}
+.user{background:rgba(37,99,235,.25)}
+.ai{background:rgba(124,58,237,.25)}
+.label{font-size:11px;opacity:.7;margin-bottom:4px}
+
+.controls{display:flex;gap:10px;margin-top:14px}
+button{
+  flex:1;padding:11px;border:none;border-radius:10px;
+  font-weight:600;font-size:14px;cursor:pointer
 }
-.start-btn:hover{
-  background:linear-gradient(135deg,#1d4ed8,#1e40af);
-  transform:translateY(-2px);
-}
-.stop-btn{
-  background:linear-gradient(135deg,#dc2626,#b91c1c);
-  color:#fff;
-}
-.stop-btn:hover{
-  background:linear-gradient(135deg,#b91c1c,#991b1b);
-  transform:translateY(-2px);
-}
-.clear-btn{
-  background:rgba(255,255,255,.1);
-  color:#e5e7eb;
-}
-.clear-btn:hover{
-  background:rgba(255,255,255,.15);
-  transform:translateY(-2px);
-}
-button:disabled{
-  opacity:.5;
-  cursor:not-allowed;
-  transform:none!important;
-}
-.footer{
-  margin-top:16px;
-  text-align:center;
-  font-size:11px;
-  opacity:.6;
-}
-.badge{
-  display:inline-block;
-  background:rgba(34,197,94,.2);
-  color:#22c55e;
-  padding:3px 8px;
-  border-radius:6px;
-  font-size:10px;
-  font-weight:600;
-  margin-left:6px;
-}
-.loading{
-  display:inline-block;
-  width:12px;
-  height:12px;
-  border:2px solid rgba(255,255,255,.3);
-  border-top-color:#fff;
-  border-radius:50%;
-  animation:spin .8s linear infinite;
-  margin-left:6px;
-  vertical-align:middle;
-}
-@keyframes spin{
-  to{transform:rotate(360deg)}
-}
-.empty-state{
-  text-align:center;
-  padding:40px 20px;
-  opacity:.6;
-}
-.empty-state-icon{
-  font-size:48px;
-  margin-bottom:10px;
-}
-@media (max-width:480px){
-  .container{
-    padding:20px;
-  }
-  h1{
-    font-size:20px;
-  }
-  .mic{
-    width:70px;
-    height:70px;
-    font-size:32px;
-  }
-  .conversation{
-    max-height:280px;
-  }
-}
+.start{background:#2563eb;color:#fff}
+.stop{background:#dc2626;color:#fff}
+.clear{background:rgba(255,255,255,.12);color:#e5e7eb}
+button:disabled{opacity:.5}
+
+.footer{text-align:center;font-size:11px;opacity:.6;margin-top:12px}
 </style>
 </head>
 
@@ -232,241 +83,123 @@ button:disabled{
 <div class="container">
   <div class="header">
     <h1>🎧 Zelvora AI Tutor</h1>
-    <div id="status">Click the microphone to start</div>
+    <div id="status">Tap the microphone to speak</div>
   </div>
 
-  <div class="mic-container">
-    <div class="mic" id="micBtn" onclick="toggleListening()" title="Click to start/stop">🎤</div>
+  <div class="mic-wrap">
+    <div class="mic" id="mic" onclick="toggleMic()">🎤</div>
   </div>
 
-  <div class="conversation" id="conversation">
-    <div class="message ai">
-      <div class="label">AI Tutor</div>
-      Hello! I'm your AI English tutor. Start speaking and I'll help you improve your English in real-time. Click the microphone when ready!
+  <div class="chat" id="chat">
+    <div class="msg ai">
+      <div class="label">Tutor</div>
+      Hello! Speak English and I’ll respond. Tap the mic to begin.
     </div>
   </div>
 
   <div class="controls">
-    <button class="start-btn" onclick="startListening()" id="startBtn">Start</button>
-    <button class="stop-btn" onclick="stopListening()" id="stopBtn" disabled>Stop</button>
-    <button class="clear-btn" onclick="clearChat()">Clear</button>
+    <button class="start" onclick="start()">Start</button>
+    <button class="stop" onclick="stop()">Stop</button>
+    <button class="clear" onclick="clearChat()">Clear</button>
   </div>
 
-  <div class="footer">
-    Powered by Advanced AI • 100% Free
-  </div>
+  <div class="footer">Zelvora • Voice Practice • No AI API</div>
 </div>
 
 <script>
-/* 🔗 YOUR CLOUDFLARE WORKER URL */
-const API_URL = "https://elvora-global.workers.dev";
+/* 🔗 Cloudflare Worker URL */
+const API = "https://elvora-global.workers.dev";
 
-/* 🎙️ Speech Recognition Setup */
+/* 🎙 Speech Recognition */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition = null;
-let isListening = false;
-let autoRestart = false;
-let conversationContext = [];
+let rec = null;
+let listening = false;
 
-/* Initialize */
-if (!SR) {
-  setStatus("❌ Speech recognition not supported. Use Chrome/Edge/Safari.");
-  document.getElementById("startBtn").disabled = true;
-  document.getElementById("micBtn").style.cursor = "not-allowed";
-  document.getElementById("micBtn").style.opacity = "0.5";
+function toggleMic(){
+  listening ? stop() : start();
 }
 
-function toggleListening() {
-  if (!SR) return;
-  if (isListening) {
-    stopListening();
-  } else {
-    startListening();
-  }
-}
+function start(){
+  if(!SR || listening) return;
 
-function startListening() {
-  if (!SR || isListening) return;
+  rec = new SR();
+  rec.lang = "en-US";
+  rec.continuous = false;
+  rec.interimResults = false;
 
-  recognition = new SR();
-  recognition.lang = "en-US";
-  recognition.continuous = false;
-  recognition.interimResults = false;
-
-  recognition.onstart = () => {
-    isListening = true;
-    autoRestart = true;
-    document.getElementById("micBtn").classList.add("active");
-    document.getElementById("startBtn").disabled = true;
-    document.getElementById("stopBtn").disabled = false;
-    setStatus("🎤 Listening... Speak now");
+  rec.onstart = () => {
+    listening = true;
+    mic.classList.add("active");
+    setStatus("Listening… speak now");
   };
 
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    addMessage("user", transcript);
-    processWithAI(transcript);
+  rec.onresult = e => {
+    const text = e.results[0][0].transcript;
+    add("You", text);
+    send(text);
   };
 
-  recognition.onend = () => {
-    isListening = false;
-    document.getElementById("micBtn").classList.remove("active");
-    
-    if (autoRestart) {
-      setTimeout(() => {
-        if (autoRestart) startListening();
-      }, 1000);
-    }
+  rec.onend = () => {
+    listening = false;
+    mic.classList.remove("active");
+    setStatus("Tap mic to speak again");
   };
 
-  recognition.onerror = (event) => {
-    console.error("Recognition error:", event.error);
-    if (event.error === 'no-speech') {
-      setStatus("No speech detected. Click mic to try again.");
-    } else if (event.error === 'not-allowed') {
-      setStatus("❌ Microphone access denied. Please allow microphone.");
-      document.getElementById("startBtn").disabled = true;
-    } else {
-      setStatus("Error occurred. Click Start to retry.");
-    }
-    autoRestart = false;
-    isListening = false;
-    document.getElementById("micBtn").classList.remove("active");
-    document.getElementById("startBtn").disabled = false;
-    document.getElementById("stopBtn").disabled = true;
+  rec.onerror = () => {
+    stop();
+    setStatus("No speech detected");
   };
 
-  recognition.start();
+  rec.start();
 }
 
-function stopListening() {
-  autoRestart = false;
-  isListening = false;
-  if (recognition) {
-    recognition.stop();
-  }
-  document.getElementById("micBtn").classList.remove("active");
-  document.getElementById("startBtn").disabled = false;
-  document.getElementById("stopBtn").disabled = true;
-  setStatus("Stopped. Click Start to resume.");
+function stop(){
+  listening = false;
+  rec && rec.stop();
+  mic.classList.remove("active");
+  setStatus("Stopped");
 }
 
-function addMessage(type, text, isError = false, correction = null) {
-  const conv = document.getElementById("conversation");
-  const msg = document.createElement("div");
-  msg.className = `message ${type === "user" ? "user" : "ai"}`;
-  
-  const label = document.createElement("div");
-  label.className = "label";
-  label.textContent = type === "user" ? "You" : "AI Tutor";
-  
-  const content = document.createElement("div");
-  content.textContent = text;
-  
-  msg.appendChild(label);
-  msg.appendChild(content);
-  
-  if (isError && correction) {
-    const corrDiv = document.createElement("div");
-    corrDiv.className = "correction";
-    corrDiv.innerHTML = `<strong>✓ Corrected:</strong> ${correction}`;
-    msg.appendChild(corrDiv);
-  }
-  
-  conv.appendChild(msg);
-  conv.scrollTop = conv.scrollHeight;
-}
-
-async function processWithAI(text) {
-  setStatus("🤖 AI analyzing<span class='loading'></span>");
-  
-  try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        text,
-        context: conversationContext.slice(-5)
-      })
+async function send(text){
+  setStatus("Processing…");
+  try{
+    const r = await fetch(API,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ text })
     });
-
-    if (!response.ok) throw new Error("API error");
-
-    const data = await response.json();
-    
-    // Store context
-    conversationContext.push({ user: text, ai: data.reply });
-    
-    // Display AI response
-    addMessage("ai", data.reply, data.hasErrors, data.correction);
-    
-    // Speak the response
-    speak(data.reply);
-    
-    setStatus("🎤 Listening... Keep speaking");
-    
-  } catch (error) {
-    console.error("AI Error:", error);
-    addMessage("ai", "Sorry, I couldn't process that. Please try again.");
-    setStatus("Error. Click mic to continue.");
-    autoRestart = false;
-    stopListening();
+    const d = await r.json();
+    add("Tutor", d.reply);
+    speak(d.reply);
+    setStatus("Tap mic to continue");
+  }catch{
+    add("Tutor","Please repeat your sentence.");
+    setStatus("Tap mic to retry");
   }
 }
 
-function speak(text) {
+function add(who,text){
+  const div=document.createElement("div");
+  div.className="msg "+(who==="You"?"user":"ai");
+  div.innerHTML=`<div class="label">${who}</div>${text}`;
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function speak(text){
   speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = 0.9;
-  utterance.pitch = 1;
-  utterance.lang = "en-US";
-  
-  utterance.onstart = () => {
-    setStatus("🔊 AI speaking...");
-  };
-  
-  utterance.onend = () => {
-    if (autoRestart) {
-      setStatus("🎤 Listening... Continue speaking");
-    }
-  };
-  
-  utterance.onerror = (e) => {
-    console.error("Speech synthesis error:", e);
-  };
-  
-  speechSynthesis.speak(utterance);
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=0.9;
+  speechSynthesis.speak(u);
 }
 
-function clearChat() {
-  const conv = document.getElementById("conversation");
-  conv.innerHTML = `
-    <div class="message ai">
-      <div class="label">AI Tutor</div>
-      Chat cleared! Ready for a fresh start. Click the mic to begin.
-    </div>
-  `;
-  conversationContext = [];
-  setStatus("Click the microphone to start");
-  if (isListening) {
-    stopListening();
-  }
+function clearChat(){
+  chat.innerHTML="";
+  setStatus("Tap the microphone to speak");
 }
 
-function setStatus(html) {
-  document.getElementById("status").innerHTML = html;
-}
-
-// Request microphone permission on page load
-if (SR) {
-  navigator.mediaDevices.getUserMedia({ audio: true })
-    .then(() => {
-      console.log("Microphone access granted");
-    })
-    .catch((err) => {
-      console.warn("Microphone access denied:", err);
-      setStatus("⚠️ Please allow microphone access to use this app");
-    });
+function setStatus(t){
+  status.innerText=t;
 }
 </script>
 
