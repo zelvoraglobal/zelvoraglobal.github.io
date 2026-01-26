@@ -1,209 +1,135 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Zelvora AI Tutor</title>
-
-<style>
-body{
-  margin:0;
-  height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(135deg,#020617,#1e1b4b,#0f172a);
-  font-family:system-ui;
-  color:#e5e7eb;
-}
-.app{
-  width:360px;
-  background:rgba(255,255,255,.08);
-  backdrop-filter:blur(20px);
-  border-radius:20px;
-  padding:20px;
-  box-shadow:0 30px 70px rgba(0,0,0,.6);
-}
-h1{
-  text-align:center;
-  font-size:20px;
-  margin-bottom:6px;
-}
-#status{
-  text-align:center;
-  font-size:12px;
-  opacity:.7;
-}
-.mic{
-  width:80px;
-  height:80px;
-  margin:16px auto;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:36px;
-  cursor:pointer;
-  background:linear-gradient(135deg,#2563eb,#7c3aed);
-}
-.mic.active{
-  background:linear-gradient(135deg,#dc2626,#ef4444);
-}
-.chat{
-  background:rgba(0,0,0,.3);
-  border-radius:12px;
-  padding:10px;
-  height:260px;
-  overflow-y:auto;
-  font-size:14px;
-}
-.msg{
-  margin-bottom:10px;
-  padding:8px 10px;
-  border-radius:10px;
-}
-.user{background:rgba(37,99,235,.25)}
-.ai{background:rgba(124,58,237,.25)}
-.label{
-  font-size:10px;
-  opacity:.6;
-}
-.controls{
-  display:flex;
-  gap:8px;
-  margin-top:10px;
-}
-button{
-  flex:1;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  font-weight:600;
-  cursor:pointer;
-}
-.start{background:#2563eb;color:#fff}
-.stop{background:#dc2626;color:#fff}
-.clear{background:#444}
-.footer{
-  text-align:center;
-  font-size:11px;
-  opacity:.5;
-  margin-top:8px;
-}
-</style>
-</head>
-
-<body>
-<div class="app">
-  <h1>🎧 Zelvora AI Tutor</h1>
-  <div id="status">Tap mic to speak</div>
-
-  <div class="mic" id="mic" onclick="toggle()">🎤</div>
-
-  <div class="chat" id="chat">
-    <div class="msg ai">
-      <div class="label">Tutor</div>
-      Hello! Speak naturally and I’ll help you improve.
-    </div>
-  </div>
-
-  <div class="controls">
-    <button class="start" onclick="start()">Start</button>
-    <button class="stop" onclick="stop()">Stop</button>
-    <button class="clear" onclick="clearChat()">Clear</button>
-  </div>
-
-  <div class="footer">Zelvora • LLaMA 3 • Cloudflare Workers</div>
-</div>
-
 <script>
 const API_URL = "https://late-mouse-4aa2.zelvora-global.workers.dev";
 
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let rec, listening=false;
+if (!SR) {
+  alert("Speech Recognition not supported. Use Chrome or Edge.");
+}
+
+let recognition;
+let listening = false;
+let autoMode = false;
 let memory = JSON.parse(sessionStorage.getItem("zelvoraMemory") || "[]");
-const LIMIT = 10;
+const MAX_MEMORY = 10;
 
-function toggle(){ listening ? stop() : start(); }
+/* ---------- START HANDS-FREE MODE ---------- */
+function start() {
+  autoMode = true;
+  startListening();
+}
 
-function start(){
-  if(!SR || listening) return;
-  rec = new SR();
-  rec.lang="en-US";
-  rec.interimResults=false;
-  rec.continuous=false;
+/* ---------- STOP ---------- */
+function stop() {
+  autoMode = false;
+  listening = false;
+  if (recognition) recognition.stop();
+  setStatus("Stopped");
+}
 
-  rec.onstart=()=>{
-    listening=true;
+/* ---------- LISTEN ---------- */
+function startListening() {
+  if (listening || !autoMode) return;
+
+  recognition = new SR();
+  recognition.lang = "en-US";
+  recognition.continuous = false; // browser limitation
+  recognition.interimResults = false;
+
+  recognition.onstart = () => {
+    listening = true;
+    setStatus("🎤 Listening...");
     mic.classList.add("active");
-    status("Listening…");
   };
 
-  rec.onresult=e=>{
-    const text=e.results[0][0].transcript;
-    add("user",text);
-    send(text);
+  recognition.onresult = (e) => {
+    const text = e.results[0][0].transcript.trim();
+    addMessage("user", text);
+    recognition.stop(); // MUST stop before AI speaks
+    sendToAI(text);
   };
 
-  rec.onend=()=>{ listening=false; mic.classList.remove("active"); };
-  rec.start();
+  recognition.onerror = () => {
+    listening = false;
+    mic.classList.remove("active");
+    if (autoMode) setTimeout(startListening, 1000);
+  };
+
+  recognition.onend = () => {
+    listening = false;
+    mic.classList.remove("active");
+  };
+
+  recognition.start();
 }
 
-function stop(){
-  listening=false;
-  if(rec) rec.stop();
-  mic.classList.remove("active");
-  status("Stopped");
-}
+/* ---------- SEND TO AI ---------- */
+async function sendToAI(text) {
+  memory.push({ role: "user", content: text });
+  memory = memory.slice(-MAX_MEMORY);
+  sessionStorage.setItem("zelvoraMemory", JSON.stringify(memory));
 
-async function send(text){
-  memory.push({role:"user",content:text});
-  memory=memory.slice(-LIMIT);
-  sessionStorage.setItem("zelvoraMemory",JSON.stringify(memory));
+  setStatus("🤖 Thinking...");
 
-  status("Thinking…");
-
-  try{
-    const r=await fetch(API_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({text,history:memory})
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, history: memory })
     });
-    const d=await r.json();
-    add("ai",d.reply);
-    speak(d.reply);
 
-    memory.push({role:"assistant",content:d.reply});
-    memory=memory.slice(-LIMIT);
-    sessionStorage.setItem("zelvoraMemory",JSON.stringify(memory));
-  }catch{
-    add("ai","Temporary issue. Please continue.");
+    const data = await res.json();
+    addMessage("ai", data.reply);
+
+    memory.push({ role: "assistant", content: data.reply });
+    memory = memory.slice(-MAX_MEMORY);
+    sessionStorage.setItem("zelvoraMemory", JSON.stringify(memory));
+
+    speak(data.reply);
+
+  } catch {
+    addMessage("ai", "Temporary issue. Please continue.");
+    if (autoMode) setTimeout(startListening, 1000);
   }
 }
 
-function speak(t){
+/* ---------- AI VOICE ---------- */
+function speak(text) {
   speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(t);
-  u.rate=.9;
-  u.onend=()=>status("Your turn");
-  speechSynthesis.speak(u);
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "en-US";
+  utter.rate = 0.9;
+
+  utter.onstart = () => {
+    setStatus("🔊 AI speaking...");
+  };
+
+  utter.onend = () => {
+    setStatus("🎤 Listening...");
+    if (autoMode) {
+      setTimeout(startListening, 600); // IMPORTANT DELAY
+    }
+  };
+
+  speechSynthesis.speak(utter);
 }
 
-function add(type,text){
-  const div=document.createElement("div");
-  div.className="msg "+type;
-  div.innerHTML=`<div class="label">${type==="user"?"You":"Tutor"}</div>${text}`;
+/* ---------- UI ---------- */
+function addMessage(type, text) {
+  const div = document.createElement("div");
+  div.className = "msg " + type;
+  div.innerHTML = `<div class="label">${type === "user" ? "You" : "Tutor"}</div>${text}`;
   chat.appendChild(div);
-  chat.scrollTop=chat.scrollHeight;
+  chat.scrollTop = chat.scrollHeight;
 }
 
-function clearChat(){
-  memory=[];
+function clearChat() {
+  memory = [];
   sessionStorage.removeItem("zelvoraMemory");
-  chat.innerHTML=`<div class="msg ai"><div class="label">Tutor</div>New conversation started.</div>`;
+  chat.innerHTML = `<div class="msg ai"><div class="label">Tutor</div>New conversation started.</div>`;
 }
 
-function status(t){ document.getElementById("status").textContent=t; }
+function setStatus(t) {
+  document.getElementById("status").textContent = t;
+}
 </script>
-</body>
-</html>
