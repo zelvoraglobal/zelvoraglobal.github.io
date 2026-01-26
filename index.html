@@ -3,184 +3,405 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Zelvora Handfree Spoken English</title>
+<title>Zelvora AI English Tutor</title>
 
 <style>
-*{box-sizing:border-box}
+*{box-sizing:border-box;margin:0;padding:0}
 body{
-  margin:0;
-  height:100vh;
+  min-height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:linear-gradient(135deg,#0f172a,#020617);
+  background:linear-gradient(135deg,#0f172a,#1e1b4b,#020617);
   font-family:system-ui,-apple-system,Segoe UI,Roboto;
   color:#e5e7eb;
-}
-.card{
-  width:320px;
-  background:rgba(255,255,255,.06);
-  backdrop-filter:blur(16px);
-  border-radius:18px;
   padding:20px;
-  box-shadow:0 20px 50px rgba(0,0,0,.4);
+}
+.container{
+  width:100%;
+  max-width:440px;
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(20px);
+  border-radius:24px;
+  padding:24px;
+  box-shadow:0 25px 60px rgba(0,0,0,.5);
+}
+.header{
   text-align:center;
+  margin-bottom:20px;
 }
 h1{
-  font-size:18px;
-  margin:0 0 6px;
+  font-size:22px;
+  margin-bottom:6px;
+  background:linear-gradient(135deg,#60a5fa,#a78bfa);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
 }
 #status{
   font-size:13px;
-  opacity:.8;
-  margin-bottom:12px;
+  opacity:.85;
+  color:#cbd5e1;
+}
+.mic-container{
+  display:flex;
+  justify-content:center;
+  margin:20px 0;
 }
 .mic{
-  width:64px;
-  height:64px;
+  width:80px;
+  height:80px;
   border-radius:50%;
-  margin:10px auto;
-  background:#2563eb;
+  background:linear-gradient(135deg,#2563eb,#7c3aed);
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:28px;
+  font-size:36px;
+  cursor:pointer;
+  transition:all .3s ease;
+  box-shadow:0 10px 30px rgba(37,99,235,.4);
 }
-.box{
-  background:#020617;
-  border-radius:10px;
-  padding:10px;
+.mic:hover{
+  transform:scale(1.05);
+}
+.mic.active{
+  animation:pulse 1.5s ease-in-out infinite;
+  background:linear-gradient(135deg,#dc2626,#ef4444);
+}
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.7)}
+  50%{box-shadow:0 0 0 20px rgba(220,38,38,0)}
+}
+.conversation{
+  max-height:320px;
+  overflow-y:auto;
+  margin:16px 0;
+  padding:12px;
+  background:rgba(0,0,0,.3);
+  border-radius:14px;
   font-size:14px;
-  min-height:40px;
-  margin-bottom:8px;
-  text-align:left;
 }
-.buttons{
+.conversation::-webkit-scrollbar{width:6px}
+.conversation::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.2);
+  border-radius:3px;
+}
+.message{
+  margin-bottom:14px;
+  padding:10px 12px;
+  border-radius:12px;
+  line-height:1.5;
+}
+.user{
+  background:rgba(37,99,235,.2);
+  border-left:3px solid #2563eb;
+}
+.ai{
+  background:rgba(124,58,237,.2);
+  border-left:3px solid #7c3aed;
+}
+.error{
+  background:rgba(220,38,38,.15);
+  border-left:3px solid #dc2626;
+  font-size:13px;
+}
+.correction{
+  background:rgba(34,197,94,.15);
+  border-left:3px solid #22c55e;
+  font-size:13px;
+  margin-top:6px;
+}
+.label{
+  font-size:11px;
+  font-weight:600;
+  text-transform:uppercase;
+  opacity:.7;
+  margin-bottom:4px;
+}
+.controls{
   display:flex;
   gap:10px;
-  margin-top:10px;
 }
 button{
   flex:1;
   border:none;
-  padding:10px;
-  border-radius:10px;
+  padding:12px;
+  border-radius:12px;
   font-weight:600;
+  font-size:14px;
   cursor:pointer;
+  transition:all .2s;
 }
-.start{background:#2563eb;color:#fff}
-.stop{background:#dc2626;color:#fff}
-footer{
-  margin-top:12px;
+.start-btn{
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  color:#fff;
+}
+.start-btn:hover{
+  background:linear-gradient(135deg,#1d4ed8,#1e40af);
+}
+.stop-btn{
+  background:linear-gradient(135deg,#dc2626,#b91c1c);
+  color:#fff;
+}
+.stop-btn:hover{
+  background:linear-gradient(135deg,#b91c1c,#991b1b);
+}
+.clear-btn{
+  background:rgba(255,255,255,.1);
+  color:#e5e7eb;
+}
+.clear-btn:hover{
+  background:rgba(255,255,255,.15);
+}
+button:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+.footer{
+  margin-top:16px;
+  text-align:center;
   font-size:11px;
   opacity:.6;
+}
+.badge{
+  display:inline-block;
+  background:rgba(34,197,94,.2);
+  color:#22c55e;
+  padding:3px 8px;
+  border-radius:6px;
+  font-size:10px;
+  font-weight:600;
+  margin-left:6px;
+}
+.loading{
+  display:inline-block;
+  width:12px;
+  height:12px;
+  border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+  margin-left:6px;
+}
+@keyframes spin{
+  to{transform:rotate(360deg)}
 }
 </style>
 </head>
 
 <body>
 
-<div class="card">
-  <h1>🎧 Zelvora Handfree Tutor</h1>
-  <div id="status">Tap Start to speak</div>
-
-  <div class="mic">🎤</div>
-
-  <div class="box" id="userText">—</div>
-  <div class="box" id="aiReply">—</div>
-
-  <div class="buttons">
-    <button class="start" onclick="startListening()">Start Listening</button>
-    <button class="stop" onclick="stopListening()">Stop</button>
+<div class="container">
+  <div class="header">
+    <h1>🎧 Zelvora AI Tutor</h1>
+    <div id="status">Click the microphone to start</div>
   </div>
 
-  <footer>No AI API • Cloudflare Worker</footer>
+  <div class="mic-container">
+    <div class="mic" id="micBtn" onclick="toggleListening()">🎤</div>
+  </div>
+
+  <div class="conversation" id="conversation">
+    <div class="message ai">
+      <div class="label">AI Tutor</div>
+      Hello! I'm your AI English tutor. Start speaking and I'll help you improve your English in real-time. Click the microphone when ready!
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="start-btn" onclick="startListening()" id="startBtn">Start</button>
+    <button class="stop-btn" onclick="stopListening()" id="stopBtn" disabled>Stop</button>
+    <button class="clear-btn" onclick="clearChat()">Clear</button>
+  </div>
+
+  <div class="footer">
+    Powered by Advanced AI • 100% Free
+  </div>
 </div>
 
 <script>
-/* 🔗 YOUR WORKER URL */
-const API = "https://elvora-global.workers.dev";
+/* 🔗 YOUR CLOUDFLARE WORKER URL */
+const API_URL = "https://elvora-global.workers.dev";
 
-/* 🎙 Speech Recognition */
+/* 🎙️ Speech Recognition Setup */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition;
-let listening = false;
+let recognition = null;
+let isListening = false;
 let autoRestart = false;
+let conversationContext = [];
 
-function startListening(){
-  if(listening || !SR) return;
+/* Initialize */
+if (!SR) {
+  setStatus("❌ Speech recognition not supported. Use Chrome/Edge.");
+  document.getElementById("startBtn").disabled = true;
+}
+
+function toggleListening() {
+  if (isListening) {
+    stopListening();
+  } else {
+    startListening();
+  }
+}
+
+function startListening() {
+  if (!SR || isListening) return;
 
   recognition = new SR();
   recognition.lang = "en-US";
   recognition.continuous = false;
   recognition.interimResults = false;
 
-  recognition.onstart = ()=>{
-    listening = true;
+  recognition.onstart = () => {
+    isListening = true;
     autoRestart = true;
-    setStatus("Listening… speak naturally");
+    document.getElementById("micBtn").classList.add("active");
+    document.getElementById("startBtn").disabled = true;
+    document.getElementById("stopBtn").disabled = false;
+    setStatus("🎤 Listening... Speak now");
   };
 
-  recognition.onresult = e=>{
-    const text = e.results[0][0].transcript;
-    document.getElementById("userText").textContent = text;
-    sendToBackend(text);
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    addMessage("user", transcript);
+    processWithAI(transcript);
   };
 
-  recognition.onend = ()=>{
-    listening = false;
-    if(autoRestart) startListening();
+  recognition.onend = () => {
+    isListening = false;
+    document.getElementById("micBtn").classList.remove("active");
+    
+    if (autoRestart) {
+      setTimeout(() => {
+        if (autoRestart) startListening();
+      }, 1000);
+    }
   };
 
-  recognition.onerror = ()=>{
-    listening = false;
+  recognition.onerror = (event) => {
+    console.error("Recognition error:", event.error);
+    if (event.error === 'no-speech') {
+      setStatus("No speech detected. Click mic to try again.");
+    } else {
+      setStatus("Error occurred. Click Start to retry.");
+    }
     autoRestart = false;
-    setStatus("Tap Start to speak");
+    isListening = false;
+    document.getElementById("micBtn").classList.remove("active");
+    document.getElementById("startBtn").disabled = false;
+    document.getElementById("stopBtn").disabled = true;
   };
 
   recognition.start();
 }
 
-function stopListening(){
+function stopListening() {
   autoRestart = false;
-  listening = false;
-  if(recognition) recognition.stop();
-  setStatus("Stopped");
+  isListening = false;
+  if (recognition) {
+    recognition.stop();
+  }
+  document.getElementById("micBtn").classList.remove("active");
+  document.getElementById("startBtn").disabled = false;
+  document.getElementById("stopBtn").disabled = true;
+  setStatus("Stopped. Click Start to resume.");
 }
 
-/* 🌐 Backend Call */
-async function sendToBackend(text){
-  setStatus("Processing…");
-  try{
-    const res = await fetch(API,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({text})
+function addMessage(type, text, isError = false, correction = null) {
+  const conv = document.getElementById("conversation");
+  const msg = document.createElement("div");
+  msg.className = `message ${type === "user" ? "user" : "ai"}`;
+  
+  const label = document.createElement("div");
+  label.className = "label";
+  label.textContent = type === "user" ? "You" : "AI Tutor";
+  
+  const content = document.createElement("div");
+  content.textContent = text;
+  
+  msg.appendChild(label);
+  msg.appendChild(content);
+  
+  if (isError && correction) {
+    const corrDiv = document.createElement("div");
+    corrDiv.className = "correction";
+    corrDiv.innerHTML = `<strong>✓ Corrected:</strong> ${correction}`;
+    msg.appendChild(corrDiv);
+  }
+  
+  conv.appendChild(msg);
+  conv.scrollTop = conv.scrollHeight;
+}
+
+async function processWithAI(text) {
+  setStatus("🤖 AI analyzing<span class='loading'></span>");
+  
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        text,
+        context: conversationContext.slice(-5) // Last 5 exchanges for context
+      })
     });
-    const data = await res.json();
-    document.getElementById("aiReply").textContent = data.reply;
+
+    if (!response.ok) throw new Error("API error");
+
+    const data = await response.json();
+    
+    // Store context
+    conversationContext.push({ user: text, ai: data.reply });
+    
+    // Display AI response
+    addMessage("ai", data.reply, data.hasErrors, data.correction);
+    
+    // Speak the response
     speak(data.reply);
-  }catch{
-    document.getElementById("aiReply").textContent =
-      "Please repeat your sentence.";
-    setStatus("Tap Start to speak");
+    
+    setStatus("🎤 Listening... Keep speaking");
+    
+  } catch (error) {
+    console.error("AI Error:", error);
+    addMessage("ai", "Sorry, I couldn't process that. Please try again.");
+    setStatus("Error. Click mic to continue.");
   }
 }
 
-/* 🔊 Speech Synthesis */
-function speak(text){
+function speak(text) {
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.95;
-
-  u.onstart = ()=> setStatus("AI speaking…");
-  u.onend = ()=> setStatus("Tap Start to continue");
-
-  speechSynthesis.speak(u);
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.9;
+  utterance.pitch = 1;
+  utterance.lang = "en-US";
+  
+  utterance.onstart = () => {
+    setStatus("🔊 AI speaking...");
+  };
+  
+  utterance.onend = () => {
+    if (autoRestart) {
+      setStatus("🎤 Listening... Continue speaking");
+    }
+  };
+  
+  speechSynthesis.speak(utterance);
 }
 
-function setStatus(msg){
-  document.getElementById("status").textContent = msg;
+function clearChat() {
+  const conv = document.getElementById("conversation");
+  conv.innerHTML = `
+    <div class="message ai">
+      <div class="label">AI Tutor</div>
+      Chat cleared! Ready for a fresh start. Click the mic to begin.
+    </div>
+  `;
+  conversationContext = [];
+  setStatus("Click the microphone to start");
+}
+
+function setStatus(html) {
+  document.getElementById("status").innerHTML = html;
 }
 </script>
 
