@@ -1,209 +1,96 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Zelvora AI – Spoken English</title>
+export default {
+  async fetch(req) {
 
-<style>
-:root{
-  --blue:#38bdf8;
-  --glass:rgba(255,255,255,.08);
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-family:Inter,system-ui,-apple-system;
-  background:
-    radial-gradient(circle at 20% 10%, #1e3a8a, transparent 40%),
-    radial-gradient(circle at 80% 80%, #0ea5e9, transparent 40%),
-    linear-gradient(180deg,#020617,#020617);
-  color:#fff;
-  overflow:hidden;
-}
-.card{
-  width:92%;
-  max-width:360px;
-  background:var(--glass);
-  backdrop-filter:blur(18px);
-  border-radius:24px;
-  padding:22px;
-  border:1px solid rgba(255,255,255,.15);
-  box-shadow:0 30px 80px rgba(0,0,0,.5);
-  animation:float 6s ease-in-out infinite;
-}
-@keyframes float{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-6px)}
-}
-h3{
-  margin:0 0 6px;
-  font-weight:600;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.status{
-  font-size:13px;
-  color:#94a3b8;
-}
-.mic{
-  width:88px;
-  height:88px;
-  margin:18px auto;
-  border-radius:50%;
-  background:linear-gradient(135deg,#38bdf8,#2563eb);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:34px;
-  box-shadow:0 0 0 0 rgba(56,189,248,.6);
-  animation:pulse 2s infinite;
-}
-@keyframes pulse{
-  0%{box-shadow:0 0 0 0 rgba(56,189,248,.6)}
-  70%{box-shadow:0 0 0 22px rgba(56,189,248,0)}
-  100%{box-shadow:0 0 0 0 rgba(56,189,248,0)}
-}
-.box{
-  background:rgba(0,0,0,.25);
-  border-radius:14px;
-  padding:12px;
-  font-size:13px;
-  min-height:44px;
-  margin-top:10px;
-  white-space:pre-wrap;
-}
-.buttons{
-  margin-top:14px;
-  display:flex;
-  gap:10px;
-}
-button{
-  flex:1;
-  border:none;
-  border-radius:14px;
-  padding:11px;
-  font-weight:600;
-  cursor:pointer;
-}
-.start{background:#38bdf8;color:#020617}
-.stop{background:#ef4444;color:#fff}
-</style>
-</head>
-
-<body>
-<div class="card">
-  <h3>🎧 Zelvora AI</h3>
-  <div class="status" id="status">Tap Start to speak</div>
-
-  <div class="mic">🎤</div>
-
-  <div class="box" id="output">Waiting for your voice…</div>
-
-  <div class="buttons">
-    <button class="start" onclick="restart()">Start</button>
-    <button class="stop" onclick="stopAll()">Stop</button>
-  </div>
-</div>
-
-<script>
-/* ================= CONFIG ================= */
-const API = "https://zelvora-ai.zelvora-global.workers.dev";
-
-/* ================= STATE ================= */
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-const rec = new SR();
-
-rec.continuous = false;          // ✅ FINAL PATCH
-rec.interimResults = false;
-rec.lang = "en-US";
-
-let speaking = false;
-let blocked = false;
-
-/* ================= UI ================= */
-const statusEl = document.getElementById("status");
-const outputEl = document.getElementById("output");
-
-/* ================= SPEECH INPUT ================= */
-rec.onstart = () => {
-  statusEl.textContent = "Listening…";
-};
-
-rec.onresult = e => {
-  if (blocked) return;
-  const text = e.results[0][0].transcript.trim();
-  if (!text) return;
-  outputEl.textContent = text;
-  sendToAI(text);
-};
-
-rec.onerror = () => {
-  statusEl.textContent = "Mic error. Tap Start.";
-};
-
-/* ================= AI CALL ================= */
-async function sendToAI(text){
-  statusEl.textContent = "Thinking…";
-  try{
-    const res = await fetch(API,{
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({ text })
-    });
-    const data = await res.json();
-
-    if (!res.ok || !data.reply) {
-      throw new Error("AI error");
+    /* CORS */
+    if (req.method === "OPTIONS") {
+      return new Response(null, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+        }
+      });
     }
 
-    outputEl.textContent = data.reply;
-    speak(data.reply);
+    if (req.method !== "POST") {
+      return json({
+        status: "ok",
+        message: "Zelvora Spoken English (No AI API)",
+        timestamp: new Date().toISOString()
+      });
+    }
 
-  }catch{
-    blocked = true;
-    statusEl.textContent = "Connection issue. Tap Start to retry.";
+    try {
+      const { text } = await req.json();
+
+      if (!text || text.trim().length < 3) {
+        return reply("Please speak a complete sentence.");
+      }
+
+      const cleaned = cleanGrammar(text);
+      const improved = improveFluency(cleaned);
+      const tip = randomTip();
+
+      return reply(
+`Correction:
+${cleaned}
+
+Improved Sentence:
+${improved}
+
+Tip:
+${tip}`
+      );
+
+    } catch (e) {
+      return reply("Please repeat your sentence clearly.");
+    }
   }
+};
+
+/* ---------- Helpers ---------- */
+
+function reply(message) {
+  return json({ reply: message });
 }
 
-/* ================= SPEAK ================= */
-function speak(text){
-  speaking = true;
-  speechSynthesis.cancel();
-
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.95;
-
-  u.onend = () => {
-    speaking = false;
-    if (!blocked) {
-      statusEl.textContent = "Listening…";
-      rec.start();              // ✅ FINAL PATCH
+function json(data) {
+  return new Response(JSON.stringify(data), {
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
     }
-  };
-
-  speechSynthesis.speak(u);
+  });
 }
 
-/* ================= CONTROLS ================= */
-function restart(){
-  blocked = false;
-  outputEl.textContent = "Listening…";
-  statusEl.textContent = "Listening…";
-  rec.start();
+function cleanGrammar(text) {
+  return text
+    .replace(/\bi am not confident\b/i, "I am not confident")
+    .replace(/\bi cant\b/i, "I can't")
+    .replace(/\bhow can i help you\b/i, "How can I help you?")
+    .replace(/\bi need job\b/i, "I need a job")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^[a-z]/, c => c.toUpperCase());
 }
 
-function stopAll(){
-  blocked = true;
-  speechSynthesis.cancel();
-  rec.stop();
-  statusEl.textContent = "Stopped";
+function improveFluency(text) {
+  if (text.toLowerCase().includes("not confident")) {
+    return "I am not confident speaking English yet, but I am learning.";
+  }
+  if (text.toLowerCase().includes("need a job")) {
+    return "I am currently looking for a suitable job opportunity.";
+  }
+  return text;
 }
-</script>
-</body>
-</html>
+
+function randomTip() {
+  const tips = [
+    "Speak slowly and clearly.",
+    "Do not worry about mistakes.",
+    "Practice speaking every day.",
+    "Listen to English conversations.",
+    "Focus on complete sentences."
+  ];
+  return tips[Math.floor(Math.random() * tips.length)];
+}
