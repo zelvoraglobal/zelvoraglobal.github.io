@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Zelvora – Hands-Free English Tutor</title>
+<title>Zelvora – English Tutor</title>
 
 <style>
 body{
@@ -111,7 +111,7 @@ button{
 footer{
   text-align:center;
   font-size:11px;
-  opacity:.6;
+  opacity:.5;
   margin-top:6px;
 }
 </style>
@@ -121,7 +121,7 @@ footer{
 
 <div class="app">
   <header>
-    <h1>🎧 Zelvora AI Tutor</h1>
+    <h1>🎧 Zelvora Tutor</h1>
     <div id="status">Tap Start and speak naturally</div>
   </header>
 
@@ -130,7 +130,7 @@ footer{
   <div class="chat" id="chat">
     <div class="msg ai">
       <div class="label">Tutor</div>
-      Hello! Speak naturally. I will correct and improve your English automatically.
+      Hello! Speak naturally. I’ll help improve your English.
     </div>
   </div>
 
@@ -140,19 +140,13 @@ footer{
     <button class="clear" onclick="clearChat()">Clear</button>
   </div>
 
-  <footer>Hands-free • Cloudflare LLaMA • Free</footer>
+  <footer>Zelvora</footer>
 </div>
 
 <script>
-/* 🔗 YOUR CLOUDFLARE WORKER */
 const API_URL = "https://late-mouse-4aa2.zelvora-global.workers.dev";
 
-/* 🎤 Speech Recognition */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-if(!SR){
-  alert("Speech Recognition not supported. Use Chrome / Edge.");
-}
-
 let recognition;
 let listening = false;
 let autoMode = false;
@@ -162,13 +156,11 @@ const MAX_MEMORY = 8;
 const chat = document.getElementById("chat");
 const mic = document.getElementById("mic");
 
-/* ---------- START ---------- */
 function start(){
   autoMode = true;
   startListening();
 }
 
-/* ---------- STOP ---------- */
 function stop(){
   autoMode = false;
   listening = false;
@@ -177,7 +169,6 @@ function stop(){
   setStatus("Stopped");
 }
 
-/* ---------- LISTEN ---------- */
 function startListening(){
   if(listening || !autoMode) return;
 
@@ -189,7 +180,7 @@ function startListening(){
   recognition.onstart = ()=>{
     listening = true;
     mic.classList.add("active");
-    setStatus("🎤 Listening...");
+    setStatus("Listening...");
   };
 
   recognition.onresult = e=>{
@@ -213,13 +204,12 @@ function startListening(){
   recognition.start();
 }
 
-/* ---------- AI ---------- */
 async function sendToAI(text){
   memory.push({role:"user",content:text});
   memory = memory.slice(-MAX_MEMORY);
   sessionStorage.setItem("zelvoraMemory",JSON.stringify(memory));
 
-  setStatus("🤖 Thinking...");
+  setStatus("Thinking...");
 
   try{
     const res = await fetch(API_URL,{
@@ -242,22 +232,20 @@ async function sendToAI(text){
   }
 }
 
-/* ---------- VOICE ---------- */
 function speak(text){
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.rate = 0.9;
 
-  u.onstart = ()=> setStatus("🔊 AI speaking...");
+  u.onstart = ()=> setStatus("Speaking...");
   u.onend = ()=>{
-    setStatus("🎤 Listening...");
+    setStatus("Listening...");
     if(autoMode) setTimeout(startListening,600);
   };
 
   speechSynthesis.speak(u);
 }
 
-/* ---------- UI ---------- */
 function addMessage(type,text){
   const div=document.createElement("div");
   div.className="msg "+type;
