@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+
+const token = {
+  plan: "monthly",
+  exp: Date.now() + THIRTY_DAYS,
+  uses: { spoken: 999999 }
+};
+
+localStorage.setItem("career_token", btoa(JSON.stringify(token)));
+location.href = "spoken-english.html";
+</script>
+
+<p>Payment successful. Redirecting…</p>
+</body>
+</html>
