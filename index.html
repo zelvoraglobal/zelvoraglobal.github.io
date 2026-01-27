@@ -1,185 +1,186 @@
-<script>
-(() => {
-  const t = localStorage.getItem("career_token");
-  if(!t) location.href = "spoken-english-gate.html";
-
-  try{
-    const d = JSON.parse(atob(t));
-    if(Date.now() > d.exp || d.uses.spoken <= 0){
-      location.href = "spoken-english-gate.html";
-    }
-  }catch{
-    location.href = "spoken-english-gate.html";
-  }
-})();
-</script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Zelvora Voice Tutor</title>
+<title>Zelvora AI | Career & Spoken English</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
+:root{
+  --bg:#020617;
+  --card:#0f172a;
+  --accent:#6366f1;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+}
+
+*{box-sizing:border-box}
 body{
   margin:0;
-  background:linear-gradient(135deg,#0f172a,#020617);
-  color:#e5e7eb;
-  font-family:system-ui;
+  font-family:'Plus Jakarta Sans',system-ui;
+  background:radial-gradient(circle at top,#0f172a,#020617);
+  color:var(--text);
+  min-height:100vh;
+}
+
+.nav{
+  padding:20px 8%;
   display:flex;
-  justify-content:center;
+  justify-content:space-between;
   align-items:center;
-  height:100vh;
+  border-bottom:1px solid rgba(255,255,255,.08);
 }
-.app{
-  width:100%;
-  max-width:420px;
-  background:rgba(255,255,255,.08);
-  backdrop-filter:blur(20px);
-  border-radius:22px;
-  padding:22px;
+.logo{
+  font-weight:800;
+  font-size:20px;
 }
-h1{text-align:center;font-size:20px}
-#status{text-align:center;font-size:13px;color:#94a3b8;margin:6px 0}
-.chat{
-  background:rgba(0,0,0,.3);
-  border-radius:14px;
-  padding:12px;
-  height:280px;
-  overflow:auto;
+.logo span{color:var(--accent)}
+.nav a{
+  color:var(--muted);
+  text-decoration:none;
+  margin-left:20px;
   font-size:14px;
 }
-.msg{margin-bottom:12px}
-.user{color:#93c5fd}
-.ai{color:#c4b5fd}
-.mic{
-  width:80px;height:80px;
-  border-radius:50%;
-  background:#2563eb;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:34px;
-  margin:18px auto;
+.nav a:hover{color:#fff}
+
+.hero{
+  max-width:1000px;
+  margin:auto;
+  padding:90px 20px 70px;
+  text-align:center;
 }
-.mic.active{background:#dc2626}
-button{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  background:#2563eb;
-  color:#fff;
-  font-weight:600;
+.hero h1{
+  font-size:clamp(2.2rem,5vw,3.5rem);
+  font-weight:800;
+  margin-bottom:16px;
+}
+.hero p{
+  color:var(--muted);
+  max-width:650px;
+  margin:auto;
+  line-height:1.6;
+}
+
+.grid{
+  max-width:1100px;
+  margin:auto;
+  padding:0 20px 100px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:24px;
+}
+
+.card{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:24px;
+  padding:28px;
+  backdrop-filter:blur(18px);
+  transition:.3s;
+}
+.card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(99,102,241,.5);
+}
+.card h3{
+  margin-top:0;
+  font-size:20px;
+}
+.card p{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.6;
+}
+.card a{
+  display:block;
+  margin-top:18px;
+  padding:14px;
+  text-align:center;
+  border-radius:14px;
+  text-decoration:none;
+  font-weight:700;
+}
+
+.primary{
+  background:var(--accent);
+  color:white;
+}
+.secondary{
+  border:1px solid rgba(255,255,255,.15);
+  color:white;
+}
+.secondary:hover{background:rgba(255,255,255,.08)}
+
+.footer{
+  text-align:center;
+  font-size:13px;
+  color:var(--muted);
+  padding:40px 0;
+  border-top:1px solid rgba(255,255,255,.08);
 }
 </style>
 </head>
 
 <body>
-<div class="app">
-  <h1>🎧 Zelvora Voice Tutor</h1>
-  <div id="status">Tap Start & speak freely</div>
 
-  <div class="chat" id="chat">
-    <div class="msg ai">Hi! Start speaking — I’ll listen and respond.</div>
+<div class="nav">
+  <div class="logo">ZELVORA <span>AI</span></div>
+  <div>
+    <a href="career-lab.html">Career Lab</a>
+    <a href="spoken-english-gate.html">Spoken English</a>
   </div>
-
-  <div class="mic" id="mic">🎤</div>
-  <button onclick="start()">Start</button>
 </div>
 
-<script>
-const API = "https://late-mouse-4aa2.zelvora-global.workers.dev";
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+<section class="hero">
+  <h1>AI-Powered Career & Language Coaching</h1>
+  <p>
+    Practice spoken English, attend real-time AI mock interviews,
+    and prepare for jobs with professional-grade feedback.
+  </p>
+</section>
 
-let recognition;
-let listening = false;
-let auto = false;
-let memory = [];
+<section class="grid">
 
-function start(){
-  auto = true;
-  listen();
-}
+  <div class="card">
+    <h3>🎧 Spoken English</h3>
+    <p>
+      Hands-free voice practice with instant AI feedback on fluency,
+      grammar, and confidence.
+    </p>
+    <a href="spoken-english-gate.html" class="primary">
+      Start Spoken English
+    </a>
+  </div>
 
-function listen(){
-  if(listening || !auto) return;
+  <div class="card">
+    <h3>🎤 Live Mock Interview</h3>
+    <p>
+      Real interview simulation with AI follow-up questions,
+      resume-based evaluation, and final scoring.
+    </p>
+    <a href="evalis-interview.html" class="secondary">
+      Launch Interview
+    </a>
+  </div>
 
-  recognition = new SR();
-  recognition.lang = "en-US";
-  recognition.continuous = false;
-  recognition.interimResults = false;
+  <div class="card">
+    <h3>🧪 Career Lab</h3>
+    <p>
+      Resume audit, ATS optimization, interview practice,
+      and career tools — all in one place.
+    </p>
+    <a href="career-lab.html" class="secondary">
+      Enter Career Lab
+    </a>
+  </div>
 
-  recognition.onstart = ()=>{
-    listening=true;
-    mic.classList.add("active");
-    status("🎤 Listening…");
-  };
+</section>
 
-  recognition.onresult = e=>{
-    const text = e.results[0][0].transcript;
-    add("user",text);
-    recognition.stop();
-    send(text);
-  };
+<div class="footer">
+  © 2026 Zelvora / Simpatico HR · AI Career Platform
+</div>
 
-  recognition.onend = ()=>{
-    listening=false;
-    mic.classList.remove("active");
-  };
-
-  recognition.onerror = ()=>{
-    listening=false;
-    mic.classList.remove("active");
-    setTimeout(listen,1000);
-  };
-
-  recognition.start();
-}
-
-async function send(text){
-  status("🤖 Thinking…");
-
-  memory.push({ role:"user", content:text });
-  memory = memory.slice(-10);
-
-  try{
-    const r = await fetch(API,{
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({ text, history: memory })
-    });
-    const d = await r.json();
-
-    add("ai",d.reply);
-    memory.push({ role:"assistant", content:d.reply });
-    speak(d.reply);
-  }catch{
-    add("ai","Connection issue. Please continue.");
-    setTimeout(listen,800);
-  }
-}
-
-function speak(text){
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate=0.9;
-
-  u.onstart=()=>status("🔊 AI speaking…");
-  u.onend=()=>{ status("🎤 Listening…"); if(auto) setTimeout(listen,600); };
-
-  speechSynthesis.speak(u);
-}
-
-function add(who,text){
-  const div=document.createElement("div");
-  div.className="msg "+who;
-  div.textContent=(who==="user"?"You: ":"Tutor: ")+text;
-  chat.appendChild(div);
-  chat.scrollTop=chat.scrollHeight;
-}
-
-function status(t){ document.getElementById("status").textContent=t; }
-</script>
 </body>
 </html>
