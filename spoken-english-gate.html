@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Unlock Spoken English</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
 body{
   margin:0;
@@ -37,6 +38,7 @@ button{
 small{opacity:.7;display:block;margin-top:6px;}
 </style>
 </head>
+
 <body>
 
 <div class="box">
@@ -53,52 +55,16 @@ small{opacity:.7;display:block;margin-top:6px;}
 </div>
 
 <script>
-/* 🔹 Razorpay payment links */
-const TRIAL_LINK = "https://rzp.io/rzp/7AD6EVmP";   // replace with actual
-const MONTHLY_LINK = "https://rzp.io/rzp/dJqre5Sw"; // your ₹300 link
+/* 🔒 Razorpay payment links ONLY */
+const TRIAL_LINK = "https://rzp.io/rzp/7AD6EVmP";
+const MONTHLY_LINK = "https://rzp.io/rzp/dJqre5Sw";
 
 function trialPay(){
-  window.open(TRIAL_LINK, "_blank");
-
-  // simulate unlock after payment
-  
+  window.location.href = TRIAL_LINK;
 }
 
 function monthlyPay(){
-  window.open(MONTHLY_LINK, "_blank");
-  // simulate unlock after payment
-  
-}
-
-/* 🔐 TOKEN GENERATORS */
-
-function createTrialToken(){
-  const ONE_DAY = 24 * 60 * 60 * 1000;
-
-  const tokenData = {
-    plan: "trial",
-    exp: Date.now() + ONE_DAY,
-    uses: { spoken: 20 }
-  };
-
-  saveAndGo(tokenData);
-}
-
-function createMonthlyToken(){
-  const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
-
-  const tokenData = {
-    plan: "monthly",
-    exp: Date.now() + THIRTY_DAYS,
-    uses: { spoken: 999999 }
-  };
-
-  saveAndGo(tokenData);
-}
-
-function saveAndGo(data){
-  localStorage.setItem("career_token", btoa(JSON.stringify(data)));
-  location.href = "spoken-english.html";
+  window.location.href = MONTHLY_LINK;
 }
 </script>
 
