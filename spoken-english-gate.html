@@ -26,50 +26,79 @@ body{
 button{
   width:100%;
   padding:14px;
-  margin-top:10px;
+  margin-top:12px;
   border:none;
   border-radius:10px;
   font-weight:bold;
   cursor:pointer;
 }
-.pay{background:#22c55e;color:black;}
-.activate{background:#6366f1;color:white;}
-small{opacity:.7;display:block;margin-top:10px;}
+.trial{background:#22c55e;color:black;}
+.monthly{background:#6366f1;color:white;}
+small{opacity:.7;display:block;margin-top:6px;}
 </style>
 </head>
 <body>
 
 <div class="box">
   <h2>Spoken English</h2>
-  <p>Practice fluency with AI feedback</p>
+  <p>Practice fluency with AI tutor</p>
 
-  <button class="pay" onclick="pay()">Pay ₹300 / $11</button>
-  <small>Monthly access</small>
+  <!-- TRIAL -->
+  <button class="trial" onclick="trialPay()">₹10 Trial – 1 Day</button>
+  <small>20 speaking turns · 24 hours</small>
 
-  <button class="activate" onclick="unlock()">Activate Access</button>
+  <!-- MONTHLY -->
+  <button class="monthly" onclick="monthlyPay()">₹300 Monthly</button>
+  <small>Unlimited usage · 30 days</small>
 </div>
 
 <script>
-function pay(){
-  window.open("https://rzp.io/rzp/TRIAL10", "_blank"); 
-  // create a ₹10 Razorpay link for trial
+/* 🔹 Razorpay payment links */
+const TRIAL_LINK = "https://rzp.io/rzp/TRIAL10";   // replace with actual
+const MONTHLY_LINK = "https://rzp.io/rzp/dJqre5Sw"; // your ₹300 link
+
+function trialPay(){
+  window.open(TRIAL_LINK, "_blank");
+
+  // simulate unlock after payment
+  setTimeout(createTrialToken, 2000);
 }
 
-function unlock(){
-  // 🔐 1 DAY = 24 HOURS
+function monthlyPay(){
+  window.open(MONTHLY_LINK, "_blank");
+
+  // simulate unlock after payment
+  setTimeout(createMonthlyToken, 2000);
+}
+
+/* 🔐 TOKEN GENERATORS */
+
+function createTrialToken(){
   const ONE_DAY = 24 * 60 * 60 * 1000;
 
   const tokenData = {
     plan: "trial",
     exp: Date.now() + ONE_DAY,
-    uses: {
-      spoken: 20   // 👈 20 speaking turns
-    }
+    uses: { spoken: 20 }
   };
 
-  const token = btoa(JSON.stringify(tokenData));
-  localStorage.setItem("career_token", token);
+  saveAndGo(tokenData);
+}
 
+function createMonthlyToken(){
+  const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+
+  const tokenData = {
+    plan: "monthly",
+    exp: Date.now() + THIRTY_DAYS,
+    uses: { spoken: 999999 }
+  };
+
+  saveAndGo(tokenData);
+}
+
+function saveAndGo(data){
+  localStorage.setItem("career_token", btoa(JSON.stringify(data)));
   location.href = "spoken-english.html";
 }
 </script>
