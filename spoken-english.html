@@ -1,56 +1,3 @@
-<script>
-
-async function sendToAI(text){
-  const token = localStorage.getItem("career_token");
-
-  if(!token){
-    alert("Session expired. Please unlock again.");
-    location.href = "spoken-english-gate.html";
-    return;
-  }
-
-  memory.push({ role:"user", content:text });
-  memory = memory.slice(-MAX_MEMORY);
-  sessionStorage.setItem("zelvoraMemory", JSON.stringify(memory));
-
-  setStatus("🤖 Thinking...");
-
-  try{
-    const res = await fetch(API_URL,{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "Authorization":"Bearer " + token
-      },
-      body: JSON.stringify({ text, history: memory })
-    });
-
-    const data = await res.json();
-
-    // ❌ backend error handling
-    if(data.error){
-      alert(data.error);
-      location.href = "spoken-english-gate.html";
-      return;
-    }
-
-    // 🔁 update token with decremented usage
-    if(data.token){
-      localStorage.setItem("career_token", data.token);
-    }
-
-    addMsg("ai", data.reply);
-
-    memory.push({ role:"assistant", content:data.reply });
-    memory = memory.slice(-MAX_MEMORY);
-    sessionStorage.setItem("zelvoraMemory", JSON.stringify(memory));
-
-    speak(data.reply);
-
-  }catch{
-    addMsg("ai","Temporary connection issue. Please continue.");
-  }
-}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -78,24 +25,12 @@ body{
   padding:22px;
   box-shadow:0 30px 60px rgba(0,0,0,.6);
 }
-h2{
-  text-align:center;
-  margin-bottom:6px;
-}
-#status{
-  text-align:center;
-  font-size:13px;
-  color:#cbd5e1;
-  min-height:18px;
-}
+h2{text-align:center;margin-bottom:6px}
+#status{text-align:center;font-size:13px;color:#cbd5e1;min-height:18px}
 .mic{
-  width:80px;height:80px;
-  border-radius:50%;
-  background:#2563eb;
-  margin:18px auto;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  width:80px;height:80px;border-radius:50%;
+  background:#2563eb;margin:18px auto;
+  display:flex;align-items:center;justify-content:center;
   font-size:34px;
 }
 .mic.active{
@@ -114,26 +49,16 @@ h2{
   overflow-y:auto;
   font-size:14px;
 }
-.msg{
-  margin-bottom:12px;
-}
+.msg{margin-bottom:12px}
 .user{color:#93c5fd}
 .ai{color:#c4b5fd}
-.label{
-  font-size:11px;
-  opacity:.6;
-}
+.label{font-size:11px;opacity:.6}
 .controls{
-  display:flex;
-  gap:10px;
-  margin-top:14px;
+  display:flex;gap:10px;margin-top:14px
 }
 button{
-  flex:1;
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  font-weight:600;
+  flex:1;padding:12px;border:none;border-radius:12px;
+  font-weight:600;cursor:pointer
 }
 .start{background:#2563eb;color:#fff}
 .stop{background:#dc2626;color:#fff}
@@ -142,6 +67,23 @@ button{
 </head>
 
 <body>
+
+<script>
+/* 🔐 ACCESS GUARD (MUST BE FIRST) */
+(() => {
+  const t = localStorage.getItem("career_token");
+  if(!t) location.href = "spoken-english-gate.html";
+
+  try{
+    const d = JSON.parse(atob(t));
+    if(Date.now() > d.exp || !d.uses || d.uses.spoken <= 0){
+      location.href = "spoken-english-gate.html";
+    }
+  }catch{
+    location.href = "spoken-english-gate.html";
+  }
+})();
+</script>
 
 <div class="app">
   <h2>🎧 Zelvora AI Tutor</h2>
@@ -164,36 +106,20 @@ button{
 </div>
 
 <script>
-/* 🔗 YOUR WORKER URL */
+/* 🔗 BACKEND */
 const API_URL = "https://late-mouse-4aa2.zelvora-global.workers.dev";
 
 /* 🎙️ Speech Recognition */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition;
-let listening = false;
-let autoMode = false;
+let recognition, listening=false, autoMode=false;
 
 /* 🧠 Memory */
 let memory = JSON.parse(sessionStorage.getItem("zelvoraMemory") || "[]");
 const MAX_MEMORY = 10;
 
-/* 🔒 Wake Lock */
-let wakeLock = null;
-async function enableWakeLock(){
-  try{
-    if("wakeLock" in navigator){
-      wakeLock = await navigator.wakeLock.request("screen");
-    }
-  }catch(e){}
-}
-async function releaseWakeLock(){
-  if(wakeLock){ await wakeLock.release(); wakeLock=null; }
-}
-
 /* ▶️ START */
 function start(){
   autoMode = true;
-  enableWakeLock();
   startListening();
 }
 
@@ -201,7 +127,6 @@ function start(){
 function stop(){
   autoMode = false;
   listening = false;
-  releaseWakeLock();
   if(recognition) recognition.stop();
   setStatus("Stopped");
   mic.classList.remove("active");
@@ -214,7 +139,6 @@ function startListening(){
   recognition = new SR();
   recognition.lang = "en-US";
   recognition.continuous = false;
-  recognition.interimResults = false;
 
   recognition.onstart = ()=>{
     listening = true;
@@ -243,32 +167,52 @@ function startListening(){
   recognition.start();
 }
 
-/* 🤖 SEND TO AI */
+/* 🤖 SEND TO AI (CORRECT + AUTH) */
 async function sendToAI(text){
-  memory.push({role:"user",content:text});
+  const token = localStorage.getItem("career_token");
+  if(!token){
+    location.href = "spoken-english-gate.html";
+    return;
+  }
+
+  memory.push({ role:"user", content:text });
   memory = memory.slice(-MAX_MEMORY);
-  sessionStorage.setItem("zelvoraMemory",JSON.stringify(memory));
+  sessionStorage.setItem("zelvoraMemory", JSON.stringify(memory));
 
   setStatus("🤖 Thinking...");
 
   try{
     const res = await fetch(API_URL,{
       method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ text, history: memory })
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer " + token
+      },
+      body: JSON.stringify({ text, history: memory })
     });
 
     const data = await res.json();
+
+    if(data.error){
+      alert(data.error);
+      location.href = "spoken-english-gate.html";
+      return;
+    }
+
+    if(data.token){
+      localStorage.setItem("career_token", data.token);
+    }
+
     addMsg("ai", data.reply);
 
-    memory.push({role:"assistant",content:data.reply});
+    memory.push({ role:"assistant", content:data.reply });
     memory = memory.slice(-MAX_MEMORY);
-    sessionStorage.setItem("zelvoraMemory",JSON.stringify(memory));
+    sessionStorage.setItem("zelvoraMemory", JSON.stringify(memory));
 
     speak(data.reply);
+
   }catch{
     addMsg("ai","Temporary issue. Please continue.");
-    if(autoMode) setTimeout(startListening,1200);
   }
 }
 
@@ -285,7 +229,6 @@ function speak(text){
       setTimeout(startListening,600);
     }
   };
-
   speechSynthesis.speak(u);
 }
 
@@ -297,11 +240,13 @@ function addMsg(type,text){
   chat.appendChild(d);
   chat.scrollTop=chat.scrollHeight;
 }
+
 function clearChat(){
   memory=[];
   sessionStorage.clear();
   chat.innerHTML=`<div class="msg ai"><div class="label">Tutor</div>New conversation started.</div>`;
 }
+
 function setStatus(t){ status.textContent=t; }
 
 /* 🎧 MIC PERMISSION */
