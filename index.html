@@ -1,3 +1,18 @@
+<script>
+(() => {
+  const t = localStorage.getItem("career_token");
+  if(!t) location.href = "spoken-english-gate.html";
+
+  try{
+    const d = JSON.parse(atob(t));
+    if(Date.now() > d.exp || d.uses.spoken <= 0){
+      location.href = "spoken-english-gate.html";
+    }
+  }catch{
+    location.href = "spoken-english-gate.html";
+  }
+})();
+</script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
