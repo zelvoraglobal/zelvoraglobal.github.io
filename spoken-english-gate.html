@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Unlock Spoken English</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#020617;
+  color:white;
+  font-family:system-ui,sans-serif;
+}
+.box{
+  background:#0f172a;
+  padding:28px;
+  border-radius:16px;
+  width:320px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,0.1);
+}
+button{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.pay{background:#22c55e;color:black;}
+.activate{background:#6366f1;color:white;}
+small{opacity:.7;display:block;margin-top:10px;}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Spoken English</h2>
+  <p>Practice fluency with AI feedback</p>
+
+  <button class="pay" onclick="pay()">Pay ₹300 / $11</button>
+  <small>Monthly access</small>
+
+  <button class="activate" onclick="unlock()">Activate Access</button>
+</div>
+
+<script>
+function pay(){
+  window.open("https://razorpay.me/@kodangattilfaisal","_blank");
+}
+
+async function unlock(){
+  const res = await fetch("https://evalis-ai.simpaticohrconsultancy.workers.dev",{
+    method:"POST",
+    body:new URLSearchParams({ mode:"activate" })
+  });
+  const data = await res.json();
+
+  if(data.token){
+    localStorage.setItem("career_token", data.token);
+    location.href = "spoken-english.html";
+  } else {
+    alert("Payment not verified yet.");
+  }
+}
+</script>
+
+</body>
+</html>
