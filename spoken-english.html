@@ -1,28 +1,56 @@
 <script>
-async function activate(){
+
+async function sendToAI(text){
+  const token = localStorage.getItem("career_token");
+
+  if(!token){
+    alert("Session expired. Please unlock again.");
+    location.href = "spoken-english-gate.html";
+    return;
+  }
+
+  memory.push({ role:"user", content:text });
+  memory = memory.slice(-MAX_MEMORY);
+  sessionStorage.setItem("zelvoraMemory", JSON.stringify(memory));
+
+  setStatus("🤖 Thinking...");
+
   try{
-    const res = await fetch(
-      "https://evalis-ai.simpaticohrconsultancy.workers.dev",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "activate" })
-      }
-    );
+    const res = await fetch(API_URL,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer " + token
+      },
+      body: JSON.stringify({ text, history: memory })
+    });
 
     const data = await res.json();
 
+    // ❌ backend error handling
+    if(data.error){
+      alert(data.error);
+      location.href = "spoken-english-gate.html";
+      return;
+    }
+
+    // 🔁 update token with decremented usage
     if(data.token){
       localStorage.setItem("career_token", data.token);
-      location.href = "spoken-english.html";
-    }else{
-      alert("❌ Payment not verified yet. Please complete payment.");
     }
+
+    addMsg("ai", data.reply);
+
+    memory.push({ role:"assistant", content:data.reply });
+    memory = memory.slice(-MAX_MEMORY);
+    sessionStorage.setItem("zelvoraMemory", JSON.stringify(memory));
+
+    speak(data.reply);
+
   }catch{
-    alert("⚠️ Server issue. Try again in a minute.");
+    addMsg("ai","Temporary connection issue. Please continue.");
   }
 }
-</script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
