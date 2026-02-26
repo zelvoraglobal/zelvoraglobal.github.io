@@ -4,598 +4,323 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zelvora — AI Voice English Tutor</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%2322d3ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='%230f172a'/%3E%3Cpath d='M32 38 C32 30 38 24 48 24 L72 24 C82 24 88 30 88 38 L88 42 L52 78 L88 78 L88 82 C88 90 82 96 72 96 L48 96 C38 96 32 90 32 82 L32 78 L68 42 L32 42 Z' fill='url(%23g)'/%3E%3Cpath d='M78 24 C84 24 90 20 94 14 C92 22 88 30 82 34 L78 24Z' fill='url(%23g)' opacity='0.8'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  :root {
-    --bg-primary: #0a0a0f;
-    --bg-secondary: #12121a;
-    --bg-card: #1a1a2e;
-    --bg-glass: rgba(26, 26, 46, 0.7);
-    --accent: #6c63ff;
-    --accent-glow: rgba(108, 99, 255, 0.3);
-    --accent-secondary: #00d4aa;
-    --text-primary: #f0f0f5;
-    --text-secondary: #8888a0;
-    --text-dim: #55556a;
-    --border: rgba(108, 99, 255, 0.15);
-    --danger: #ff4757;
-    --success: #00d4aa;
-    --warning: #ffa502;
+  :root{
+    --bg:#020617;--bg2:#0f172a;--card:#1e293b;
+    --accent:#6366f1;--accent2:#22d3ee;--accent3:#a855f7;
+    --success:#10b981;--warning:#f59e0b;--danger:#ef4444;
+    --text:#e5e7eb;--muted:#94a3b8;--dim:#475569;
+    --glass:rgba(255,255,255,.05);--border:rgba(255,255,255,.08);
   }
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    min-height: 100vh;
-    overflow-x: hidden;
+  body{
+    font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+    background:var(--bg);color:var(--text);
+    min-height:100vh;overflow-x:hidden;
   }
 
-  /* ===== AMBIENT BACKGROUND ===== */
-  .ambient-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    overflow: hidden;
-  }
+  /* ===== AMBIENT BG ===== */
+  .amb{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .amb .orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.15;animation:orbF 22s ease-in-out infinite alternate}
+  .amb .orb:nth-child(1){width:450px;height:450px;background:var(--accent);top:-12%;left:-8%}
+  .amb .orb:nth-child(2){width:350px;height:350px;background:var(--accent2);bottom:-8%;right:-8%;animation-delay:6s}
+  .amb .orb:nth-child(3){width:250px;height:250px;background:var(--accent3);top:45%;left:35%;animation-delay:12s}
+  @keyframes orbF{0%{transform:translate(0,0) scale(1)}33%{transform:translate(50px,-35px) scale(1.12)}66%{transform:translate(-25px,45px) scale(.92)}100%{transform:translate(15px,-15px) scale(1.04)}}
 
-  .ambient-bg .orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.15;
-    animation: orbFloat 20s ease-in-out infinite;
+  /* ===== NAV ===== */
+  .nav{
+    position:sticky;top:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 20px;
+    background:rgba(2,6,23,.85);backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border);
   }
+  .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text);font-weight:800;font-size:17px}
+  .nav-logo svg{width:30px;height:30px}
+  .nav-logo em{font-style:normal;font-size:10px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;margin-left:2px}
+  .nav-right{display:flex;align-items:center;gap:10px}
+  .nav-back{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;color:var(--muted);background:var(--glass);border:1px solid var(--border);text-decoration:none;transition:.2s}
+  .nav-back:hover{color:var(--text);border-color:var(--accent)}
+  .uses-badge{font-size:11px;color:var(--accent);background:rgba(99,102,241,.12);padding:5px 12px;border-radius:16px;font-weight:700}
 
-  .ambient-bg .orb:nth-child(1) {
-    width: 400px; height: 400px;
-    background: var(--accent);
-    top: -100px; left: -100px;
-    animation-delay: 0s;
-  }
-
-  .ambient-bg .orb:nth-child(2) {
-    width: 300px; height: 300px;
-    background: var(--accent-secondary);
-    bottom: -50px; right: -50px;
-    animation-delay: -7s;
-  }
-
-  .ambient-bg .orb:nth-child(3) {
-    width: 200px; height: 200px;
-    background: #ff6b9d;
-    top: 50%; left: 50%;
-    animation-delay: -14s;
-  }
-
-  @keyframes orbFloat {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    25% { transform: translate(50px, -30px) scale(1.1); }
-    50% { transform: translate(-20px, 50px) scale(0.9); }
-    75% { transform: translate(30px, 20px) scale(1.05); }
-  }
-
-  /* ===== LAYOUT ===== */
-  .app {
-    position: relative;
-    z-index: 1;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* ===== HEADER ===== */
-  .header {
-    text-align: center;
-    padding: 30px 0 20px;
-  }
-
-  .header .logo {
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 8px;
-  }
-
-  .header h1 {
-    font-size: 28px;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--text-primary), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .header .subtitle {
-    color: var(--text-secondary);
-    font-size: 14px;
-    margin-top: 6px;
-  }
+  /* ===== APP ===== */
+  .app{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:12px 16px;display:flex;flex-direction:column;min-height:calc(100vh - 58px)}
 
   /* ===== STATUS BAR ===== */
-  .status-bar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    padding: 12px 24px;
-    background: var(--bg-glass);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
+  .status-bar{
+    display:flex;align-items:center;justify-content:center;gap:16px;
+    padding:10px 20px;background:var(--glass);backdrop-filter:blur(16px);
+    border:1px solid var(--border);border-radius:14px;margin-bottom:14px;flex-wrap:wrap;
   }
+  .status-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
+  .status-dot{width:7px;height:7px;border-radius:50%;background:var(--dim);transition:.3s}
+  .status-dot.active{background:var(--success);box-shadow:0 0 8px var(--success)}
+  .status-dot.listening{background:var(--danger);box-shadow:0 0 8px var(--danger);animation:pulse 1s infinite}
+  .status-dot.speaking{background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse .8s infinite}
+  .status-dot.thinking{background:var(--warning);box-shadow:0 0 8px var(--warning);animation:pulse .5s infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
 
-  .status-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    color: var(--text-secondary);
+  /* ===== MODE SELECTOR ===== */
+  .mode-bar{
+    display:flex;gap:5px;justify-content:center;flex-wrap:wrap;
+    margin-bottom:14px;padding:0 4px;
   }
-
-  .status-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--text-dim);
-    transition: all 0.3s;
+  .mode-btn{
+    padding:7px 14px;border-radius:10px;font-size:12px;font-weight:600;
+    color:var(--muted);background:var(--glass);border:1px solid var(--border);
+    cursor:pointer;transition:.25s;font-family:inherit;white-space:nowrap;
   }
+  .mode-btn:hover{color:var(--text);border-color:rgba(99,102,241,.3)}
+  .mode-btn.active{color:var(--accent);background:rgba(99,102,241,.1);border-color:rgba(99,102,241,.35)}
 
-  .status-dot.active { background: var(--success); box-shadow: 0 0 8px var(--success); }
-  .status-dot.listening { background: var(--danger); box-shadow: 0 0 8px var(--danger); animation: pulse 1s infinite; }
-  .status-dot.speaking { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 0.8s infinite; }
-  .status-dot.thinking { background: var(--warning); box-shadow: 0 0 8px var(--warning); animation: pulse 0.5s infinite; }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.3); }
+  /* ===== VOICE SELECT ===== */
+  .voice-select-wrap{
+    display:flex;align-items:center;gap:6px;justify-content:center;
+    margin-bottom:10px;flex-wrap:wrap;
   }
-
-  .uses-badge {
-    background: rgba(108, 99, 255, 0.15);
-    color: var(--accent);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
+  .voice-select-wrap .label{font-size:11px;color:var(--dim)}
+  .voice-chip{
+    padding:5px 12px;border:1px solid var(--border);border-radius:14px;
+    font-size:11px;color:var(--muted);cursor:pointer;transition:.2s;
+    background:none;font-family:inherit;
   }
+  .voice-chip:hover,.voice-chip.selected{border-color:var(--accent);color:var(--accent);background:rgba(99,102,241,.08)}
 
   /* ===== VOICE ORB ===== */
-  .voice-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 0;
+  .voice-section{display:flex;flex-direction:column;align-items:center;padding:12px 0}
+
+  .orb-container{
+    position:relative;width:160px;height:160px;margin-bottom:16px;cursor:pointer;
+  }
+  .orb-main{
+    width:100%;height:100%;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    transition:.4s cubic-bezier(.175,.885,.32,1.275);position:relative;z-index:2;
+  }
+  .orb-main:hover{transform:scale(1.05)}
+  .orb-main .icon{font-size:42px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3));transition:.3s}
+
+  .orb-ring{
+    position:absolute;inset:-10px;border-radius:50%;
+    border:2px solid var(--accent);opacity:0;z-index:1;
   }
 
-  .voice-orb-container {
-    position: relative;
-    width: 180px;
-    height: 180px;
-    margin-bottom: 24px;
-    cursor: pointer;
-  }
+  /* ORB STATES */
+  .orb-container.idle .orb-main{background:radial-gradient(circle at 35% 35%,#3a3565,#1a1540)}
+  .orb-container.listening .orb-main{background:radial-gradient(circle at 35% 35%,var(--danger),#991b1b);animation:orbBreathe 1.5s ease-in-out infinite}
+  .orb-container.listening .orb-ring{opacity:1;border-color:var(--danger);animation:ringPulse 1.5s ease-out infinite}
+  .orb-container.thinking .orb-main{background:radial-gradient(circle at 35% 35%,var(--warning),#92400e);animation:orbSpin 2s linear infinite}
+  .orb-container.speaking .orb-main{background:radial-gradient(circle at 35% 35%,var(--success),#065f46);animation:orbBreathe .8s ease-in-out infinite}
+  .orb-container.speaking .orb-ring{opacity:1;border-color:var(--success);animation:ringPulse .8s ease-out infinite}
 
-  .voice-orb {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, var(--accent), #3d37a5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
-    z-index: 2;
-  }
+  @keyframes orbBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  @keyframes orbSpin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(.95)}100%{transform:rotate(360deg) scale(1)}}
+  @keyframes ringPulse{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.4);opacity:0}}
 
-  .voice-orb:hover { transform: scale(1.05); }
-
-  .voice-orb .icon {
-    font-size: 48px;
-    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
-    transition: all 0.3s;
-  }
-
-  .voice-orb-ring {
-    position: absolute;
-    inset: -10px;
-    border-radius: 50%;
-    border: 2px solid var(--accent);
-    opacity: 0;
-    z-index: 1;
-  }
-
-  /* STATES */
-  .voice-orb-container.idle .voice-orb {
-    background: radial-gradient(circle at 35% 35%, #4a4570, #2a2545);
-  }
-
-  .voice-orb-container.listening .voice-orb {
-    background: radial-gradient(circle at 35% 35%, var(--danger), #a52222);
-    animation: orbBreathe 1.5s ease-in-out infinite;
-  }
-
-  .voice-orb-container.listening .voice-orb-ring {
-    opacity: 1;
-    border-color: var(--danger);
-    animation: ringPulse 1.5s ease-out infinite;
-  }
-
-  .voice-orb-container.thinking .voice-orb {
-    background: radial-gradient(circle at 35% 35%, var(--warning), #b87800);
-    animation: orbSpin 2s linear infinite;
-  }
-
-  .voice-orb-container.speaking .voice-orb {
-    background: radial-gradient(circle at 35% 35%, var(--accent-secondary), #008866);
-    animation: orbBreathe 0.8s ease-in-out infinite;
-  }
-
-  .voice-orb-container.speaking .voice-orb-ring {
-    opacity: 1;
-    border-color: var(--accent-secondary);
-    animation: ringPulse 0.8s ease-out infinite;
-  }
-
-  @keyframes orbBreathe {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.06); }
-  }
-
-  @keyframes orbSpin {
-    0% { transform: rotate(0deg) scale(1); }
-    50% { transform: rotate(180deg) scale(0.95); }
-    100% { transform: rotate(360deg) scale(1); }
-  }
-
-  @keyframes ringPulse {
-    0% { transform: scale(1); opacity: 0.6; }
-    100% { transform: scale(1.4); opacity: 0; }
-  }
-
-  .voice-label {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    transition: color 0.3s;
-  }
-
-  .voice-sublabel {
-    font-size: 13px;
-    color: var(--text-secondary);
-  }
+  .orb-label{font-size:15px;font-weight:700;transition:color .3s}
+  .orb-sublabel{font-size:12px;color:var(--muted);margin-top:3px}
 
   /* ===== WAVEFORM ===== */
-  .waveform {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    height: 40px;
-    margin: 16px 0;
-  }
-
-  .waveform .bar {
-    width: 4px;
-    height: 8px;
-    background: var(--accent);
-    border-radius: 4px;
-    transition: height 0.1s;
-  }
-
-  .waveform.active .bar {
-    animation: waveBar 0.6s ease-in-out infinite;
-  }
-
-  .waveform .bar:nth-child(1) { animation-delay: 0s; }
-  .waveform .bar:nth-child(2) { animation-delay: 0.1s; }
-  .waveform .bar:nth-child(3) { animation-delay: 0.2s; }
-  .waveform .bar:nth-child(4) { animation-delay: 0.3s; }
-  .waveform .bar:nth-child(5) { animation-delay: 0.4s; }
-  .waveform .bar:nth-child(6) { animation-delay: 0.3s; }
-  .waveform .bar:nth-child(7) { animation-delay: 0.2s; }
-  .waveform .bar:nth-child(8) { animation-delay: 0.1s; }
-  .waveform .bar:nth-child(9) { animation-delay: 0s; }
-
-  @keyframes waveBar {
-    0%, 100% { height: 8px; }
-    50% { height: 32px; }
-  }
-
-  /* ===== CHAT AREA ===== */
-  .chat-area {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-height: 45vh;
-    scroll-behavior: smooth;
-  }
-
-  .chat-area::-webkit-scrollbar { width: 4px; }
-  .chat-area::-webkit-scrollbar-track { background: transparent; }
-  .chat-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-  .msg {
-    max-width: 85%;
-    padding: 14px 18px;
-    border-radius: 18px;
-    font-size: 14px;
-    line-height: 1.6;
-    animation: msgSlide 0.3s ease-out;
-    position: relative;
-  }
-
-  @keyframes msgSlide {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .msg.user {
-    align-self: flex-end;
-    background: linear-gradient(135deg, var(--accent), #5a52d5);
-    color: white;
-    border-bottom-right-radius: 6px;
-  }
-
-  .msg.ai {
-    align-self: flex-start;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    color: var(--text-primary);
-    border-bottom-left-radius: 6px;
-  }
-
-  .msg .timestamp {
-    font-size: 10px;
-    color: rgba(255,255,255,0.4);
-    margin-top: 6px;
-    display: block;
-  }
-
-  .msg.ai .timestamp { color: var(--text-dim); }
-
-  /* ===== CONTROLS ===== */
-  .controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    padding: 20px 0;
-    flex-wrap: wrap;
-  }
-
-  .ctrl-btn {
-    padding: 10px 20px;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: var(--bg-glass);
-    backdrop-filter: blur(10px);
-    color: var(--text-secondary);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .ctrl-btn:hover {
-    border-color: var(--accent);
-    color: var(--text-primary);
-    background: rgba(108, 99, 255, 0.1);
-  }
-
-  .ctrl-btn.active {
-    border-color: var(--accent);
-    background: rgba(108, 99, 255, 0.15);
-    color: var(--accent);
-  }
-
-  .ctrl-btn.danger:hover {
-    border-color: var(--danger);
-    color: var(--danger);
-    background: rgba(255, 71, 87, 0.1);
-  }
-
-  /* ===== VOICE SELECTOR ===== */
-  .voice-select-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-  }
-
-  .voice-chip {
-    padding: 6px 14px;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    font-size: 12px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.3s;
-    background: transparent;
-  }
-
-  .voice-chip:hover, .voice-chip.selected {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(108, 99, 255, 0.1);
-  }
-
-  /* ===== SETTINGS PANEL ===== */
-  .settings-panel {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 16px;
-    display: none;
-  }
-
-  .settings-panel.open { display: block; animation: msgSlide 0.3s ease-out; }
-
-  .setting-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .setting-row:last-child { border-bottom: none; }
-
-  .setting-label {
-    font-size: 13px;
-    color: var(--text-secondary);
-  }
-
-  .setting-value {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .speed-slider {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 120px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 4px;
-    outline: none;
-  }
-
-  .speed-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    background: var(--accent);
-    border-radius: 50%;
-    cursor: pointer;
-  }
-
-  .toggle {
-    width: 44px;
-    height: 24px;
-    background: var(--bg-secondary);
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    cursor: pointer;
-    position: relative;
-    transition: all 0.3s;
-  }
-
-  .toggle::after {
-    content: '';
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    background: var(--text-secondary);
-    border-radius: 50%;
-    top: 2px;
-    left: 2px;
-    transition: all 0.3s;
-  }
-
-  .toggle.on {
-    background: rgba(108, 99, 255, 0.3);
-    border-color: var(--accent);
-  }
-
-  .toggle.on::after {
-    left: 22px;
-    background: var(--accent);
-  }
+  .waveform{display:flex;align-items:center;justify-content:center;gap:3px;height:32px;margin:10px 0}
+  .waveform .bar{width:3.5px;height:7px;background:var(--accent);border-radius:4px;transition:height .1s}
+  .waveform.active .bar{animation:waveBar .55s ease-in-out infinite}
+  .waveform .bar:nth-child(1){animation-delay:0s}
+  .waveform .bar:nth-child(2){animation-delay:.08s}
+  .waveform .bar:nth-child(3){animation-delay:.16s}
+  .waveform .bar:nth-child(4){animation-delay:.24s}
+  .waveform .bar:nth-child(5){animation-delay:.32s}
+  .waveform .bar:nth-child(6){animation-delay:.24s}
+  .waveform .bar:nth-child(7){animation-delay:.16s}
+  .waveform .bar:nth-child(8){animation-delay:.08s}
+  .waveform .bar:nth-child(9){animation-delay:0s}
+  @keyframes waveBar{0%,100%{height:7px}50%{height:28px}}
 
   /* ===== LIVE TRANSCRIPT ===== */
-  .live-transcript {
-    text-align: center;
-    min-height: 24px;
-    font-size: 14px;
-    color: var(--text-dim);
-    font-style: italic;
-    padding: 8px;
-    transition: all 0.3s;
+  .live-transcript{
+    text-align:center;min-height:22px;font-size:13px;
+    color:var(--dim);font-style:italic;padding:6px 12px;transition:.3s;
+    max-width:600px;margin:0 auto;word-break:break-word;
   }
+  .live-transcript.active{color:var(--muted)}
 
-  .live-transcript.active {
-    color: var(--text-secondary);
+  /* ===== CHAT AREA ===== */
+  .chat-area{
+    flex:1;overflow-y:auto;padding:8px 0;
+    display:flex;flex-direction:column;gap:10px;
+    max-height:42vh;scroll-behavior:smooth;
   }
+  .chat-area::-webkit-scrollbar{width:3px}
+  .chat-area::-webkit-scrollbar-track{background:transparent}
+  .chat-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  .msg{
+    max-width:85%;padding:12px 16px;border-radius:16px;
+    font-size:13px;line-height:1.65;animation:msgSlide .3s ease-out;
+    position:relative;
+  }
+  @keyframes msgSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  .msg.user{
+    align-self:flex-end;
+    background:linear-gradient(135deg,var(--accent),#7c3aed);
+    color:#fff;border-bottom-right-radius:5px;
+  }
+  .msg.ai{
+    align-self:flex-start;
+    background:var(--card);border:1px solid var(--border);
+    color:var(--text);border-bottom-left-radius:5px;
+  }
+  .msg .ts{
+    font-size:10px;color:rgba(255,255,255,.35);
+    margin-top:5px;display:block;
+  }
+  .msg.ai .ts{color:var(--dim)}
+
+  /* ===== CONTROLS ===== */
+  .controls{
+    display:flex;align-items:center;justify-content:center;
+    gap:8px;padding:14px 0;flex-wrap:wrap;
+  }
+  .ctrl-btn{
+    padding:8px 16px;border:1px solid var(--border);border-radius:10px;
+    background:var(--glass);backdrop-filter:blur(8px);color:var(--muted);
+    font-size:12px;font-weight:600;cursor:pointer;transition:.25s;
+    font-family:inherit;display:flex;align-items:center;gap:5px;
+  }
+  .ctrl-btn:hover{border-color:var(--accent);color:var(--text);background:rgba(99,102,241,.06)}
+  .ctrl-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(99,102,241,.1)}
+  .ctrl-btn.danger:hover{border-color:var(--danger);color:var(--danger);background:rgba(239,68,68,.06)}
+
+  /* ===== SETTINGS PANEL ===== */
+  .settings-panel{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:16px;padding:18px;margin-bottom:12px;
+    display:none;animation:msgSlide .3s ease-out;
+  }
+  .settings-panel.open{display:block}
+  .setting-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:9px 0;border-bottom:1px solid var(--border);
+  }
+  .setting-row:last-child{border-bottom:none}
+  .setting-label{font-size:12px;color:var(--muted)}
+  .setting-value{display:flex;align-items:center;gap:8px}
+  .slider{
+    -webkit-appearance:none;appearance:none;width:110px;height:4px;
+    background:var(--border);border-radius:4px;outline:none;
+  }
+  .slider::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:16px;height:16px;
+    background:var(--accent);border-radius:50%;cursor:pointer;
+  }
+  .slider-val{font-size:11px;color:var(--accent);min-width:32px;text-align:right;font-weight:600}
+  .toggle{
+    width:40px;height:22px;background:var(--bg2);border-radius:11px;
+    border:1px solid var(--border);cursor:pointer;position:relative;transition:.3s;
+  }
+  .toggle::after{
+    content:'';position:absolute;width:16px;height:16px;
+    background:var(--muted);border-radius:50%;top:2px;left:2px;transition:.3s;
+  }
+  .toggle.on{background:rgba(99,102,241,.25);border-color:var(--accent)}
+  .toggle.on::after{left:20px;background:var(--accent)}
+
+  /* ===== SESSION STATS ===== */
+  .session-stats{
+    display:flex;justify-content:center;gap:16px;padding:8px 0;flex-wrap:wrap;
+  }
+  .stat-item{text-align:center}
+  .stat-item .val{font-size:18px;font-weight:800;color:var(--accent)}
+  .stat-item .lbl{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
 
   /* ===== RESPONSIVE ===== */
-  @media (max-width: 600px) {
-    .app { padding: 12px; }
-    .header h1 { font-size: 22px; }
-    .voice-orb-container { width: 140px; height: 140px; }
-    .voice-orb .icon { font-size: 36px; }
-    .chat-area { max-height: 35vh; }
-    .msg { max-width: 92%; font-size: 13px; }
+  @media(max-width:600px){
+    .app{padding:8px 10px}
+    .orb-container{width:130px;height:130px}
+    .orb-main .icon{font-size:34px}
+    .chat-area{max-height:32vh}
+    .msg{max-width:92%;font-size:12px;padding:10px 14px}
+    .mode-bar{gap:4px}
+    .mode-btn{padding:6px 10px;font-size:11px}
+    .controls{gap:6px}
+    .ctrl-btn{padding:7px 12px;font-size:11px}
+    .status-bar{padding:8px 12px;gap:10px}
+    .nav{padding:10px 14px}
   }
 </style>
 </head>
 <body>
 
 <!-- AMBIENT -->
-<div class="ambient-bg">
-  <div class="orb"></div>
-  <div class="orb"></div>
-  <div class="orb"></div>
+<div class="amb">
+  <div class="orb"></div><div class="orb"></div><div class="orb"></div>
 </div>
 
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <svg viewBox="0 0 200 200" fill="none">
+      <path d="M60 20 C35 20 20 35 20 60 L20 140 C20 165 35 180 60 180 L140 180 C165 180 180 165 180 140 L180 60 C180 35 165 20 140 20Z" fill="url(#ng)" opacity=".1"/>
+      <path d="M56 58 C56 48 63 42 74 42 L126 42 C137 42 144 48 144 58 L144 64 L82 126 L144 126 L144 142 C144 152 137 158 126 158 L74 158 C63 158 56 152 56 142 L56 136 L118 74 L56 74Z" fill="url(#ng)"/>
+      <path d="M134 42 C142 36 152 26 158 16 C156 28 150 42 142 50 L134 42Z" fill="url(#ng)" opacity=".75"/>
+      <defs><linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient></defs>
+    </svg>
+    ZELVORA <em>AI</em>
+  </a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-back">← Home</a>
+    <div class="uses-badge" id="usesBadge">∞ uses</div>
+  </div>
+</nav>
+
+<!-- APP -->
 <div class="app" id="app">
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="logo">✦ ZELVORA</div>
-    <h1>Voice English Tutor</h1>
-    <div class="subtitle">Hands-free AI conversation practice</div>
-  </div>
-
-  <!-- STATUS -->
+  <!-- STATUS BAR -->
   <div class="status-bar">
     <div class="status-item">
       <div class="status-dot" id="statusDot"></div>
       <span id="statusText">Ready</span>
     </div>
     <div class="status-item">
-      <span>🎯 Session:</span>
-      <span id="turnCount">0</span> turns
+      🎯 <span id="turnCount">0</span> turns
     </div>
-    <div class="uses-badge" id="usesBadge">∞ uses</div>
+    <div class="status-item">
+      ⏱️ <span id="sessionTime">0:00</span>
+    </div>
+    <div class="status-item">
+      🧠 <span id="modelLabel">—</span>
+    </div>
   </div>
 
-  <!-- VOICE SELECTOR -->
+  <!-- MODE SELECTOR -->
+  <div class="mode-bar">
+    <button class="mode-btn active" data-mode="conversation" onclick="switchMode(this)">💬 Conversation</button>
+    <button class="mode-btn" data-mode="debate" onclick="switchMode(this)">⚔️ Debate</button>
+    <button class="mode-btn" data-mode="roleplay" onclick="switchMode(this)">🎭 Roleplay</button>
+    <button class="mode-btn" data-mode="vocabulary" onclick="switchMode(this)">📚 Vocabulary</button>
+    <button class="mode-btn" data-mode="pronunciation" onclick="switchMode(this)">🗣️ Pronunciation</button>
+  </div>
+
+  <!-- VOICE SELECT -->
   <div class="voice-select-wrap" id="voiceSelector">
-    <span style="font-size:12px;color:var(--text-dim)">Voice:</span>
+    <span class="label">Voice:</span>
   </div>
 
   <!-- VOICE ORB -->
   <div class="voice-section">
-    <div class="voice-orb-container idle" id="orbContainer" onclick="toggleConversation()">
-      <div class="voice-orb">
+    <div class="orb-container idle" id="orbContainer" onclick="toggleConversation()">
+      <div class="orb-main">
         <span class="icon" id="orbIcon">🎙️</span>
       </div>
-      <div class="voice-orb-ring"></div>
+      <div class="orb-ring"></div>
     </div>
-    <div class="voice-label" id="voiceLabel">Tap to Start</div>
-    <div class="voice-sublabel" id="voiceSublabel">Begin hands-free conversation</div>
+    <div class="orb-label" id="orbLabel">Tap to Start</div>
+    <div class="orb-sublabel" id="orbSublabel">Begin hands-free conversation</div>
   </div>
 
   <!-- WAVEFORM -->
@@ -611,10 +336,19 @@
   <!-- CHAT -->
   <div class="chat-area" id="chatArea"></div>
 
+  <!-- SESSION STATS (shown after reset or end) -->
+  <div class="session-stats" id="sessionStats" style="display:none">
+    <div class="stat-item"><div class="val" id="statTurns">0</div><div class="lbl">Turns</div></div>
+    <div class="stat-item"><div class="val" id="statTime">0:00</div><div class="lbl">Duration</div></div>
+    <div class="stat-item"><div class="val" id="statWords">0</div><div class="lbl">Your Words</div></div>
+    <div class="stat-item"><div class="val" id="statMode">—</div><div class="lbl">Mode</div></div>
+  </div>
+
   <!-- CONTROLS -->
   <div class="controls">
     <button class="ctrl-btn" id="settingsBtn" onclick="toggleSettings()">⚙️ Settings</button>
-    <button class="ctrl-btn" id="autoBtn" onclick="toggleAutoListen()">🔄 Auto-Listen: ON</button>
+    <button class="ctrl-btn active" id="autoBtn" onclick="toggleAutoListen()">🔄 Auto: ON</button>
+    <button class="ctrl-btn" id="muteBtn" onclick="toggleMute()">🔊 Voice: ON</button>
     <button class="ctrl-btn danger" onclick="resetConversation()">🗑️ Reset</button>
   </div>
 
@@ -623,15 +357,22 @@
     <div class="setting-row">
       <span class="setting-label">Speech Speed</span>
       <div class="setting-value">
-        <input type="range" class="speed-slider" id="speedSlider" min="0.5" max="1.5" step="0.1" value="0.95">
-        <span id="speedVal" style="font-size:12px;color:var(--accent);min-width:30px">0.95x</span>
+        <input type="range" class="slider" id="speedSlider" min="0.5" max="1.5" step="0.05" value="0.95">
+        <span class="slider-val" id="speedVal">0.95x</span>
       </div>
     </div>
     <div class="setting-row">
       <span class="setting-label">Speech Pitch</span>
       <div class="setting-value">
-        <input type="range" class="speed-slider" id="pitchSlider" min="0.5" max="1.5" step="0.1" value="1.0">
-        <span id="pitchVal" style="font-size:12px;color:var(--accent);min-width:30px">1.0</span>
+        <input type="range" class="slider" id="pitchSlider" min="0.5" max="1.5" step="0.05" value="1.0">
+        <span class="slider-val" id="pitchVal">1.0</span>
+      </div>
+    </div>
+    <div class="setting-row">
+      <span class="setting-label">Silence Timeout</span>
+      <div class="setting-value">
+        <input type="range" class="slider" id="silenceSlider" min="2" max="10" step="1" value="4">
+        <span class="slider-val" id="silenceVal">4s</span>
       </div>
     </div>
     <div class="setting-row">
@@ -639,91 +380,109 @@
       <div class="toggle on" id="transcriptToggle" onclick="this.classList.toggle('on')"></div>
     </div>
     <div class="setting-row">
-      <span class="setting-label">Silence Timeout (sec)</span>
+      <span class="setting-label">Language</span>
       <div class="setting-value">
-        <input type="range" class="speed-slider" id="silenceSlider" min="2" max="10" step="1" value="4">
-        <span id="silenceVal" style="font-size:12px;color:var(--accent);min-width:30px">4s</span>
+        <select id="langSelect" style="background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:4px 8px;font-size:12px;font-family:inherit;outline:none">
+          <option value="en-US">🇺🇸 English (US)</option>
+          <option value="en-GB">🇬🇧 English (UK)</option>
+          <option value="en-AU">🇦🇺 English (AU)</option>
+          <option value="en-IN">🇮🇳 English (India)</option>
+        </select>
       </div>
     </div>
   </div>
 
 </div>
 
+<!-- ================================================================
+     JAVASCRIPT ENGINE
+     ================================================================ -->
 <script>
-/* ============================================================
-   ZELVORA VOICE ENGINE - Hands-Free Spoken English Tutor
-   ============================================================ */
+/* =================================================================
+   ZELVORA VOICE ENGINE — Hands-Free Spoken English Tutor (FINAL)
+   Connects to: Universal Worker.js v4
+   Module: "tutor"
+   ================================================================= */
 
-const API_URL = "https://late-mouse-4aa2.zelvora-global.workers.dev/"; // ← UPDATE THIS
+const API_URL = "https://your-worker.your-subdomain.workers.dev"; // ← UPDATE THIS
 
-// ===== STATE =====
-let state = {
+/* ===== STATE ===== */
+const state = {
   active: false,
-  phase: "idle", // idle | listening | thinking | speaking
+  phase: "idle",       // idle | listening | thinking | speaking
+  currentMode: "conversation", // conversation | debate | roleplay | vocabulary | pronunciation
   history: [],
   turns: 0,
+  totalUserWords: 0,
   autoListen: true,
+  muted: false,        // if true, show text only (no TTS)
   token: null,
   selectedVoice: null,
-  abortController: null,
+  startTime: null,
+  sessionTimer: null,
 };
 
-// ===== DOM =====
+/* ===== DOM REFS ===== */
 const $ = id => document.getElementById(id);
-const orbContainer = $("orbContainer");
-const orbIcon = $("orbIcon");
-const voiceLabel = $("voiceLabel");
-const voiceSublabel = $("voiceSublabel");
-const statusDot = $("statusDot");
-const statusText = $("statusText");
-const chatArea = $("chatArea");
-const waveform = $("waveform");
+const orbContainer   = $("orbContainer");
+const orbIcon        = $("orbIcon");
+const orbLabel       = $("orbLabel");
+const orbSublabel    = $("orbSublabel");
+const statusDot      = $("statusDot");
+const statusText     = $("statusText");
+const chatArea       = $("chatArea");
+const waveform       = $("waveform");
 const liveTranscript = $("liveTranscript");
-const turnCount = $("turnCount");
-const usesBadge = $("usesBadge");
-const speedSlider = $("speedSlider");
-const pitchSlider = $("pitchSlider");
-const silenceSlider = $("silenceSlider");
+const turnCount      = $("turnCount");
+const usesBadge      = $("usesBadge");
+const modelLabel     = $("modelLabel");
+const sessionTime    = $("sessionTime");
 
-// ===== INIT TOKEN =====
+
+/* ================================================================
+   TOKEN MANAGEMENT
+   ================================================================ */
 function initToken() {
   const stored = localStorage.getItem("zelvora_token");
   if (stored) {
     try {
-      const payload = JSON.parse(atob(stored));
-      if (Date.now() < payload.exp) {
+      const p = JSON.parse(atob(stored));
+      if (Date.now() < p.exp) {
         state.token = stored;
-        usesBadge.textContent = `${payload.uses.spoken} uses left`;
+        usesBadge.textContent = p.uses.spoken + " uses";
         return;
       }
-    } catch(e) {}
+    } catch (e) {}
   }
-  // Create demo token (30 day, 500 uses)
+  // Demo token: 500 uses, 30 days
   const demo = {
-    sub: "demo_user_" + Date.now(),
-    exp: Date.now() + 30 * 24 * 60 * 60 * 1000,
+    sub: "demo_" + Date.now(),
+    exp: Date.now() + 30 * 24 * 3600000,
     uses: { spoken: 500 }
   };
   state.token = btoa(JSON.stringify(demo));
   localStorage.setItem("zelvora_token", state.token);
-  usesBadge.textContent = "500 uses left";
+  usesBadge.textContent = "500 uses";
 }
 
-// ===== SPEECH RECOGNITION =====
+
+/* ================================================================
+   SPEECH RECOGNITION (STT)
+   ================================================================ */
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition = null;
 
 function setupRecognition() {
   if (!SpeechRecognition) {
-    voiceLabel.textContent = "Browser not supported";
-    voiceSublabel.textContent = "Use Chrome or Edge";
+    orbLabel.textContent = "Browser not supported";
+    orbSublabel.textContent = "Use Chrome, Edge, or Safari";
     return false;
   }
 
   recognition = new SpeechRecognition();
   recognition.continuous = true;
   recognition.interimResults = true;
-  recognition.lang = "en-US";
+  recognition.lang = $("langSelect").value;
   recognition.maxAlternatives = 1;
 
   let finalTranscript = "";
@@ -751,12 +510,12 @@ function setupRecognition() {
 
     // Reset silence timer
     clearTimeout(silenceTimer);
-    const silenceTimeout = parseInt(silenceSlider.value) * 1000;
+    const timeout = parseInt($("silenceSlider").value) * 1000;
     silenceTimer = setTimeout(() => {
       if (finalTranscript.trim().length > 2) {
         recognition.stop();
       }
-    }, silenceTimeout);
+    }, timeout);
   };
 
   recognition.onend = () => {
@@ -764,19 +523,19 @@ function setupRecognition() {
     if (state.phase === "listening" && finalTranscript.trim().length > 2) {
       processUserSpeech(finalTranscript.trim());
     } else if (state.active && state.phase === "listening") {
-      // No speech detected, restart
+      // No speech detected — restart
       startListening();
     }
   };
 
   recognition.onerror = (e) => {
-    console.log("Recognition error:", e.error);
+    console.warn("STT error:", e.error);
     if (e.error === "no-speech" && state.active) {
       setTimeout(() => startListening(), 500);
     } else if (e.error === "aborted") {
-      // Intentional stop
-    } else {
-      setPhase("idle");
+      // Intentional — do nothing
+    } else if (e.error === "network") {
+      addMessage("ai", "Network issue with speech recognition. Check your connection.");
     }
   };
 
@@ -785,26 +544,27 @@ function setupRecognition() {
 
 function startListening() {
   if (!recognition || state.phase === "speaking" || state.phase === "thinking") return;
-  try {
-    recognition.start();
-  } catch(e) {
-    // Already started
-  }
+  // Update language in case user changed it
+  recognition.lang = $("langSelect").value;
+  try { recognition.start(); } catch (e) { /* already started */ }
 }
 
 function stopListening() {
   if (recognition) {
-    try { recognition.stop(); } catch(e) {}
+    try { recognition.stop(); } catch (e) {}
   }
 }
 
-// ===== SPEECH SYNTHESIS (REALISTIC VOICE) =====
+
+/* ================================================================
+   SPEECH SYNTHESIS (TTS) — Realistic Voice
+   ================================================================ */
 function getVoices() {
   return new Promise(resolve => {
-    const voices = speechSynthesis.getVoices();
-    if (voices.length) return resolve(voices);
+    const v = speechSynthesis.getVoices();
+    if (v.length) return resolve(v);
     speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices());
-    setTimeout(() => resolve(speechSynthesis.getVoices()), 1000);
+    setTimeout(() => resolve(speechSynthesis.getVoices()), 1500);
   });
 }
 
@@ -813,27 +573,16 @@ async function populateVoices() {
   const selector = $("voiceSelector");
 
   // Prefer natural/premium voices
+  const keywords = ["Natural","Premium","Enhanced","Google","Samantha","Daniel","Karen","Moira","Rishi","Microsoft","Zira","David","Mark","Alex","Fiona","Tessa"];
   const preferred = voices.filter(v =>
-    v.lang.startsWith("en") && (
-      v.name.includes("Natural") ||
-      v.name.includes("Premium") ||
-      v.name.includes("Enhanced") ||
-      v.name.includes("Google") ||
-      v.name.includes("Samantha") ||
-      v.name.includes("Daniel") ||
-      v.name.includes("Karen") ||
-      v.name.includes("Moira") ||
-      v.name.includes("Rishi") ||
-      v.name.includes("Microsoft") ||
-      v.name.includes("Zira") ||
-      v.name.includes("David") ||
-      v.name.includes("Mark")
-    )
+    v.lang.startsWith("en") && keywords.some(k => v.name.includes(k))
   );
 
-  const voiceList = preferred.length > 0 ? preferred.slice(0, 6) : voices.filter(v => v.lang.startsWith("en")).slice(0, 6);
+  const list = preferred.length > 0
+    ? preferred.slice(0, 6)
+    : voices.filter(v => v.lang.startsWith("en")).slice(0, 6);
 
-  voiceList.forEach((v, i) => {
+  list.forEach((v, i) => {
     const chip = document.createElement("button");
     chip.className = "voice-chip" + (i === 0 ? " selected" : "");
     chip.textContent = v.name.replace(/Microsoft |Google |Apple /g, "").split(" ")[0];
@@ -847,33 +596,27 @@ async function populateVoices() {
     if (i === 0) state.selectedVoice = v;
   });
 
-  if (voiceList.length === 0) {
+  // Fallback
+  if (list.length === 0) {
     state.selectedVoice = voices.find(v => v.lang.startsWith("en")) || voices[0];
   }
 }
 
 function speak(text) {
   return new Promise((resolve) => {
+    // If muted, skip TTS
+    if (state.muted) {
+      resolve();
+      return;
+    }
+
     speechSynthesis.cancel();
     setPhase("speaking");
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.voice = state.selectedVoice;
-    utterance.rate = parseFloat(speedSlider.value);
-    utterance.pitch = parseFloat(pitchSlider.value);
-    utterance.volume = 1;
+    const rate = parseFloat($("speedSlider").value);
+    const pitch = parseFloat($("pitchSlider").value);
 
-    utterance.onend = () => {
-      setPhase("idle");
-      resolve();
-    };
-
-    utterance.onerror = () => {
-      setPhase("idle");
-      resolve();
-    };
-
-    // Chrome bug fix: break long text
+    // Chrome bug: break long text into sentences
     if (text.length > 200) {
       const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
       let i = 0;
@@ -885,33 +628,51 @@ function speak(text) {
         }
         const u = new SpeechSynthesisUtterance(sentences[i].trim());
         u.voice = state.selectedVoice;
-        u.rate = parseFloat(speedSlider.value);
-        u.pitch = parseFloat(pitchSlider.value);
+        u.rate = rate;
+        u.pitch = pitch;
+        u.volume = 1;
         u.onend = () => { i++; speakNext(); };
         u.onerror = () => { i++; speakNext(); };
         speechSynthesis.speak(u);
       }
       speakNext();
     } else {
-      speechSynthesis.speak(utterance);
+      const u = new SpeechSynthesisUtterance(text);
+      u.voice = state.selectedVoice;
+      u.rate = rate;
+      u.pitch = pitch;
+      u.volume = 1;
+      u.onend = () => { setPhase("idle"); resolve(); };
+      u.onerror = () => { setPhase("idle"); resolve(); };
+      speechSynthesis.speak(u);
     }
   });
 }
 
-// ===== AI API =====
-const res = await fetch(API_URL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${state.token}`
-  },
-  body: JSON.stringify({
-    text,
-    history: state.history.slice(-16),
-    mode: currentMode,    // "tutor" | "debate" | "roleplay" | "vocabulary"
-    quality: "fast"       // ← Speed priority for voice conversation
-  })
-});
+
+/* ================================================================
+   AI API — Connects to Universal Worker v4
+   ================================================================ */
+async function callAI(text) {
+  setPhase("thinking");
+
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${state.token}`,
+    },
+    body: JSON.stringify({
+      // Universal worker params
+      module: "tutor",
+      mode: state.currentMode,
+      quality: "fast",
+
+      // Content
+      text: text,
+      history: state.history.slice(-16),
+    })
+  });
 
   const data = await res.json();
 
@@ -923,115 +684,232 @@ const res = await fetch(API_URL, {
   if (data.token) {
     state.token = data.token;
     localStorage.setItem("zelvora_token", data.token);
-    if (data.remaining !== undefined) {
-      usesBadge.textContent = `${data.remaining} uses left`;
-    }
+  }
+
+  // Update UI
+  if (data.remaining !== undefined) {
+    usesBadge.textContent = data.remaining + " uses";
+  }
+  if (data.model) {
+    modelLabel.textContent = data.model.replace("llama-","L").replace("-instruct","").replace("-fast","⚡");
   }
 
   return data.reply;
 }
 
-// ===== CONVERSATION FLOW =====
+
+/* ================================================================
+   CONVERSATION FLOW
+   ================================================================ */
 async function processUserSpeech(text) {
   // Add user message
   addMessage("user", text);
   state.history.push({ role: "user", content: text });
   state.turns++;
+  state.totalUserWords += text.split(/\s+/).length;
   turnCount.textContent = state.turns;
   liveTranscript.textContent = "";
   liveTranscript.classList.remove("active");
 
   try {
+    // Get AI response
     const reply = await callAI(text);
+
+    // Add AI message
     addMessage("ai", reply);
     state.history.push({ role: "assistant", content: reply });
 
+    // Speak it
     await speak(reply);
 
     // Auto-listen for next turn
     if (state.active && state.autoListen) {
       setTimeout(() => startListening(), 400);
     }
+
   } catch (err) {
-    addMessage("ai", "I had a small hiccup. Say that again?");
+    console.error("AI error:", err);
+
+    let fallbackMsg = "I had a small hiccup. Could you say that again?";
+    if (err.message === "Usage limit reached") {
+      fallbackMsg = "You've used all your turns. Please upgrade your plan to continue.";
+      state.active = false;
+    } else if (err.message === "Access expired") {
+      fallbackMsg = "Your access has expired. Please renew to continue.";
+      state.active = false;
+    }
+
+    addMessage("ai", fallbackMsg);
+
     if (state.active && state.autoListen) {
-      setTimeout(() => startListening(), 1000);
+      await speak(fallbackMsg);
+      setTimeout(() => startListening(), 800);
     }
   }
 }
 
-// ===== TOGGLE CONVERSATION =====
+
+/* ================================================================
+   TOGGLE CONVERSATION (START/STOP)
+   ================================================================ */
 function toggleConversation() {
   if (state.active) {
-    // Stop
+    // === STOP ===
     state.active = false;
     stopListening();
     speechSynthesis.cancel();
+    clearInterval(state.sessionTimer);
     setPhase("idle");
-    voiceLabel.textContent = "Tap to Start";
-    voiceSublabel.textContent = "Begin hands-free conversation";
+    orbLabel.textContent = "Tap to Start";
+    orbSublabel.textContent = "Begin hands-free conversation";
   } else {
-    // Start
+    // === START ===
     if (!setupRecognition()) return;
-    state.active = true;
-    voiceLabel.textContent = "Listening...";
-    voiceSublabel.textContent = "Speak naturally";
 
-    // Greeting on first start
+    state.active = true;
+    state.startTime = Date.now();
+
+    // Session timer
+    state.sessionTimer = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+      const m = Math.floor(elapsed / 60);
+      const s = elapsed % 60;
+      sessionTime.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+    }, 1000);
+
+    // Mode-specific greetings
+    const greetings = {
+      conversation: "Hi there! I'm Zelvora, your English conversation partner. Just speak naturally and I'll help you improve. What would you like to talk about today?",
+      debate: "Welcome to debate practice! I'm Zelvora. Give me any topic and I'll take the opposing side. We'll sharpen both your arguments and your English. What topic should we debate?",
+      roleplay: "Hey! I'm Zelvora, ready for some roleplay practice. Set up a scenario for us — maybe a job interview, ordering at a restaurant, or a business meeting. What would you like to practice?",
+      vocabulary: "Hello! I'm Zelvora, your vocabulary coach. Let's have a conversation where I'll introduce advanced words naturally. Tell me about something you're interested in, and we'll build your word power!",
+      pronunciation: "Hi! I'm Zelvora, your pronunciation coach. Just speak naturally and I'll listen carefully for any sounds we can work on together. Go ahead — tell me about your day or anything on your mind.",
+    };
+
+    const greeting = greetings[state.currentMode] || greetings.conversation;
+
+    // First turn greeting
     if (state.turns === 0) {
-      const greeting = "Hi there! I'm Zelvora, your English conversation partner. Just speak naturally and I'll help you improve. What would you like to talk about today?";
       addMessage("ai", greeting);
       state.history.push({ role: "assistant", content: greeting });
       speak(greeting).then(() => {
         if (state.active) startListening();
       });
     } else {
+      orbLabel.textContent = "Listening...";
+      orbSublabel.textContent = "Speak naturally";
       startListening();
     }
   }
 }
 
-// ===== UI HELPERS =====
-function setPhase(phase) {
-  state.phase = phase;
-  orbContainer.className = `voice-orb-container ${phase}`;
 
-  const config = {
-    idle: { icon: "🎙️", dot: "", label: "Tap to Start", sub: "Begin conversation", status: "Ready", wave: false },
-    listening: { icon: "👂", dot: "listening", label: "Listening...", sub: "Speak naturally", status: "Listening", wave: true },
-    thinking: { icon: "🧠", dot: "thinking", label: "Thinking...", sub: "Processing your speech", status: "Processing", wave: false },
-    speaking: { icon: "🗣️", dot: "speaking", label: "Speaking", sub: "Zelvora is responding", status: "Speaking", wave: true },
+/* ================================================================
+   MODE SWITCHING
+   ================================================================ */
+function switchMode(el) {
+  const newMode = el.dataset.mode;
+  if (newMode === state.currentMode) return;
+
+  // Update UI
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  state.currentMode = newMode;
+
+  // Notify user
+  const modeNames = {
+    conversation: "💬 Free Conversation",
+    debate: "⚔️ Debate Practice",
+    roleplay: "🎭 Roleplay",
+    vocabulary: "📚 Vocabulary Builder",
+    pronunciation: "🗣️ Pronunciation Coach",
   };
 
-  const c = config[phase];
+  const modeTips = {
+    conversation: "Speak freely — I'll correct and coach you naturally.",
+    debate: "Give me a topic and I'll argue the opposite side!",
+    roleplay: "Set up a scenario and let's act it out.",
+    vocabulary: "I'll teach you advanced words during our chat.",
+    pronunciation: "I'll focus on how you say things and help you improve.",
+  };
+
+  addMessage("ai", `Switched to ${modeNames[newMode]}. ${modeTips[newMode]}`);
+
+  // If active, speak the mode change and continue
+  if (state.active) {
+    stopListening();
+    speechSynthesis.cancel();
+    speak(`${modeNames[newMode].replace(/[^\w\s]/g,'')} mode. ${modeTips[newMode]}`).then(() => {
+      if (state.active && state.autoListen) {
+        setTimeout(() => startListening(), 300);
+      }
+    });
+  }
+}
+
+
+/* ================================================================
+   UI HELPERS
+   ================================================================ */
+function setPhase(phase) {
+  state.phase = phase;
+  orbContainer.className = `orb-container ${phase}`;
+
+  const config = {
+    idle:      { icon: "🎙️", dot: "",         label: "Tap to Start",  sub: "Begin conversation",     status: "Ready",      wave: false },
+    listening: { icon: "👂", dot: "listening",  label: "Listening...",   sub: "Speak naturally",        status: "Listening",  wave: true  },
+    thinking:  { icon: "🧠", dot: "thinking",   label: "Thinking...",   sub: "Processing your speech", status: "Processing", wave: false },
+    speaking:  { icon: "🗣️", dot: "speaking",  label: "Speaking",      sub: "Zelvora is responding",  status: "Speaking",   wave: true  },
+  };
+
+  const c = config[phase] || config.idle;
   orbIcon.textContent = c.icon;
   statusDot.className = `status-dot ${c.dot || (state.active ? "active" : "")}`;
   statusText.textContent = c.status;
   waveform.classList.toggle("active", c.wave);
 
   if (state.active) {
-    voiceLabel.textContent = c.label;
-    voiceSublabel.textContent = c.sub;
+    orbLabel.textContent = c.label;
+    orbSublabel.textContent = c.sub;
   }
 }
 
 function addMessage(type, text) {
+  // Respect transcript toggle for user messages
   const showTranscript = $("transcriptToggle").classList.contains("on");
   if (!showTranscript && type === "user") return;
 
   const div = document.createElement("div");
   div.className = `msg ${type}`;
   const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  div.innerHTML = `${text}<span class="timestamp">${type === "ai" ? "🤖 Zelvora" : "🎤 You"} · ${time}</span>`;
+  const icon = type === "ai" ? "🤖 Zelvora" : "🎤 You";
+  div.innerHTML = `${escapeHtml(text)}<span class="ts">${icon} · ${time}</span>`;
   chatArea.appendChild(div);
   chatArea.scrollTop = chatArea.scrollHeight;
 }
 
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+
+/* ================================================================
+   CONTROL FUNCTIONS
+   ================================================================ */
 function toggleAutoListen() {
   state.autoListen = !state.autoListen;
   const btn = $("autoBtn");
-  btn.textContent = `🔄 Auto-Listen: ${state.autoListen ? "ON" : "OFF"}`;
+  btn.textContent = `🔄 Auto: ${state.autoListen ? "ON" : "OFF"}`;
   btn.classList.toggle("active", state.autoListen);
+}
+
+function toggleMute() {
+  state.muted = !state.muted;
+  const btn = $("muteBtn");
+  btn.textContent = state.muted ? "🔇 Voice: OFF" : "🔊 Voice: ON";
+  if (state.muted) speechSynthesis.cancel();
 }
 
 function toggleSettings() {
@@ -1039,32 +917,98 @@ function toggleSettings() {
 }
 
 function resetConversation() {
+  // Show session stats before clearing
+  if (state.turns > 0) {
+    const elapsed = state.startTime ? Math.floor((Date.now() - state.startTime) / 1000) : 0;
+    const m = Math.floor(elapsed / 60);
+    const s = elapsed % 60;
+
+    $("statTurns").textContent = state.turns;
+    $("statTime").textContent = `${m}:${s.toString().padStart(2, '0')}`;
+    $("statWords").textContent = state.totalUserWords;
+    $("statMode").textContent = state.currentMode;
+    $("sessionStats").style.display = "flex";
+
+    setTimeout(() => { $("sessionStats").style.display = "none"; }, 8000);
+  }
+
+  // Reset everything
   state.active = false;
   state.history = [];
   state.turns = 0;
+  state.totalUserWords = 0;
+  state.startTime = null;
+
   stopListening();
   speechSynthesis.cancel();
+  clearInterval(state.sessionTimer);
+
   chatArea.innerHTML = "";
   turnCount.textContent = "0";
+  sessionTime.textContent = "0:00";
+  modelLabel.textContent = "—";
   liveTranscript.textContent = "...";
+  liveTranscript.classList.remove("active");
+
   setPhase("idle");
-  voiceLabel.textContent = "Tap to Start";
-  voiceSublabel.textContent = "Begin hands-free conversation";
+  orbLabel.textContent = "Tap to Start";
+  orbSublabel.textContent = "Begin hands-free conversation";
 }
 
-// ===== SLIDER LISTENERS =====
-speedSlider.oninput = () => $("speedVal").textContent = speedSlider.value + "x";
-pitchSlider.oninput = () => $("pitchVal").textContent = pitchSlider.value;
-silenceSlider.oninput = () => $("silenceVal").textContent = silenceSlider.value + "s";
 
-// ===== INIT =====
+/* ================================================================
+   SLIDER EVENT LISTENERS
+   ================================================================ */
+$("speedSlider").oninput = function() { $("speedVal").textContent = this.value + "x"; };
+$("pitchSlider").oninput = function() { $("pitchVal").textContent = this.value; };
+$("silenceSlider").oninput = function() { $("silenceVal").textContent = this.value + "s"; };
+
+
+/* ================================================================
+   KEYBOARD SHORTCUTS
+   ================================================================ */
+document.addEventListener("keydown", (e) => {
+  // Space bar to toggle conversation (when not typing)
+  if (e.code === "Space" && e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+    e.preventDefault();
+    toggleConversation();
+  }
+  // Escape to stop
+  if (e.code === "Escape" && state.active) {
+    state.active = false;
+    stopListening();
+    speechSynthesis.cancel();
+    clearInterval(state.sessionTimer);
+    setPhase("idle");
+    orbLabel.textContent = "Tap to Start";
+    orbSublabel.textContent = "Press Space or tap to begin";
+  }
+});
+
+
+/* ================================================================
+   CHROME TTS KEEP-ALIVE WORKAROUND
+   ================================================================ */
+setInterval(() => {
+  if (state.phase === "speaking") {
+    speechSynthesis.resume();
+  }
+}, 5000);
+
+
+/* ================================================================
+   INIT
+   ================================================================ */
 initToken();
 populateVoices();
 
-// Keep speech synthesis alive (Chrome workaround)
-setInterval(() => {
-  if (state.phase === "speaking") speechSynthesis.resume();
-}, 5000);
+// Check browser support on load
+if (!SpeechRecognition) {
+  orbLabel.textContent = "Not Supported";
+  orbSublabel.textContent = "Please use Chrome, Edge, or Safari";
+  orbContainer.style.opacity = "0.5";
+  orbContainer.style.pointerEvents = "none";
+}
 </script>
 </body>
 </html>
