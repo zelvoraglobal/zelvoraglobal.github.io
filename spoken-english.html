@@ -899,21 +899,19 @@ function speak(text) {
 }
 
 // ===== AI API =====
-async function callAI(text) {
-  setPhase("thinking");
-
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${state.token}`
-    },
-    body: JSON.stringify({
-      text,
-      history: state.history.slice(-16),
-      mode: "tutor"
-    })
-  });
+const res = await fetch(API_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${state.token}`
+  },
+  body: JSON.stringify({
+    text,
+    history: state.history.slice(-16),
+    mode: currentMode,    // "tutor" | "debate" | "roleplay" | "vocabulary"
+    quality: "fast"       // ← Speed priority for voice conversation
+  })
+});
 
   const data = await res.json();
 
