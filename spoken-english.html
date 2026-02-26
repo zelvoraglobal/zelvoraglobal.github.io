@@ -2,258 +2,1071 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Zelvora AI Tutor</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zelvora — AI Voice English Tutor</title>
 <style>
-body{
-  margin:0;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:radial-gradient(circle at top,#0b1d3a,#020617);
-  font-family:system-ui;
-  color:#fff;
-}
-.app{
-  width:100%;
-  max-width:420px;
-  background:rgba(255,255,255,.08);
-  backdrop-filter:blur(18px);
-  border-radius:24px;
-  padding:22px;
-  box-shadow:0 30px 60px rgba(0,0,0,.6);
-}
-h2{text-align:center;margin-bottom:6px}
-#status{text-align:center;font-size:13px;color:#cbd5e1;min-height:18px}
-.mic{
-  width:80px;height:80px;border-radius:50%;
-  background:#2563eb;margin:18px auto;
-  display:flex;align-items:center;justify-content:center;
-  font-size:34px;
-}
-.mic.active{
-  background:#dc2626;
-  animation:pulse 1.4s infinite;
-}
-@keyframes pulse{
-  0%{box-shadow:0 0 0 0 rgba(220,38,38,.6)}
-  70%{box-shadow:0 0 0 20px rgba(220,38,38,0)}
-}
-.chat{
-  background:rgba(0,0,0,.3);
-  border-radius:14px;
-  padding:12px;
-  max-height:260px;
-  overflow-y:auto;
-  font-size:14px;
-}
-.msg{margin-bottom:12px}
-.user{color:#93c5fd}
-.ai{color:#c4b5fd}
-.label{font-size:11px;opacity:.6}
-.controls{
-  display:flex;gap:10px;margin-top:14px
-}
-button{
-  flex:1;padding:12px;border:none;border-radius:12px;
-  font-weight:600;cursor:pointer
-}
-.start{background:#2563eb;color:#fff}
-.stop{background:#dc2626;color:#fff}
-.clear{background:rgba(255,255,255,.12);color:#fff}
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-primary: #0a0a0f;
+    --bg-secondary: #12121a;
+    --bg-card: #1a1a2e;
+    --bg-glass: rgba(26, 26, 46, 0.7);
+    --accent: #6c63ff;
+    --accent-glow: rgba(108, 99, 255, 0.3);
+    --accent-secondary: #00d4aa;
+    --text-primary: #f0f0f5;
+    --text-secondary: #8888a0;
+    --text-dim: #55556a;
+    --border: rgba(108, 99, 255, 0.15);
+    --danger: #ff4757;
+    --success: #00d4aa;
+    --warning: #ffa502;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== AMBIENT BACKGROUND ===== */
+  .ambient-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .ambient-bg .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.15;
+    animation: orbFloat 20s ease-in-out infinite;
+  }
+
+  .ambient-bg .orb:nth-child(1) {
+    width: 400px; height: 400px;
+    background: var(--accent);
+    top: -100px; left: -100px;
+    animation-delay: 0s;
+  }
+
+  .ambient-bg .orb:nth-child(2) {
+    width: 300px; height: 300px;
+    background: var(--accent-secondary);
+    bottom: -50px; right: -50px;
+    animation-delay: -7s;
+  }
+
+  .ambient-bg .orb:nth-child(3) {
+    width: 200px; height: 200px;
+    background: #ff6b9d;
+    top: 50%; left: 50%;
+    animation-delay: -14s;
+  }
+
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(50px, -30px) scale(1.1); }
+    50% { transform: translate(-20px, 50px) scale(0.9); }
+    75% { transform: translate(30px, 20px) scale(1.05); }
+  }
+
+  /* ===== LAYOUT ===== */
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    text-align: center;
+    padding: 30px 0 20px;
+  }
+
+  .header .logo {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--text-primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header .subtitle {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-top: 6px;
+  }
+
+  /* ===== STATUS BAR ===== */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 12px 24px;
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    transition: all 0.3s;
+  }
+
+  .status-dot.active { background: var(--success); box-shadow: 0 0 8px var(--success); }
+  .status-dot.listening { background: var(--danger); box-shadow: 0 0 8px var(--danger); animation: pulse 1s infinite; }
+  .status-dot.speaking { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 0.8s infinite; }
+  .status-dot.thinking { background: var(--warning); box-shadow: 0 0 8px var(--warning); animation: pulse 0.5s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+  }
+
+  .uses-badge {
+    background: rgba(108, 99, 255, 0.15);
+    color: var(--accent);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* ===== VOICE ORB ===== */
+  .voice-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+  }
+
+  .voice-orb-container {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin-bottom: 24px;
+    cursor: pointer;
+  }
+
+  .voice-orb {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, var(--accent), #3d37a5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    z-index: 2;
+  }
+
+  .voice-orb:hover { transform: scale(1.05); }
+
+  .voice-orb .icon {
+    font-size: 48px;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+    transition: all 0.3s;
+  }
+
+  .voice-orb-ring {
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    opacity: 0;
+    z-index: 1;
+  }
+
+  /* STATES */
+  .voice-orb-container.idle .voice-orb {
+    background: radial-gradient(circle at 35% 35%, #4a4570, #2a2545);
+  }
+
+  .voice-orb-container.listening .voice-orb {
+    background: radial-gradient(circle at 35% 35%, var(--danger), #a52222);
+    animation: orbBreathe 1.5s ease-in-out infinite;
+  }
+
+  .voice-orb-container.listening .voice-orb-ring {
+    opacity: 1;
+    border-color: var(--danger);
+    animation: ringPulse 1.5s ease-out infinite;
+  }
+
+  .voice-orb-container.thinking .voice-orb {
+    background: radial-gradient(circle at 35% 35%, var(--warning), #b87800);
+    animation: orbSpin 2s linear infinite;
+  }
+
+  .voice-orb-container.speaking .voice-orb {
+    background: radial-gradient(circle at 35% 35%, var(--accent-secondary), #008866);
+    animation: orbBreathe 0.8s ease-in-out infinite;
+  }
+
+  .voice-orb-container.speaking .voice-orb-ring {
+    opacity: 1;
+    border-color: var(--accent-secondary);
+    animation: ringPulse 0.8s ease-out infinite;
+  }
+
+  @keyframes orbBreathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+  }
+
+  @keyframes orbSpin {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(0.95); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+
+  @keyframes ringPulse {
+    0% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+
+  .voice-label {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    transition: color 0.3s;
+  }
+
+  .voice-sublabel {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  /* ===== WAVEFORM ===== */
+  .waveform {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    height: 40px;
+    margin: 16px 0;
+  }
+
+  .waveform .bar {
+    width: 4px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: height 0.1s;
+  }
+
+  .waveform.active .bar {
+    animation: waveBar 0.6s ease-in-out infinite;
+  }
+
+  .waveform .bar:nth-child(1) { animation-delay: 0s; }
+  .waveform .bar:nth-child(2) { animation-delay: 0.1s; }
+  .waveform .bar:nth-child(3) { animation-delay: 0.2s; }
+  .waveform .bar:nth-child(4) { animation-delay: 0.3s; }
+  .waveform .bar:nth-child(5) { animation-delay: 0.4s; }
+  .waveform .bar:nth-child(6) { animation-delay: 0.3s; }
+  .waveform .bar:nth-child(7) { animation-delay: 0.2s; }
+  .waveform .bar:nth-child(8) { animation-delay: 0.1s; }
+  .waveform .bar:nth-child(9) { animation-delay: 0s; }
+
+  @keyframes waveBar {
+    0%, 100% { height: 8px; }
+    50% { height: 32px; }
+  }
+
+  /* ===== CHAT AREA ===== */
+  .chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 45vh;
+    scroll-behavior: smooth;
+  }
+
+  .chat-area::-webkit-scrollbar { width: 4px; }
+  .chat-area::-webkit-scrollbar-track { background: transparent; }
+  .chat-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .msg {
+    max-width: 85%;
+    padding: 14px 18px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.6;
+    animation: msgSlide 0.3s ease-out;
+    position: relative;
+  }
+
+  @keyframes msgSlide {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg.user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, var(--accent), #5a52d5);
+    color: white;
+    border-bottom-right-radius: 6px;
+  }
+
+  .msg.ai {
+    align-self: flex-start;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    border-bottom-left-radius: 6px;
+  }
+
+  .msg .timestamp {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 6px;
+    display: block;
+  }
+
+  .msg.ai .timestamp { color: var(--text-dim); }
+
+  /* ===== CONTROLS ===== */
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px 0;
+    flex-wrap: wrap;
+  }
+
+  .ctrl-btn {
+    padding: 10px 20px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-glass);
+    backdrop-filter: blur(10px);
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ctrl-btn:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+    background: rgba(108, 99, 255, 0.1);
+  }
+
+  .ctrl-btn.active {
+    border-color: var(--accent);
+    background: rgba(108, 99, 255, 0.15);
+    color: var(--accent);
+  }
+
+  .ctrl-btn.danger:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+    background: rgba(255, 71, 87, 0.1);
+  }
+
+  /* ===== VOICE SELECTOR ===== */
+  .voice-select-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .voice-chip {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s;
+    background: transparent;
+  }
+
+  .voice-chip:hover, .voice-chip.selected {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(108, 99, 255, 0.1);
+  }
+
+  /* ===== SETTINGS PANEL ===== */
+  .settings-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  .settings-panel.open { display: block; animation: msgSlide 0.3s ease-out; }
+
+  .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .setting-row:last-child { border-bottom: none; }
+
+  .setting-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .setting-value {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .speed-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 120px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    outline: none;
+  }
+
+  .speed-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .toggle {
+    width: 44px;
+    height: 24px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: var(--text-secondary);
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: all 0.3s;
+  }
+
+  .toggle.on {
+    background: rgba(108, 99, 255, 0.3);
+    border-color: var(--accent);
+  }
+
+  .toggle.on::after {
+    left: 22px;
+    background: var(--accent);
+  }
+
+  /* ===== LIVE TRANSCRIPT ===== */
+  .live-transcript {
+    text-align: center;
+    min-height: 24px;
+    font-size: 14px;
+    color: var(--text-dim);
+    font-style: italic;
+    padding: 8px;
+    transition: all 0.3s;
+  }
+
+  .live-transcript.active {
+    color: var(--text-secondary);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    .app { padding: 12px; }
+    .header h1 { font-size: 22px; }
+    .voice-orb-container { width: 140px; height: 140px; }
+    .voice-orb .icon { font-size: 36px; }
+    .chat-area { max-height: 35vh; }
+    .msg { max-width: 92%; font-size: 13px; }
+  }
 </style>
 </head>
-
 <body>
 
-<script>
-/* 🔐 ACCESS GUARD (MUST BE FIRST) */
-(() => {
-  const t = localStorage.getItem("career_token");
-  if(!t) location.href = "spoken-english-gate.html";
+<!-- AMBIENT -->
+<div class="ambient-bg">
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+</div>
 
-  try{
-    const d = JSON.parse(atob(t));
-    if(Date.now() > d.exp || !d.uses || d.uses.spoken <= 0){
-      location.href = "spoken-english-gate.html";
-    }
-  }catch{
-    location.href = "spoken-english-gate.html";
-  }
-})();
-</script>
+<div class="app" id="app">
 
-<div class="app">
-  <h2>🎧 Zelvora AI Tutor</h2>
-  <div id="status">Tap Start to speak</div>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">✦ ZELVORA</div>
+    <h1>Voice English Tutor</h1>
+    <div class="subtitle">Hands-free AI conversation practice</div>
+  </div>
 
-  <div class="mic" id="mic">🎤</div>
+  <!-- STATUS -->
+  <div class="status-bar">
+    <div class="status-item">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">Ready</span>
+    </div>
+    <div class="status-item">
+      <span>🎯 Session:</span>
+      <span id="turnCount">0</span> turns
+    </div>
+    <div class="uses-badge" id="usesBadge">∞ uses</div>
+  </div>
 
-  <div class="chat" id="chat">
-    <div class="msg ai">
-      <div class="label">Tutor</div>
-      Hello! Start speaking and I’ll help you improve your English.
+  <!-- VOICE SELECTOR -->
+  <div class="voice-select-wrap" id="voiceSelector">
+    <span style="font-size:12px;color:var(--text-dim)">Voice:</span>
+  </div>
+
+  <!-- VOICE ORB -->
+  <div class="voice-section">
+    <div class="voice-orb-container idle" id="orbContainer" onclick="toggleConversation()">
+      <div class="voice-orb">
+        <span class="icon" id="orbIcon">🎙️</span>
+      </div>
+      <div class="voice-orb-ring"></div>
+    </div>
+    <div class="voice-label" id="voiceLabel">Tap to Start</div>
+    <div class="voice-sublabel" id="voiceSublabel">Begin hands-free conversation</div>
+  </div>
+
+  <!-- WAVEFORM -->
+  <div class="waveform" id="waveform">
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+  </div>
+
+  <!-- LIVE TRANSCRIPT -->
+  <div class="live-transcript" id="liveTranscript">...</div>
+
+  <!-- CHAT -->
+  <div class="chat-area" id="chatArea"></div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="ctrl-btn" id="settingsBtn" onclick="toggleSettings()">⚙️ Settings</button>
+    <button class="ctrl-btn" id="autoBtn" onclick="toggleAutoListen()">🔄 Auto-Listen: ON</button>
+    <button class="ctrl-btn danger" onclick="resetConversation()">🗑️ Reset</button>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="settings-panel" id="settingsPanel">
+    <div class="setting-row">
+      <span class="setting-label">Speech Speed</span>
+      <div class="setting-value">
+        <input type="range" class="speed-slider" id="speedSlider" min="0.5" max="1.5" step="0.1" value="0.95">
+        <span id="speedVal" style="font-size:12px;color:var(--accent);min-width:30px">0.95x</span>
+      </div>
+    </div>
+    <div class="setting-row">
+      <span class="setting-label">Speech Pitch</span>
+      <div class="setting-value">
+        <input type="range" class="speed-slider" id="pitchSlider" min="0.5" max="1.5" step="0.1" value="1.0">
+        <span id="pitchVal" style="font-size:12px;color:var(--accent);min-width:30px">1.0</span>
+      </div>
+    </div>
+    <div class="setting-row">
+      <span class="setting-label">Show Transcript</span>
+      <div class="toggle on" id="transcriptToggle" onclick="this.classList.toggle('on')"></div>
+    </div>
+    <div class="setting-row">
+      <span class="setting-label">Silence Timeout (sec)</span>
+      <div class="setting-value">
+        <input type="range" class="speed-slider" id="silenceSlider" min="2" max="10" step="1" value="4">
+        <span id="silenceVal" style="font-size:12px;color:var(--accent);min-width:30px">4s</span>
+      </div>
     </div>
   </div>
 
-  <div class="controls">
-    <button class="start" onclick="start()">Start</button>
-    <button class="stop" onclick="stop()">Stop</button>
-    <button class="clear" onclick="clearChat()">Clear</button>
-  </div>
 </div>
 
 <script>
-/* 🔗 BACKEND */
-const API_URL = "https://late-mouse-4aa2.zelvora-global.workers.dev";
+/* ============================================================
+   ZELVORA VOICE ENGINE - Hands-Free Spoken English Tutor
+   ============================================================ */
 
-/* 🎙️ Speech Recognition */
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition, listening=false, autoMode=false;
+const API_URL = "https://your-worker.your-subdomain.workers.dev"; // ← UPDATE THIS
 
-/* 🧠 Memory */
-let memory = JSON.parse(sessionStorage.getItem("zelvoraMemory") || "[]");
-const MAX_MEMORY = 10;
+// ===== STATE =====
+let state = {
+  active: false,
+  phase: "idle", // idle | listening | thinking | speaking
+  history: [],
+  turns: 0,
+  autoListen: true,
+  token: null,
+  selectedVoice: null,
+  abortController: null,
+};
 
-/* ▶️ START */
-function start(){
-  autoMode = true;
-  startListening();
+// ===== DOM =====
+const $ = id => document.getElementById(id);
+const orbContainer = $("orbContainer");
+const orbIcon = $("orbIcon");
+const voiceLabel = $("voiceLabel");
+const voiceSublabel = $("voiceSublabel");
+const statusDot = $("statusDot");
+const statusText = $("statusText");
+const chatArea = $("chatArea");
+const waveform = $("waveform");
+const liveTranscript = $("liveTranscript");
+const turnCount = $("turnCount");
+const usesBadge = $("usesBadge");
+const speedSlider = $("speedSlider");
+const pitchSlider = $("pitchSlider");
+const silenceSlider = $("silenceSlider");
+
+// ===== INIT TOKEN =====
+function initToken() {
+  const stored = localStorage.getItem("zelvora_token");
+  if (stored) {
+    try {
+      const payload = JSON.parse(atob(stored));
+      if (Date.now() < payload.exp) {
+        state.token = stored;
+        usesBadge.textContent = `${payload.uses.spoken} uses left`;
+        return;
+      }
+    } catch(e) {}
+  }
+  // Create demo token (30 day, 500 uses)
+  const demo = {
+    sub: "demo_user_" + Date.now(),
+    exp: Date.now() + 30 * 24 * 60 * 60 * 1000,
+    uses: { spoken: 500 }
+  };
+  state.token = btoa(JSON.stringify(demo));
+  localStorage.setItem("zelvora_token", state.token);
+  usesBadge.textContent = "500 uses left";
 }
 
-/* ⏹ STOP */
-function stop(){
-  autoMode = false;
-  listening = false;
-  if(recognition) recognition.stop();
-  setStatus("Stopped");
-  mic.classList.remove("active");
-}
+// ===== SPEECH RECOGNITION =====
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
 
-/* 🎤 LISTEN */
-function startListening(){
-  if(listening || !autoMode || !SR) return;
+function setupRecognition() {
+  if (!SpeechRecognition) {
+    voiceLabel.textContent = "Browser not supported";
+    voiceSublabel.textContent = "Use Chrome or Edge";
+    return false;
+  }
 
-  recognition = new SR();
+  recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
   recognition.lang = "en-US";
-  recognition.continuous = false;
+  recognition.maxAlternatives = 1;
 
-  recognition.onstart = ()=>{
-    listening = true;
-    mic.classList.add("active");
-    setStatus("🎤 Listening...");
+  let finalTranscript = "";
+  let silenceTimer = null;
+
+  recognition.onstart = () => {
+    setPhase("listening");
+    finalTranscript = "";
+    liveTranscript.textContent = "Listening...";
+    liveTranscript.classList.add("active");
   };
 
-  recognition.onresult = e=>{
-    const text = e.results[0][0].transcript.trim();
-    addMsg("user", text);
-    recognition.stop();
-    sendToAI(text);
+  recognition.onresult = (e) => {
+    let interim = "";
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) {
+        finalTranscript += t + " ";
+      } else {
+        interim = t;
+      }
+    }
+
+    liveTranscript.textContent = finalTranscript + interim;
+
+    // Reset silence timer
+    clearTimeout(silenceTimer);
+    const silenceTimeout = parseInt(silenceSlider.value) * 1000;
+    silenceTimer = setTimeout(() => {
+      if (finalTranscript.trim().length > 2) {
+        recognition.stop();
+      }
+    }, silenceTimeout);
   };
 
-  recognition.onend = ()=>{
-    listening = false;
-    mic.classList.remove("active");
+  recognition.onend = () => {
+    clearTimeout(silenceTimer);
+    if (state.phase === "listening" && finalTranscript.trim().length > 2) {
+      processUserSpeech(finalTranscript.trim());
+    } else if (state.active && state.phase === "listening") {
+      // No speech detected, restart
+      startListening();
+    }
   };
 
-  recognition.onerror = ()=>{
-    listening = false;
-    mic.classList.remove("active");
-    if(autoMode) setTimeout(startListening, 1000);
+  recognition.onerror = (e) => {
+    console.log("Recognition error:", e.error);
+    if (e.error === "no-speech" && state.active) {
+      setTimeout(() => startListening(), 500);
+    } else if (e.error === "aborted") {
+      // Intentional stop
+    } else {
+      setPhase("idle");
+    }
   };
 
-  recognition.start();
+  return true;
 }
 
-/* 🤖 SEND TO AI (CORRECT + AUTH) */
-async function sendToAI(text){
-  const token = localStorage.getItem("career_token");
-  if(!token){
-    location.href = "spoken-english-gate.html";
-    return;
-  }
-
-  memory.push({ role:"user", content:text });
-  memory = memory.slice(-MAX_MEMORY);
-  sessionStorage.setItem("zelvoraMemory", JSON.stringify(memory));
-
-  setStatus("🤖 Thinking...");
-
-  try{
-    const res = await fetch(API_URL,{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "Authorization":"Bearer " + token
-      },
-      body: JSON.stringify({ text, history: memory })
-    });
-
-    const data = await res.json();
-
-    if(data.error){
-      alert(data.error);
-      location.href = "spoken-english-gate.html";
-      return;
-    }
-
-    if(data.token){
-      localStorage.setItem("career_token", data.token);
-    }
-
-    addMsg("ai", data.reply);
-
-    memory.push({ role:"assistant", content:data.reply });
-    memory = memory.slice(-MAX_MEMORY);
-    sessionStorage.setItem("zelvoraMemory", JSON.stringify(memory));
-
-    speak(data.reply);
-
-  }catch{
-    addMsg("ai","Temporary issue. Please continue.");
+function startListening() {
+  if (!recognition || state.phase === "speaking" || state.phase === "thinking") return;
+  try {
+    recognition.start();
+  } catch(e) {
+    // Already started
   }
 }
 
-/* 🔊 SPEAK */
-function speak(text){
+function stopListening() {
+  if (recognition) {
+    try { recognition.stop(); } catch(e) {}
+  }
+}
+
+// ===== SPEECH SYNTHESIS (REALISTIC VOICE) =====
+function getVoices() {
+  return new Promise(resolve => {
+    const voices = speechSynthesis.getVoices();
+    if (voices.length) return resolve(voices);
+    speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices());
+    setTimeout(() => resolve(speechSynthesis.getVoices()), 1000);
+  });
+}
+
+async function populateVoices() {
+  const voices = await getVoices();
+  const selector = $("voiceSelector");
+
+  // Prefer natural/premium voices
+  const preferred = voices.filter(v =>
+    v.lang.startsWith("en") && (
+      v.name.includes("Natural") ||
+      v.name.includes("Premium") ||
+      v.name.includes("Enhanced") ||
+      v.name.includes("Google") ||
+      v.name.includes("Samantha") ||
+      v.name.includes("Daniel") ||
+      v.name.includes("Karen") ||
+      v.name.includes("Moira") ||
+      v.name.includes("Rishi") ||
+      v.name.includes("Microsoft") ||
+      v.name.includes("Zira") ||
+      v.name.includes("David") ||
+      v.name.includes("Mark")
+    )
+  );
+
+  const voiceList = preferred.length > 0 ? preferred.slice(0, 6) : voices.filter(v => v.lang.startsWith("en")).slice(0, 6);
+
+  voiceList.forEach((v, i) => {
+    const chip = document.createElement("button");
+    chip.className = "voice-chip" + (i === 0 ? " selected" : "");
+    chip.textContent = v.name.replace(/Microsoft |Google |Apple /g, "").split(" ")[0];
+    chip.title = v.name;
+    chip.onclick = () => {
+      document.querySelectorAll(".voice-chip").forEach(c => c.classList.remove("selected"));
+      chip.classList.add("selected");
+      state.selectedVoice = v;
+    };
+    selector.appendChild(chip);
+    if (i === 0) state.selectedVoice = v;
+  });
+
+  if (voiceList.length === 0) {
+    state.selectedVoice = voices.find(v => v.lang.startsWith("en")) || voices[0];
+  }
+}
+
+function speak(text) {
+  return new Promise((resolve) => {
+    speechSynthesis.cancel();
+    setPhase("speaking");
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.voice = state.selectedVoice;
+    utterance.rate = parseFloat(speedSlider.value);
+    utterance.pitch = parseFloat(pitchSlider.value);
+    utterance.volume = 1;
+
+    utterance.onend = () => {
+      setPhase("idle");
+      resolve();
+    };
+
+    utterance.onerror = () => {
+      setPhase("idle");
+      resolve();
+    };
+
+    // Chrome bug fix: break long text
+    if (text.length > 200) {
+      const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+      let i = 0;
+      function speakNext() {
+        if (i >= sentences.length) {
+          setPhase("idle");
+          resolve();
+          return;
+        }
+        const u = new SpeechSynthesisUtterance(sentences[i].trim());
+        u.voice = state.selectedVoice;
+        u.rate = parseFloat(speedSlider.value);
+        u.pitch = parseFloat(pitchSlider.value);
+        u.onend = () => { i++; speakNext(); };
+        u.onerror = () => { i++; speakNext(); };
+        speechSynthesis.speak(u);
+      }
+      speakNext();
+    } else {
+      speechSynthesis.speak(utterance);
+    }
+  });
+}
+
+// ===== AI API =====
+async function callAI(text) {
+  setPhase("thinking");
+
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${state.token}`
+    },
+    body: JSON.stringify({
+      text,
+      history: state.history.slice(-16),
+      mode: "tutor"
+    })
+  });
+
+  const data = await res.json();
+
+  if (data.error) {
+    throw new Error(data.error);
+  }
+
+  // Update token
+  if (data.token) {
+    state.token = data.token;
+    localStorage.setItem("zelvora_token", data.token);
+    if (data.remaining !== undefined) {
+      usesBadge.textContent = `${data.remaining} uses left`;
+    }
+  }
+
+  return data.reply;
+}
+
+// ===== CONVERSATION FLOW =====
+async function processUserSpeech(text) {
+  // Add user message
+  addMessage("user", text);
+  state.history.push({ role: "user", content: text });
+  state.turns++;
+  turnCount.textContent = state.turns;
+  liveTranscript.textContent = "";
+  liveTranscript.classList.remove("active");
+
+  try {
+    const reply = await callAI(text);
+    addMessage("ai", reply);
+    state.history.push({ role: "assistant", content: reply });
+
+    await speak(reply);
+
+    // Auto-listen for next turn
+    if (state.active && state.autoListen) {
+      setTimeout(() => startListening(), 400);
+    }
+  } catch (err) {
+    addMessage("ai", "I had a small hiccup. Say that again?");
+    if (state.active && state.autoListen) {
+      setTimeout(() => startListening(), 1000);
+    }
+  }
+}
+
+// ===== TOGGLE CONVERSATION =====
+function toggleConversation() {
+  if (state.active) {
+    // Stop
+    state.active = false;
+    stopListening();
+    speechSynthesis.cancel();
+    setPhase("idle");
+    voiceLabel.textContent = "Tap to Start";
+    voiceSublabel.textContent = "Begin hands-free conversation";
+  } else {
+    // Start
+    if (!setupRecognition()) return;
+    state.active = true;
+    voiceLabel.textContent = "Listening...";
+    voiceSublabel.textContent = "Speak naturally";
+
+    // Greeting on first start
+    if (state.turns === 0) {
+      const greeting = "Hi there! I'm Zelvora, your English conversation partner. Just speak naturally and I'll help you improve. What would you like to talk about today?";
+      addMessage("ai", greeting);
+      state.history.push({ role: "assistant", content: greeting });
+      speak(greeting).then(() => {
+        if (state.active) startListening();
+      });
+    } else {
+      startListening();
+    }
+  }
+}
+
+// ===== UI HELPERS =====
+function setPhase(phase) {
+  state.phase = phase;
+  orbContainer.className = `voice-orb-container ${phase}`;
+
+  const config = {
+    idle: { icon: "🎙️", dot: "", label: "Tap to Start", sub: "Begin conversation", status: "Ready", wave: false },
+    listening: { icon: "👂", dot: "listening", label: "Listening...", sub: "Speak naturally", status: "Listening", wave: true },
+    thinking: { icon: "🧠", dot: "thinking", label: "Thinking...", sub: "Processing your speech", status: "Processing", wave: false },
+    speaking: { icon: "🗣️", dot: "speaking", label: "Speaking", sub: "Zelvora is responding", status: "Speaking", wave: true },
+  };
+
+  const c = config[phase];
+  orbIcon.textContent = c.icon;
+  statusDot.className = `status-dot ${c.dot || (state.active ? "active" : "")}`;
+  statusText.textContent = c.status;
+  waveform.classList.toggle("active", c.wave);
+
+  if (state.active) {
+    voiceLabel.textContent = c.label;
+    voiceSublabel.textContent = c.sub;
+  }
+}
+
+function addMessage(type, text) {
+  const showTranscript = $("transcriptToggle").classList.contains("on");
+  if (!showTranscript && type === "user") return;
+
+  const div = document.createElement("div");
+  div.className = `msg ${type}`;
+  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  div.innerHTML = `${text}<span class="timestamp">${type === "ai" ? "🤖 Zelvora" : "🎤 You"} · ${time}</span>`;
+  chatArea.appendChild(div);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function toggleAutoListen() {
+  state.autoListen = !state.autoListen;
+  const btn = $("autoBtn");
+  btn.textContent = `🔄 Auto-Listen: ${state.autoListen ? "ON" : "OFF"}`;
+  btn.classList.toggle("active", state.autoListen);
+}
+
+function toggleSettings() {
+  $("settingsPanel").classList.toggle("open");
+}
+
+function resetConversation() {
+  state.active = false;
+  state.history = [];
+  state.turns = 0;
+  stopListening();
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.9;
-
-  u.onstart = ()=>setStatus("🔊 Speaking...");
-  u.onend = ()=>{
-    if(autoMode){
-      setStatus("🎤 Listening...");
-      setTimeout(startListening,600);
-    }
-  };
-  speechSynthesis.speak(u);
+  chatArea.innerHTML = "";
+  turnCount.textContent = "0";
+  liveTranscript.textContent = "...";
+  setPhase("idle");
+  voiceLabel.textContent = "Tap to Start";
+  voiceSublabel.textContent = "Begin hands-free conversation";
 }
 
-/* 🧾 UI */
-function addMsg(type,text){
-  const d=document.createElement("div");
-  d.className="msg "+type;
-  d.innerHTML=`<div class="label">${type==="user"?"You":"Tutor"}</div>${text}`;
-  chat.appendChild(d);
-  chat.scrollTop=chat.scrollHeight;
-}
+// ===== SLIDER LISTENERS =====
+speedSlider.oninput = () => $("speedVal").textContent = speedSlider.value + "x";
+pitchSlider.oninput = () => $("pitchVal").textContent = pitchSlider.value;
+silenceSlider.oninput = () => $("silenceVal").textContent = silenceSlider.value + "s";
 
-function clearChat(){
-  memory=[];
-  sessionStorage.clear();
-  chat.innerHTML=`<div class="msg ai"><div class="label">Tutor</div>New conversation started.</div>`;
-}
+// ===== INIT =====
+initToken();
+populateVoices();
 
-function setStatus(t){ status.textContent=t; }
-
-/* 🎧 MIC PERMISSION */
-navigator.mediaDevices.getUserMedia({audio:true}).catch(()=>{
-  setStatus("⚠️ Allow microphone to continue");
-});
+// Keep speech synthesis alive (Chrome workaround)
+setInterval(() => {
+  if (state.phase === "speaking") speechSynthesis.resume();
+}, 5000);
 </script>
-
 </body>
 </html>
