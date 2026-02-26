@@ -803,24 +803,21 @@ function speak(text) {
 }
 
 // ===== AI =====
-async function callIntAI(text, isStart = false) {
-  setIntPhase("thinking");
-
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${iv.token}`
-    },
-    body: JSON.stringify({
-      text: isStart ? "__start_interview__" : text,
-      history: iv.history.slice(-20),
-      mode: "interview",
-      job_role: iv.jobRole,
-      difficulty: iv.difficulty,
-    })
-  });
-
+const res = await fetch(API_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${iv.token}`
+  },
+  body: JSON.stringify({
+    text,
+    history: iv.history.slice(-20),
+    mode: "interview",
+    job_role: iv.jobRole,
+    difficulty: iv.difficulty,
+    quality: "best"       // ← Quality priority for interviews
+  })
+});
   const data = await res.json();
   if (data.error) throw new Error(data.error);
 
