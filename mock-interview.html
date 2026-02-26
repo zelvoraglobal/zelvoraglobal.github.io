@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zelvora AI — Elite Mock Interview</title>
+<meta name="description" content="AI-powered voice mock interview with real-time feedback, scoring, and career tips.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎤</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:#020617;--accent:#6366f1;--accent2:#22d3ee;
+  --success:#10b981;--warning:#f59e0b;--danger:#ef4444;
+  --glass:rgba(255,255,255,.05);--glass-b:rgba(255,255,255,.08);
+  --text:#e5e7eb;--muted:#94a3b8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;overflow-x:hidden;
+}
+
+/* ===== BG ===== */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg .orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.18;animation:orbF 20s ease-in-out infinite alternate}
+.bg .orb:nth-child(1){width:450px;height:450px;background:#6366f1;top:-12%;left:-8%}
+.bg .orb:nth-child(2){width:380px;height:380px;background:#22d3ee;bottom:-10%;right:-8%;animation-delay:6s}
+.bg .orb:nth-child(3){width:280px;height:280px;background:#f43f5e;top:45%;left:55%;animation-delay:12s}
+@keyframes orbF{0%{transform:translate(0,0) scale(1)}50%{transform:translate(50px,-30px) scale(1.12)}100%{transform:translate(-20px,30px) scale(.92)}}
+.dots{position:fixed;inset:0;z-index:0;background-image:radial-gradient(rgba(99,102,241,.12) 1px,transparent 1px);background-size:36px 36px;opacity:.4}
+
+/* ===== LAYOUT ===== */
+.app-wrap{
+  position:relative;z-index:1;
+  max-width:520px;margin:auto;
+  padding:20px 16px 40px;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+}
+
+/* ===== HEADER ===== */
+.header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 0 18px;
+}
+.back{
+  color:var(--muted);text-decoration:none;font-size:13px;
+  font-weight:600;display:flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:10px;
+  background:var(--glass);border:1px solid var(--glass-b);
+  transition:.2s;
+}
+.back:hover{color:#fff;background:rgba(255,255,255,.08)}
+.title{
+  font-size:20px;font-weight:800;
+  background:linear-gradient(135deg,#6366f1,#22d3ee);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+
+/* ===== SETUP PANEL ===== */
+.setup-panel{
+  background:var(--glass);border:1px solid var(--glass-b);
+  border-radius:24px;padding:28px;
+  backdrop-filter:blur(20px);
+  animation:fadeUp .5s ease;
+}
+.setup-panel h3{font-size:18px;font-weight:700;margin-bottom:4px}
+.setup-panel .sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+
+.form-group{margin-bottom:16px}
+.form-group label{
+  display:block;font-size:12px;font-weight:600;
+  color:var(--muted);text-transform:uppercase;
+  letter-spacing:.6px;margin-bottom:6px;
+}
+.form-group select,.form-group input,.form-group textarea{
+  width:100%;padding:12px 14px;border-radius:12px;
+  background:rgba(0,0,0,.3);border:1px solid var(--glass-b);
+  color:#fff;font-size:14px;font-family:inherit;
+  transition:.2s;
+}
+.form-group select:focus,.form-group input:focus,.form-group textarea:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(99,102,241,.15);
+}
+.form-group textarea{resize:vertical;min-height:70px}
+
+.setup-row{display:flex;gap:10px}
+.setup-row .form-group{flex:1}
+
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:16px;border:none;border-radius:14px;
+  font-size:15px;font-weight:700;cursor:pointer;
+  transition:all .25s;font-family:inherit;
+}
+.btn-go{
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;
+  box-shadow:0 8px 30px rgba(99,102,241,.3);margin-top:8px;
+}
+.btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(99,102,241,.45)}
+
+/* ===== INTERVIEW PANEL ===== */
+.interview-panel{
+  display:none;flex-direction:column;flex:1;gap:14px;
+  animation:fadeUp .5s ease;
+}
+.interview-panel.active{display:flex}
+
+/* Stats row */
+.stats-row{display:flex;gap:8px}
+.stat-card{
+  flex:1;background:var(--glass);border:1px solid var(--glass-b);
+  border-radius:14px;padding:10px;text-align:center;
+  transition:.2s;
+}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-val{font-size:22px;font-weight:800;color:var(--accent2)}
+.stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+/* Progress */
+.progress-wrap{
+  background:var(--glass);border-radius:14px;padding:12px 16px;
+  border:1px solid var(--glass-b);
+}
+.progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.progress-label{font-size:12px;font-weight:600;color:var(--muted)}
+.progress-count{font-size:12px;font-weight:700;color:var(--accent)}
+.progress-bar{height:6px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden}
+.progress-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#6366f1,#22d3ee);transition:width .5s cubic-bezier(.16,1,.3,1);width:0%}
+
+/* Voice Orb */
+.orb-area{display:flex;justify-content:center;align-items:center;height:150px;position:relative}
+.interview-orb{
+  width:110px;height:110px;border-radius:50%;
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);
+  display:flex;align-items:center;justify-content:center;
+  font-size:42px;cursor:pointer;position:relative;z-index:2;
+  transition:all .3s cubic-bezier(.16,1,.3,1);
+  box-shadow:0 0 50px rgba(99,102,241,.25);
+}
+.interview-orb:hover{transform:scale(1.04)}
+.interview-orb.listening{
+  background:linear-gradient(135deg,#ef4444,#f97316);
+  box-shadow:0 0 60px rgba(239,68,68,.3);
+  animation:breathe 2s ease-in-out infinite;
+}
+.interview-orb.thinking{
+  background:linear-gradient(135deg,#22d3ee,#6366f1);
+  animation:spin-g 1.5s linear infinite;
+}
+.interview-orb.speaking{
+  background:linear-gradient(135deg,#10b981,#22d3ee);
+  box-shadow:0 0 60px rgba(16,185,129,.3);
+  animation:breathe 1.2s ease-in-out infinite;
+}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+@keyframes spin-g{0%{box-shadow:0 0 30px rgba(34,211,238,.3)}50%{box-shadow:0 0 60px rgba(99,102,241,.5)}100%{box-shadow:0 0 30px rgba(34,211,238,.3)}}
+
+.rip{
+  position:absolute;border-radius:50%;width:110px;height:110px;
+  border:2px solid rgba(99,102,241,.25);
+  animation:ripOut 2s ease-out infinite;pointer-events:none;
+}
+.rip:nth-child(2){animation-delay:.6s}
+.rip:nth-child(3){animation-delay:1.2s}
+.rip.active{border-color:rgba(239,68,68,.25)}
+@keyframes ripOut{0%{transform:scale(1);opacity:.5}100%{transform:scale(2.5);opacity:0}}
+
+#status{
+  text-align:center;font-size:13px;color:var(--muted);
+  min-height:20px;transition:.3s;
+}
+#status.on{color:var(--accent2)}
+
+/* Chat */
+.chat{
+  flex:1;background:rgba(0,0,0,.2);border:1px solid var(--glass-b);
+  border-radius:18px;padding:14px;
+  max-height:300px;overflow-y:auto;font-size:13.5px;
+  scroll-behavior:smooth;
+}
+.chat::-webkit-scrollbar{width:4px}
+.chat::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:4px}
+
+.msg{
+  margin-bottom:14px;padding:12px 14px;border-radius:14px;
+  animation:msgIn .4s ease;
+}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.msg.interviewer{background:rgba(34,211,238,.08);border-left:3px solid var(--accent2)}
+.msg.candidate{background:rgba(99,102,241,.1);border-left:3px solid var(--accent)}
+.msg.feedback{background:rgba(245,158,11,.08);border-left:3px solid var(--warning)}
+.msg.tip{background:rgba(16,185,129,.08);border-left:3px solid var(--success)}
+.msg.score-msg{background:rgba(168,85,247,.1);border-left:3px solid #a855f7}
+
+.msg-label{
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.8px;margin-bottom:4px;opacity:.6;
+}
+.badge{
+  display:inline-block;padding:2px 8px;border-radius:6px;
+  font-size:10px;font-weight:700;margin-left:6px;
+}
+.badge-score{background:rgba(168,85,247,.2);color:#c4b5fd}
+.badge-tip{background:rgba(16,185,129,.2);color:#34d399}
+.badge-fix{background:rgba(245,158,11,.2);color:#fbbf24}
+
+/* Controls */
+.controls{display:flex;gap:8px;margin-top:auto;padding-top:12px}
+.ctrl{
+  flex:1;padding:14px;border:none;border-radius:14px;
+  font-size:13px;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:.2s;
+}
+.ctrl:active{transform:scale(.97)}
+.ctrl-start{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff}
+.ctrl-stop{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff}
+.ctrl-end{background:rgba(168,85,247,.15);color:#c4b5fd;border:1px solid rgba(168,85,247,.2)}
+.ctrl-new{background:var(--glass);color:var(--muted);border:1px solid var(--glass-b)}
+
+/* Settings */
+.settings-bar{
+  display:flex;gap:8px;justify-content:center;
+  flex-wrap:wrap;padding-top:8px;
+}
+.setting{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.setting select{
+  background:rgba(0,0,0,.3);border:1px solid var(--glass-b);
+  color:#fff;border-radius:8px;padding:4px 8px;font-size:11px;
+}
+
+/* ===== SCORE REPORT ===== */
+.report-panel{
+  display:none;flex-direction:column;gap:16px;
+  animation:fadeUp .5s ease;
+}
+.report-panel.active{display:flex}
+
+.report-card{
+  background:var(--glass);border:1px solid var(--glass-b);
+  border-radius:20px;padding:28px;text-align:center;
+  backdrop-filter:blur(16px);
+}
+.report-card h3{font-size:20px;font-weight:800;margin-bottom:6px}
+.report-card .sub{font-size:13px;color:var(--muted);margin-bottom:24px}
+
+.score-circle{
+  width:140px;height:140px;border-radius:50%;
+  margin:0 auto 20px;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;
+  border:4px solid var(--glass-b);
+  position:relative;
+}
+.score-circle .big{font-size:42px;font-weight:800;line-height:1}
+.score-circle .of{font-size:13px;color:var(--muted)}
+
+.grade-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}
+.grade-item{
+  background:rgba(0,0,0,.2);border-radius:12px;padding:12px 16px;
+  text-align:center;min-width:80px;
+}
+.grade-item .g-val{font-size:18px;font-weight:700}
+.grade-item .g-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.grade-item.good .g-val{color:var(--success)}
+.grade-item.mid .g-val{color:var(--warning)}
+.grade-item.low .g-val{color:var(--danger)}
+
+.tips-list{
+  background:rgba(0,0,0,.2);border-radius:16px;padding:18px;
+  text-align:left;
+}
+.tips-list h4{font-size:14px;font-weight:700;margin-bottom:10px;color:var(--accent2)}
+.tips-list li{
+  font-size:13px;color:var(--muted);line-height:1.7;
+  margin-bottom:6px;list-style:none;padding-left:20px;
+  position:relative;
+}
+.tips-list li::before{content:'💡';position:absolute;left:0;top:0}
+
+/* Toast */
+.toast{
+  position:fixed;top:20px;right:20px;z-index:999;
+  background:rgba(15,23,42,.9);backdrop-filter:blur(12px);
+  border:1px solid var(--glass-b);border-radius:12px;
+  padding:12px 20px;font-size:13px;font-weight:500;
+  transform:translateX(140%);transition:.3s cubic-bezier(.16,1,.3,1);
+}
+.toast.show{transform:translateX(0)}
+.toast.ok{border-left:3px solid var(--success)}
+.toast.err{border-left:3px solid var(--danger)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:480px){
+  .app-wrap{padding:12px 10px 30px}
+  .interview-orb{width:90px;height:90px;font-size:34px}
+  .rip{width:90px;height:90px}
+  .stats-row{flex-wrap:wrap}
+  .stat-card{min-width:calc(50% - 4px)}
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg">
+  <div class="orb"></div><div class="orb"></div><div class="orb"></div>
+</div>
+<div class="dots"></div>
+<div class="toast" id="toast"></div>
+
+<!-- 🔐 AUTH GUARD -->
+<script>
+(()=>{
+  const t=localStorage.getItem("career_token");
+  if(!t){location.href="spoken-english-gate.html";return}
+  try{
+    const d=JSON.parse(atob(t));
+    if(Date.now()>d.exp||!d.uses||d.uses.spoken<=0)
+      location.href="spoken-english-gate.html";
+  }catch{location.href="spoken-english-gate.html"}
+})();
+</script>
+
+<div class="app-wrap">
+
+  <!-- ===== HEADER ===== -->
+  <div class="header">
+    <a href="index.html" class="back">← Home</a>
+    <div class="title">✦ Mock Interview</div>
+  </div>
+
+  <!-- ===== 1. SETUP SCREEN ===== -->
+  <div class="setup-panel" id="setupPanel">
+    <h3>🎯 Configure Your Interview</h3>
+    <p class="sub">Set up your mock interview — the AI interviewer will adapt to your profile.</p>
+
+    <div class="form-group">
+      <label>Job Role / Position</label>
+      <input type="text" id="jobRole" placeholder="e.g. Software Engineer, Marketing Manager" value="Software Engineer">
+    </div>
+
+    <div class="setup-row">
+      <div class="form-group">
+        <label>Experience Level</label>
+        <select id="expLevel">
+          <option value="fresher">Fresher / Entry</option>
+          <option value="mid" selected>Mid-Level (2-5 yrs)</option>
+          <option value="senior">Senior (5+ yrs)</option>
+          <option value="lead">Lead / Manager</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Interview Type</label>
+        <select id="interviewType">
+          <option value="behavioral">Behavioral</option>
+          <option value="technical" selected>Technical</option>
+          <option value="hr">HR / Culture Fit</option>
+          <option value="mix">Mixed (All Types)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="setup-row">
+      <div class="form-group">
+        <label>Difficulty</label>
+        <select id="difficulty">
+          <option value="easy">Easy</option>
+          <option value="medium" selected>Medium</option>
+          <option value="hard">Hard</option>
+          <option value="faang">FAANG-Level</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Questions</label>
+        <select id="totalQ">
+          <option value="5">5 Quick</option>
+          <option value="8" selected>8 Standard</option>
+          <option value="12">12 Deep</option>
+          <option value="15">15 Marathon</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Company (Optional)</label>
+      <input type="text" id="company" placeholder="e.g. Google, Infosys, TCS">
+    </div>
+
+    <div class="form-group">
+      <label>Your Key Skills (Optional)</label>
+      <textarea id="skills" placeholder="e.g. React, Node.js, Python, Leadership, Communication"></textarea>
+    </div>
+
+    <button class="btn btn-go" onclick="startInterview()">
+      🚀 Start Interview
+    </button>
+  </div>
+
+  <!-- ===== 2. INTERVIEW SCREEN ===== -->
+  <div class="interview-panel" id="interviewPanel">
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-val" id="qNum">0</div>
+        <div class="stat-lbl">Question</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="scoreDisp">0</div>
+        <div class="stat-lbl">⭐ Score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="timeDisp">0:00</div>
+        <div class="stat-lbl">⏱ Time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="usesDisp">-</div>
+        <div class="stat-lbl">💎 Uses</div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-wrap">
+      <div class="progress-top">
+        <span class="progress-label" id="progressLabel">Question 0 of 0</span>
+        <span class="progress-count" id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <!-- Orb -->
+    <div class="orb-area">
+      <div class="rip" id="r1"></div>
+      <div class="rip" id="r2"></div>
+      <div class="rip" id="r3"></div>
+      <div class="interview-orb" id="orb" onclick="toggleVoice()">🎤</div>
+    </div>
+
+    <div id="status">Tap Start or the orb to answer</div>
+
+    <!-- Chat -->
+    <div class="chat" id="chat"></div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button class="ctrl ctrl-start" onclick="beginListening()">▶ Answer</button>
+      <button class="ctrl ctrl-stop" onclick="stopListening()">⏹ Stop</button>
+      <button class="ctrl ctrl-end" onclick="endInterview()">📊 End & Score</button>
+      <button class="ctrl ctrl-new" onclick="resetAll()">🔄 New</button>
+    </div>
+
+    <div class="settings-bar">
+      <div class="setting">
+        <label>Speed:</label>
+        <select id="speedSel">
+          <option value="0.8">Slow</option>
+          <option value="0.95" selected>Normal</option>
+          <option value="1.15">Fast</option>
+        </select>
+      </div>
+      <div class="setting">
+        <label>Accent:</label>
+        <select id="accentSel">
+          <option value="en-US">🇺🇸 US</option>
+          <option value="en-GB">🇬🇧 UK</option>
+          <option value="en-IN">🇮🇳 IN</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 3. REPORT SCREEN ===== -->
+  <div class="report-panel" id="reportPanel">
+    <div class="report-card">
+      <h3>📊 Interview Report</h3>
+      <p class="sub">Here's your detailed performance breakdown</p>
+
+      <div class="score-circle" id="scoreCircle">
+        <div class="big" id="finalScore">0</div>
+        <div class="of">/ 100</div>
+      </div>
+
+      <div class="grade-row" id="gradeRow"></div>
+
+      <div class="tips-list">
+        <h4>💡 Improvement Tips</h4>
+        <ul id="tipsList"></ul>
+      </div>
+    </div>
+
+    <button class="btn btn-go" onclick="resetAll()">🔄 Start New Interview</button>
+    <a href="index.html" class="btn" style="background:var(--glass);color:var(--muted);border:1px solid var(--glass-b);text-decoration:none">← Back to Home</a>
+  </div>
+
+</div>
+
+<!-- ===== ENGINE ===== -->
+<script>
+const API_URL = "https://late-mouse-4aa2.zelvora-global.workers.dev";
+
+/* State */
+let config = {};
+let questionNum = 0;
+let totalQuestions = 8;
+let interviewScore = 0;
+let scores = [];
+let allQA = [];
+let memory = [];
+let timer = null;
+let seconds = 0;
+let listening = false;
+let autoListen = false;
+let recognition = null;
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+/* ===== START INTERVIEW ===== */
+function startInterview() {
+  config = {
+    role: document.getElementById('jobRole').value || 'Software Engineer',
+    level: document.getElementById('expLevel').value,
+    type: document.getElementById('interviewType').value,
+    difficulty: document.getElementById('difficulty').value,
+    company: document.getElementById('company').value,
+    skills: document.getElementById('skills').value
+  };
+  totalQuestions = parseInt(document.getElementById('totalQ').value);
+  questionNum = 0;
+  interviewScore = 0;
+  scores = [];
+  allQA = [];
+  memory = [];
+  seconds = 0;
+
+  document.getElementById('setupPanel').style.display = 'none';
+  document.getElementById('interviewPanel').classList.add('active');
+  document.getElementById('reportPanel').classList.remove('active');
+  document.getElementById('chat').innerHTML = '';
+
+  updateStats();
+  updateUses();
+  startTimer();
+  showToast('Interview started! Good luck 🍀', 'ok');
+
+  // Ask first question
+  askNextQuestion();
+}
+
+/* ===== ASK NEXT QUESTION ===== */
+async function askNextQuestion() {
+  if (questionNum >= totalQuestions) {
+    endInterview();
+    return;
+  }
+
+  questionNum++;
+  updateStats();
+  setOrb('thinking');
+  setStatus('🤖 Preparing question ' + questionNum + '...');
+
+  const token = localStorage.getItem("career_token");
+  if (!token) { location.href = "spoken-english-gate.html"; return; }
+
+  const prompt = questionNum === 1
+    ? `Start the mock interview. Ask the first question.`
+    : `The candidate answered: "${allQA[allQA.length-1]?.answer || ''}". 
+       ${questionNum <= totalQuestions ? 'Ask the next interview question.' : 'This was the last question.'}
+       You may ask a follow-up if the previous answer was weak.`;
+
+  memory.push({ role: "user", content: prompt });
+  memory = memory.slice(-20);
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({
+        service: "interview",
+        text: prompt,
+        history: memory,
+        config,
+        questionNum,
+        totalQuestions
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+      showToast(data.error, 'err');
+      if (data.error.includes('expired') || data.error.includes('limit'))
+        location.href = "spoken-english-gate.html";
+      return;
+    }
+
+    if (data.token) {
+      localStorage.setItem("career_token", data.token);
+      updateUses();
+    }
+
+    const question = data.reply || "Tell me about yourself.";
+    memory.push({ role: "assistant", content: question });
+
+    allQA.push({ q: question, answer: '', feedback: '', score: 0 });
+
+    addMsg('interviewer', `<strong>Q${questionNum}:</strong> ${question}`);
+    speak(question, () => {
+      autoListen = true;
+      beginListening();
+    });
+
+  } catch {
+    addMsg('interviewer', 'Brief issue — please tap Answer to continue.');
+    setOrb('idle');
+  }
+}
+
+/* ===== LISTEN FOR ANSWER ===== */
+function beginListening() {
+  if (listening || !SR) return;
+
+  recognition = new SR();
+  recognition.lang = document.getElementById('accentSel').value;
+  recognition.continuous = true;
+  recognition.interimResults = false;
+
+  let fullTranscript = '';
+  let silenceTimer = null;
+
+  recognition.onstart = () => {
+    listening = true;
+    setOrb('listening');
+    setStatus('🎤 Listening... speak your answer');
+  };
+
+  recognition.onresult = e => {
+    // Collect all new results
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) {
+        fullTranscript += ' ' + e.results[i][0].transcript;
+      }
+    }
+
+    // Reset silence timer — auto-stop after 3s of silence
+    clearTimeout(silenceTimer);
+    silenceTimer = setTimeout(() => {
+      finishAnswer(fullTranscript.trim());
+    }, 3000);
+  };
+
+  recognition.onend = () => {
+    listening = false;
+    if (fullTranscript.trim().length > 2) {
+      clearTimeout(silenceTimer);
+      finishAnswer(fullTranscript.trim());
+    } else {
+      setOrb('idle');
+      if (autoListen) setTimeout(beginListening, 800);
+    }
+  };
+
+  recognition.onerror = (e) => {
+    listening = false;
+    if (e.error === 'no-speech' && autoListen) {
+      setTimeout(beginListening, 800);
+    } else {
+      setOrb('idle');
+    }
+  };
+
+  recognition.start();
+}
+
+function stopListening() {
+  autoListen = false;
+  listening = false;
+  if (recognition) recognition.stop();
+  setOrb('idle');
+  setStatus('Stopped. Tap Answer to continue.');
+}
+
+/* ===== PROCESS ANSWER ===== */
+async function finishAnswer(answer) {
+  autoListen = false;
+  if (recognition) { recognition.stop(); listening = false; }
+  if (!answer || answer.length < 3) return;
+
+  addMsg('candidate', answer);
+  setOrb('thinking');
+  setStatus('🤖 Evaluating your answer...');
+
+  const token = localStorage.getItem("career_token");
+  if (!token) { location.href = "spoken-english-gate.html"; return; }
+
+  // Store answer
+  if (allQA[questionNum - 1]) {
+    allQA[questionNum - 1].answer = answer;
+  }
+
+  memory.push({ role: "user", content: `Candidate's answer: "${answer}"` });
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({
+        service: "interview_feedback",
+        text: answer,
+        history: memory,
+        config,
+        questionNum,
+        totalQuestions,
+        question: allQA[questionNum - 1]?.q || ''
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+      showToast(data.error, 'err');
+      return;
+    }
+
+    if (data.token) {
+      localStorage.setItem("career_token", data.token);
+      updateUses();
+    }
+
+    const feedback = data.reply || "Good answer. Let's move on.";
+    const qScore = data.score || 6;
+
+    if (allQA[questionNum - 1]) {
+      allQA[questionNum - 1].feedback = feedback;
+      allQA[questionNum - 1].score = qScore;
+    }
+
+    scores.push(qScore);
+    interviewScore = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length * 10);
+    updateStats();
+
+    memory.push({ role: "assistant", content: feedback });
+
+    addMsg('feedback', feedback);
+
+    // Speak feedback then ask next question
+    speak(feedback, () => {
+      setTimeout(askNextQuestion, 800);
+    });
+
+  } catch {
+    addMsg('feedback', 'Could not evaluate. Moving to next question.');
+    setTimeout(askNextQuestion, 1500);
+  }
+}
+
+/* ===== END INTERVIEW ===== */
+async function endInterview() {
+  stopListening();
+  stopTimer();
+  speechSynthesis.cancel();
+  setOrb('idle');
+
+  // Calculate final
+  const avgScore = scores.length ? (scores.reduce((a, b) => a + b, 0) / scores.length) : 5;
+  const finalPct = Math.round(avgScore * 10);
+  const grade = finalPct >= 85 ? 'A+' : finalPct >= 70 ? 'A' : finalPct >= 55 ? 'B' : finalPct >= 40 ? 'C' : 'D';
+
+  // Try to get AI summary
+  let tips = [];
+  try {
+    const token = localStorage.getItem("career_token");
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({
+        service: "interview_report",
+        config,
+        allQA,
+        finalScore: finalPct
+      })
+    });
+    const data = await res.json();
+    if (data.token) localStorage.setItem("career_token", data.token);
+    if (data.tips) tips = data.tips;
+    if (data.grades) renderGrades(data.grades);
+  } catch {}
+
+  // Show report
+  document.getElementById('interviewPanel').classList.remove('active');
+  document.getElementById('reportPanel').classList.add('active');
+
+  // Animate score
+  animateScore(finalPct);
+
+  // Score circle color
+  const circle = document.getElementById('scoreCircle');
+  circle.style.borderColor = finalPct >= 70 ? '#10b981' : finalPct >= 50 ? '#f59e0b' : '#ef4444';
+
+  // Tips
+  const tipsList = document.getElementById('tipsList');
+  if (tips.length) {
+    tipsList.innerHTML = tips.map(t => `<li>${t}</li>`).join('');
+  } else {
+    tipsList.innerHTML = `
+      <li>Practice structuring answers using the STAR method</li>
+      <li>Speak more slowly and pause between key points</li>
+      <li>Use specific examples from your experience</li>
+      <li>Research the company before real interviews</li>
+      <li>Practice with harder difficulty to push your limits</li>
+    `;
+  }
+
+  showToast('Interview complete! Check your report.', 'ok');
+}
+
+function renderGrades(grades) {
+  const row = document.getElementById('gradeRow');
+  if (!grades) {
+    row.innerHTML = `
+      <div class="grade-item good"><div class="g-val">—</div><div class="g-lbl">Confidence</div></div>
+      <div class="grade-item mid"><div class="g-val">—</div><div class="g-lbl">Clarity</div></div>
+      <div class="grade-item mid"><div class="g-val">—</div><div class="g-lbl">Depth</div></div>
+      <div class="grade-item good"><div class="g-val">—</div><div class="g-lbl">Grammar</div></div>
+    `;
+    return;
+  }
+  row.innerHTML = Object.entries(grades).map(([k, v]) => {
+    const cls = v >= 8 ? 'good' : v >= 5 ? 'mid' : 'low';
+    return `<div class="grade-item ${cls}"><div class="g-val">${v}/10</div><div class="g-lbl">${k}</div></div>`;
+  }).join('');
+}
+
+function animateScore(target) {
+  let current = 0;
+  const el = document.getElementById('finalScore');
+  const step = Math.ceil(target / 50);
+  const t = setInterval(() => {
+    current += step;
+    if (current >= target) { current = target; clearInterval(t); }
+    el.textContent = current;
+  }, 30);
+}
+
+/* ===== RESET ===== */
+function resetAll() {
+  stopListening();
+  stopTimer();
+  speechSynthesis.cancel();
+  questionNum = 0;
+  interviewScore = 0;
+  scores = [];
+  allQA = [];
+  memory = [];
+  seconds = 0;
+
+  document.getElementById('setupPanel').style.display = 'block';
+  document.getElementById('interviewPanel').classList.remove('active');
+  document.getElementById('reportPanel').classList.remove('active');
+  document.getElementById('chat').innerHTML = '';
+  renderGrades(null);
+  updateStats();
+}
+
+/* ===== VOICE ===== */
+function toggleVoice() {
+  if (listening) stopListening();
+  else beginListening();
+}
+
+function speak(text, onDone) {
+  speechSynthesis.cancel();
+  const clean = text.replace(/[✏️💡📊⭐🎯✅❌🔄]/g, '').replace(/\*\*/g, '');
+  const u = new SpeechSynthesisUtterance(clean);
+  u.rate = parseFloat(document.getElementById('speedSel').value);
+  u.lang = document.getElementById('accentSel').value;
+
+  const voices = speechSynthesis.getVoices();
+  const accent = document.getElementById('accentSel').value;
+  const pref = voices.find(v => v.lang === accent && v.name.includes('Google'))
+             || voices.find(v => v.lang === accent)
+             || voices.find(v => v.lang.startsWith('en'));
+  if (pref) u.voice = pref;
+
+  u.onstart = () => { setOrb('speaking'); setStatus('🔊 Interviewer speaking...'); };
+  u.onend = () => {
+    setOrb('idle');
+    setStatus('Tap Answer or the orb to respond');
+    if (onDone) onDone();
+  };
+  u.onerror = () => { setOrb('idle'); if (onDone) onDone(); };
+
+  speechSynthesis.speak(u);
+}
+
+/* ===== ORB STATES ===== */
+function setOrb(state) {
+  const o = document.getElementById('orb');
+  const rips = [document.getElementById('r1'), document.getElementById('r2'), document.getElementById('r3')];
+  o.className = 'interview-orb';
+  rips.forEach(r => r.className = 'rip');
+  switch (state) {
+    case 'listening': o.classList.add('listening'); o.textContent = '🎤'; rips.forEach(r => r.classList.add('active')); break;
+    case 'thinking':  o.classList.add('thinking');  o.textContent = '🧠'; break;
+    case 'speaking':  o.classList.add('speaking');  o.textContent = '🔊'; break;
+    default:          o.textContent = '🎤';
+  }
+}
+
+/* ===== UI ===== */
+function addMsg(type, text) {
+  const d = document.createElement('div');
+  const labels = { interviewer: 'Interviewer', candidate: 'You', feedback: '📋 Feedback', tip: '💡 Tip', 'score-msg': '📊 Score' };
+  d.className = 'msg ' + type;
+
+  let formatted = text
+    .replace(/(Score:\s*\d+\/10)/gi, '<span class="badge badge-score">$1</span>')
+    .replace(/(Tip:)/gi, '<span class="badge badge-tip">$1</span>')
+    .replace(/(Improve:)/gi, '<span class="badge badge-fix">$1</span>');
+
+  d.innerHTML = `<div class="msg-label">${labels[type] || type}</div>${formatted}`;
+  document.getElementById('chat').appendChild(d);
+  document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
+}
+
+function updateStats() {
+  document.getElementById('qNum').textContent = questionNum + '/' + totalQuestions;
+  document.getElementById('scoreDisp').textContent = interviewScore;
+  const pct = totalQuestions ? Math.round((questionNum / totalQuestions) * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `Question ${questionNum} of ${totalQuestions}`;
+  document.getElementById('progressPct').textContent = pct + '%';
+}
+
+function updateUses() {
+  try {
+    const t = localStorage.getItem("career_token");
+    if (t) {
+      const d = JSON.parse(atob(t));
+      document.getElementById('usesDisp').textContent = d.uses?.spoken ?? '-';
+    }
+  } catch {}
+}
+
+function setStatus(t) {
+  const el = document.getElementById('status');
+  el.textContent = t;
+  el.classList.toggle('on', t.includes('Listening'));
+}
+
+function startTimer() {
+  timer = setInterval(() => {
+    seconds++;
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    document.getElementById('timeDisp').textContent = m + ':' + String(s).padStart(2, '0');
+  }, 1000);
+}
+function stopTimer() { clearInterval(timer); }
+
+function showToast(msg, type = 'ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* Init */
+speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+navigator.mediaDevices?.getUserMedia({ audio: true }).catch(() => {
+  showToast('Please allow microphone access', 'err');
+});
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' && e.target === document.body) { e.preventDefault(); toggleVoice(); }
+});
+renderGrades(null);
+</script>
+
+</body>
+</html>
