@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zelvora — Career Lab & Exam Coaching</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#020617;--bg2:#0f172a;--card:#1e293b;
+    --accent:#6366f1;--accent2:#22d3ee;--accent3:#a855f7;
+    --success:#10b981;--warning:#f59e0b;--danger:#ef4444;
+    --text:#e5e7eb;--muted:#94a3b8;--dim:#475569;
+    --glass:rgba(255,255,255,.05);--border:rgba(255,255,255,.08);
+  }
+  body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+  /* BG */
+  .amb{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .amb .o{position:absolute;border-radius:50%;filter:blur(120px);opacity:.12;animation:of 25s ease-in-out infinite alternate}
+  .amb .o:nth-child(1){width:500px;height:500px;background:var(--accent);top:-10%;right:-5%}
+  .amb .o:nth-child(2){width:400px;height:400px;background:var(--accent3);bottom:-10%;left:-5%;animation-delay:8s}
+  .amb .o:nth-child(3){width:300px;height:300px;background:var(--accent2);top:40%;left:30%;animation-delay:16s}
+  @keyframes of{0%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.1)}100%{transform:translate(-20px,20px) scale(.95)}}
+
+  /* NAV */
+  .nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:rgba(2,6,23,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+  .nav-logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:18px;text-decoration:none;color:var(--text)}
+  .nav-logo svg{width:32px;height:32px}
+  .nav-logo em{font-style:normal;font-size:11px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
+  .nav-tabs{display:flex;gap:4px}
+  .nav-tab{padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);background:none;border:1px solid transparent;cursor:pointer;transition:.2s;font-family:inherit}
+  .nav-tab:hover{color:var(--text);background:var(--glass)}
+  .nav-tab.active{color:var(--accent);background:rgba(99,102,241,.1);border-color:rgba(99,102,241,.25)}
+  .nav-uses{font-size:12px;color:var(--accent);background:rgba(99,102,241,.12);padding:6px 14px;border-radius:20px;font-weight:600}
+
+  @media(max-width:768px){
+    .nav{flex-wrap:wrap;gap:8px}
+    .nav-tabs{width:100%;overflow-x:auto;padding-bottom:4px}
+    .nav-tab{white-space:nowrap;font-size:12px;padding:6px 12px}
+  }
+
+  /* LAYOUT */
+  .app{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:20px}
+
+  /* MODULE PANELS */
+  .module{display:none;animation:fadeIn .4s ease}
+  .module.active{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+  /* SECTION HEADER */
+  .sec-head{text-align:center;padding:24px 0 20px}
+  .sec-head h1{font-size:clamp(1.4rem,3vw,1.8rem);font-weight:800;margin-bottom:6px}
+  .sec-head h1 .gr{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .sec-head p{color:var(--muted);font-size:14px}
+
+  /* TOOL GRID */
+  .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:24px}
+  .tool-card{padding:20px;background:var(--glass);border:1px solid var(--border);border-radius:16px;cursor:pointer;transition:.3s;text-align:center}
+  .tool-card:hover{transform:translateY(-4px);border-color:rgba(99,102,241,.3);box-shadow:0 12px 40px rgba(99,102,241,.08)}
+  .tool-card.active{border-color:var(--accent);background:rgba(99,102,241,.08)}
+  .tool-card .ico{font-size:28px;margin-bottom:8px}
+  .tool-card h4{font-size:14px;font-weight:700;margin-bottom:4px}
+  .tool-card p{font-size:11px;color:var(--muted);line-height:1.5}
+
+  /* INPUT AREAS */
+  .input-section{background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:20px}
+  .input-section h3{font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .textarea{width:100%;min-height:140px;padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:13px;line-height:1.7;resize:vertical;outline:none;transition:border-color .2s}
+  .textarea:focus{border-color:var(--accent)}
+  .textarea::placeholder{color:var(--dim)}
+  .small-input{width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:border-color .2s}
+  .small-input:focus{border-color:var(--accent)}
+  .small-input::placeholder{color:var(--dim)}
+  select.small-input{cursor:pointer}
+  select.small-input option{background:var(--bg2);color:var(--text)}
+
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .field-row.three{grid-template-columns:1fr 1fr 1fr}
+  @media(max-width:600px){.field-row,.field-row.three{grid-template-columns:1fr}}
+  .field-label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600}
+
+  /* BUTTONS */
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .btn{padding:12px 24px;border:none;border-radius:12px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;gap:8px}
+  .btn:hover{transform:translateY(-1px)}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent3));color:#fff;box-shadow:0 4px 20px rgba(99,102,241,.3)}
+  .btn-secondary{background:var(--glass);color:var(--text);border:1px solid var(--border)}
+  .btn-success{background:linear-gradient(135deg,var(--success),#059669);color:#fff}
+  .btn-warning{background:linear-gradient(135deg,var(--warning),#d97706);color:#fff}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+  /* RESULT AREA */
+  .result-area{background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:20px;display:none;animation:fadeIn .4s ease}
+  .result-area.visible{display:block}
+  .result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .result-header h3{font-size:15px;font-weight:700}
+  .result-actions{display:flex;gap:8px}
+  .result-actions button{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit}
+  .copy-btn{background:rgba(99,102,241,.15);color:var(--accent);border:1px solid rgba(99,102,241,.2)}
+  .copy-btn:hover{background:rgba(99,102,241,.25)}
+
+  .result-content{font-size:14px;line-height:1.8;color:var(--text);white-space:pre-wrap;overflow-x:auto}
+  .result-content h1,.result-content h2,.result-content h3{color:var(--accent);margin:16px 0 8px;font-size:16px}
+  .result-content strong{color:var(--accent2)}
+  .result-content code{background:rgba(99,102,241,.1);padding:2px 6px;border-radius:4px;font-size:12px}
+  .result-content ul,.result-content ol{padding-left:20px;margin:8px 0}
+  .result-content li{margin:4px 0}
+  .result-content blockquote{border-left:3px solid var(--accent);padding-left:12px;color:var(--muted);margin:8px 0}
+
+  /* LOADING */
+  .loading{display:none;text-align:center;padding:40px}
+  .loading.visible{display:block}
+  .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading p{color:var(--muted);font-size:13px}
+
+  /* EXAM SECTION */
+  .exam-categories{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:20px}
+  .exam-cat{padding:14px;background:var(--glass);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:.3s;text-align:center}
+  .exam-cat:hover{border-color:rgba(99,102,241,.3);transform:translateY(-2px)}
+  .exam-cat.active{border-color:var(--accent);background:rgba(99,102,241,.08)}
+  .exam-cat .ico{font-size:24px;margin-bottom:6px}
+  .exam-cat h5{font-size:13px;font-weight:700}
+  .exam-cat p{font-size:10px;color:var(--muted);margin-top:2px}
+
+  .subject-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+  .sub-chip{padding:6px 14px;border:1px solid var(--border);border-radius:20px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:.2s;background:none;font-family:inherit}
+  .sub-chip:hover,.sub-chip.active{border-color:var(--accent);color:var(--accent);background:rgba(99,102,241,.08)}
+
+  /* QUIZ MODE */
+  .quiz-area{background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;display:none}
+  .quiz-area.visible{display:block;animation:fadeIn .3s ease}
+  .quiz-q{font-size:15px;font-weight:600;line-height:1.7;margin-bottom:16px}
+  .quiz-options{display:grid;gap:8px}
+  .quiz-opt{padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:.2s;font-size:14px;text-align:left;color:var(--text);font-family:inherit}
+  .quiz-opt:hover{border-color:var(--accent);background:rgba(99,102,241,.05)}
+  .quiz-opt.selected{border-color:var(--accent);background:rgba(99,102,241,.1);color:var(--accent)}
+  .quiz-opt.correct{border-color:var(--success);background:rgba(16,185,129,.1);color:var(--success)}
+  .quiz-opt.wrong{border-color:var(--danger);background:rgba(239,68,68,.1);color:var(--danger)}
+
+  .quiz-stats{display:flex;gap:16px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+  .quiz-stat{text-align:center;padding:8px 16px;background:var(--bg);border-radius:10px;border:1px solid var(--border)}
+  .quiz-stat .n{font-size:20px;font-weight:800}
+  .quiz-stat .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+
+  /* CHAT for doubt solving */
+  .chat-area{max-height:50vh;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:10px 0;scroll-behavior:smooth}
+  .chat-area::-webkit-scrollbar{width:3px}
+  .chat-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .chat-msg{max-width:88%;padding:12px 16px;border-radius:16px;font-size:13px;line-height:1.7;animation:fadeIn .3s ease}
+  .chat-msg.user{align-self:flex-end;background:linear-gradient(135deg,var(--accent),var(--accent3));color:#fff;border-bottom-right-radius:4px}
+  .chat-msg.ai{align-self:flex-start;background:var(--card);border:1px solid var(--border);border-bottom-left-radius:4px}
+  .chat-input-row{display:flex;gap:8px;margin-top:12px}
+  .chat-input-row input{flex:1}
+  .chat-input-row .btn{padding:10px 20px}
+
+  /* SCORE DISPLAY */
+  .score-ring-wrap{display:flex;justify-content:center;margin:20px 0}
+  .score-ring{width:100px;height:100px;position:relative}
+  .score-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .score-ring .bg{fill:none;stroke:var(--border);stroke-width:8}
+  .score-ring .fg{fill:none;stroke:var(--accent);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.5s ease}
+  .score-ring .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:var(--accent)}
+
+  /* TABS WITHIN MODULE */
+  .inner-tabs{display:flex;gap:4px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
+  .inner-tab{padding:8px 16px;border-radius:10px;font-size:12px;font-weight:600;color:var(--muted);background:var(--glass);border:1px solid var(--border);cursor:pointer;transition:.2s;white-space:nowrap;font-family:inherit}
+  .inner-tab:hover{color:var(--text)}
+  .inner-tab.active{color:var(--accent);border-color:var(--accent);background:rgba(99,102,241,.1)}
+</style>
+</head>
+<body>
+
+<div class="amb"><div class="o"></div><div class="o"></div><div class="o"></div></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <svg viewBox="0 0 200 200" fill="none">
+      <path d="M60 20 C35 20 20 35 20 60 L20 140 C20 165 35 180 60 180 L140 180 C165 180 180 165 180 140 L180 60 C180 35 165 20 140 20Z" fill="url(#ng)" opacity=".1"/>
+      <path d="M56 58 C56 48 63 42 74 42 L126 42 C137 42 144 48 144 58 L144 64 L82 126 L144 126 L144 142 C144 152 137 158 126 158 L74 158 C63 158 56 152 56 142 L56 136 L118 74 L56 74Z" fill="url(#ng)"/>
+      <path d="M134 42 C142 36 152 26 158 16 C156 28 150 42 142 50 L134 42Z" fill="url(#ng)" opacity=".75"/>
+      <defs><linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient></defs>
+    </svg>
+    ZELVORA <em>AI</em>
+  </a>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchModule('career')">🧪 Career Lab</button>
+    <button class="nav-tab" onclick="switchModule('exam')">📚 Exam Coach</button>
+    <button class="nav-tab" onclick="switchModule('doubt')">💬 Doubt Solver</button>
+  </div>
+  <div class="nav-uses" id="usesDisplay">∞ uses</div>
+</nav>
+
+<div class="app">
+
+<!-- ========================= CAREER LAB MODULE ========================= -->
+<div class="module active" id="mod-career">
+  <div class="sec-head">
+    <h1>🧪 <span class="gr">Career Lab</span></h1>
+    <p>AI-powered career toolkit — resume, cover letter, LinkedIn, salary & more</p>
+  </div>
+
+  <!-- Career Tools Grid -->
+  <div class="tool-grid" id="careerTools">
+    <div class="tool-card active" data-tool="resume_audit" onclick="selectCareerTool(this)">
+      <div class="ico">📄</div>
+      <h4>Resume Audit</h4>
+      <p>Deep analysis with score & fixes</p>
+    </div>
+    <div class="tool-card" data-tool="ats_optimize" onclick="selectCareerTool(this)">
+      <div class="ico">🎯</div>
+      <h4>ATS Optimizer</h4>
+      <p>Match resume to job description</p>
+    </div>
+    <div class="tool-card" data-tool="cover_letter" onclick="selectCareerTool(this)">
+      <div class="ico">✉️</div>
+      <h4>Cover Letter</h4>
+      <p>AI-written professional letter</p>
+    </div>
+    <div class="tool-card" data-tool="linkedin_review" onclick="selectCareerTool(this)">
+      <div class="ico">💼</div>
+      <h4>LinkedIn Review</h4>
+      <p>Optimize profile for visibility</p>
+    </div>
+    <div class="tool-card" data-tool="job_match" onclick="selectCareerTool(this)">
+      <div class="ico">🔍</div>
+      <h4>Job Match</h4>
+      <p>Fit analysis + gap report</p>
+    </div>
+    <div class="tool-card" data-tool="salary_negotiate" onclick="selectCareerTool(this)">
+      <div class="ico">💰</div>
+      <h4>Salary Coach</h4>
+      <p>Negotiation scripts & strategy</p>
+    </div>
+    <div class="tool-card" data-tool="career_path" onclick="selectCareerTool(this)">
+      <div class="ico">🗺️</div>
+      <h4>Career Path</h4>
+      <p>Personalized growth roadmap</p>
+    </div>
+  </div>
+
+  <!-- Input Section -->
+  <div class="input-section" id="careerInput">
+    <h3>📄 Paste Your Resume</h3>
+    <textarea class="textarea" id="resumeText" placeholder="Paste your entire resume text here...&#10;&#10;Include: Name, Contact, Summary, Experience, Education, Skills..."></textarea>
+
+    <div id="jdSection" style="margin-top:16px;display:none">
+      <h3 style="font-size:14px;margin-bottom:8px">🎯 Job Description (for matching)</h3>
+      <textarea class="textarea" id="jdText" placeholder="Paste the target job description here..." style="min-height:100px"></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="careerGoBtn" onclick="runCareerTool()">
+        🚀 Analyze Resume
+      </button>
+      <button class="btn btn-secondary" onclick="clearCareer()">🗑️ Clear</button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" id="careerLoading">
+    <div class="spinner"></div>
+    <p id="careerLoadingText">Analyzing your resume with AI...</p>
+  </div>
+
+  <!-- Result -->
+  <div class="result-area" id="careerResult">
+    <div class="result-header">
+      <h3 id="careerResultTitle">📊 Analysis Result</h3>
+      <div class="result-actions">
+        <button class="copy-btn" onclick="copyResult('careerResultContent')">📋 Copy</button>
+      </div>
+    </div>
+    <div class="result-content" id="careerResultContent"></div>
+  </div>
+</div>
+
+
+<!-- ========================= EXAM COACHING MODULE ========================= -->
+<div class="module" id="mod-exam">
+  <div class="sec-head">
+    <h1>📚 <span class="gr">Exam Coaching</span></h1>
+    <p>AI tutor for competitive exams, subjects & topics</p>
+  </div>
+
+  <!-- Exam Categories -->
+  <div class="exam-categories" id="examCategories">
+    <div class="exam-cat active" data-exam="UPSC" onclick="selectExam(this)">
+      <div class="ico">🏛️</div><h5>UPSC</h5><p>Civil Services</p>
+    </div>
+    <div class="exam-cat" data-exam="SSC" onclick="selectExam(this)">
+      <div class="ico">📋</div><h5>SSC</h5><p>CGL / CHSL / MTS</p>
+    </div>
+    <div class="exam-cat" data-exam="Banking" onclick="selectExam(this)">
+      <div class="ico">🏦</div><h5>Banking</h5><p>IBPS / SBI / RBI</p>
+    </div>
+    <div class="exam-cat" data-exam="GATE" onclick="selectExam(this)">
+      <div class="ico">⚙️</div><h5>GATE</h5><p>Engineering</p>
+    </div>
+    <div class="exam-cat" data-exam="CAT" onclick="selectExam(this)">
+      <div class="ico">📊</div><h5>CAT</h5><p>MBA Entrance</p>
+    </div>
+    <div class="exam-cat" data-exam="NEET" onclick="selectExam(this)">
+      <div class="ico">🩺</div><h5>NEET</h5><p>Medical</p>
+    </div>
+    <div class="exam-cat" data-exam="JEE" onclick="selectExam(this)">
+      <div class="ico">🔬</div><h5>JEE</h5><p>IIT Engineering</p>
+    </div>
+    <div class="exam-cat" data-exam="CLAT" onclick="selectExam(this)">
+      <div class="ico">⚖️</div><h5>CLAT</h5><p>Law Entrance</p>
+    </div>
+    <div class="exam-cat" data-exam="UGC NET" onclick="selectExam(this)">
+      <div class="ico">🎓</div><h5>UGC NET</h5><p>Lectureship</p>
+    </div>
+    <div class="exam-cat" data-exam="Railway" onclick="selectExam(this)">
+      <div class="ico">🚂</div><h5>Railway</h5><p>RRB / NTPC</p>
+    </div>
+    <div class="exam-cat" data-exam="State PSC" onclick="selectExam(this)">
+      <div class="ico">🏢</div><h5>State PSC</h5><p>BPSC / UPPSC etc</p>
+    </div>
+    <div class="exam-cat" data-exam="IELTS" onclick="selectExam(this)">
+      <div class="ico">🌍</div><h5>IELTS</h5><p>English Proficiency</p>
+    </div>
+    <div class="exam-cat" data-exam="GRE" onclick="selectExam(this)">
+      <div class="ico">🇺🇸</div><h5>GRE</h5><p>Graduate Record</p>
+    </div>
+    <div class="exam-cat" data-exam="TOEFL" onclick="selectExam(this)">
+      <div class="ico">📝</div><h5>TOEFL</h5><p>English Test</p>
+    </div>
+    <div class="exam-cat" data-exam="Custom" onclick="selectExam(this)">
+      <div class="ico">➕</div><h5>Custom</h5><p>Any exam</p>
+    </div>
+  </div>
+
+  <!-- Custom Exam Input -->
+  <div id="customExamWrap" style="display:none;margin-bottom:16px">
+    <input class="small-input" id="customExamName" placeholder="Enter exam name (e.g., CA Foundation, NDA, CUET)..." style="max-width:400px">
+  </div>
+
+  <!-- Subject Chips -->
+  <div id="subjectArea" style="margin-bottom:16px">
+    <label class="field-label">Select Subject</label>
+    <div class="subject-chips" id="subjectChips"></div>
+  </div>
+
+  <!-- Topic + Difficulty -->
+  <div class="field-row">
+    <div>
+      <label class="field-label">Topic (optional)</label>
+      <input class="small-input" id="examTopic" placeholder="e.g., Indian Polity, Algebra, Organic Chemistry...">
+    </div>
+    <div>
+      <label class="field-label">Difficulty</label>
+      <select class="small-input" id="examDiff">
+        <option value="easy">🟢 Easy</option>
+        <option value="medium" selected>🟡 Medium</option>
+        <option value="hard">🔴 Hard</option>
+        <option value="previous_year">📜 Previous Year Level</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Exam Mode Tabs -->
+  <div class="inner-tabs" id="examModeTabs">
+    <button class="inner-tab active" data-mode="practice" onclick="selectExamMode(this)">🎯 Practice Q</button>
+    <button class="inner-tab" data-mode="quick_quiz" onclick="selectExamMode(this)">⚡ Quick Quiz</button>
+    <button class="inner-tab" data-mode="mock_test" onclick="selectExamMode(this)">📝 Mini Mock</button>
+    <button class="inner-tab" data-mode="topic_tutor" onclick="selectExamMode(this)">📖 Learn Topic</button>
+    <button class="inner-tab" data-mode="formula_sheet" onclick="selectExamMode(this)">📐 Formulas</button>
+    <button class="inner-tab" data-mode="previous_year" onclick="selectExamMode(this)">📜 PYQ Style</button>
+    <button class="inner-tab" data-mode="study_plan" onclick="selectExamMode(this)">🗓️ Study Plan</button>
+  </div>
+
+  <!-- Action -->
+  <div class="btn-row" style="margin-bottom:20px">
+    <button class="btn btn-primary" id="examGoBtn" onclick="runExamMode()">🚀 Start</button>
+    <button class="btn btn-secondary" onclick="clearExam()">🗑️ Clear</button>
+  </div>
+
+  <!-- Quiz Stats -->
+  <div class="quiz-stats" id="quizStats" style="display:none">
+    <div class="quiz-stat"><div class="n" id="qCorrect" style="color:var(--success)">0</div><div class="l">Correct</div></div>
+    <div class="quiz-stat"><div class="n" id="qWrong" style="color:var(--danger)">0</div><div class="l">Wrong</div></div>
+    <div class="quiz-stat"><div class="n" id="qTotal">0</div><div class="l">Total</div></div>
+    <div class="quiz-stat"><div class="n" id="qAccuracy" style="color:var(--accent)">0%</div><div class="l">Accuracy</div></div>
+  </div>
+
+  <!-- Quiz Area -->
+  <div class="quiz-area" id="quizArea"></div>
+
+  <!-- Loading -->
+  <div class="loading" id="examLoading">
+    <div class="spinner"></div>
+    <p id="examLoadingText">Generating questions...</p>
+  </div>
+
+  <!-- Result -->
+  <div class="result-area" id="examResult">
+    <div class="result-header">
+      <h3 id="examResultTitle">📊 Result</h3>
+      <div class="result-actions">
+        <button class="copy-btn" onclick="copyResult('examResultContent')">📋 Copy</button>
+      </div>
+    </div>
+    <div class="result-content" id="examResultContent"></div>
+  </div>
+</div>
+
+
+<!-- ========================= DOUBT SOLVER MODULE ========================= -->
+<div class="module" id="mod-doubt">
+  <div class="sec-head">
+    <h1>💬 <span class="gr">Doubt Solver</span></h1>
+    <p>Ask any question — get instant AI explanations</p>
+  </div>
+
+  <div class="field-row three" style="margin-bottom:16px">
+    <div>
+      <label class="field-label">Exam (optional)</label>
+      <input class="small-input" id="doubtExam" placeholder="e.g., UPSC, JEE">
+    </div>
+    <div>
+      <label class="field-label">Subject</label>
+      <input class="small-input" id="doubtSubject" placeholder="e.g., Physics, History">
+    </div>
+    <div>
+      <label class="field-label">Topic</label>
+      <input class="small-input" id="doubtTopic" placeholder="e.g., Thermodynamics">
+    </div>
+  </div>
+
+  <div class="input-section" style="padding:16px">
+    <div class="chat-area" id="doubtChat"></div>
+    <div class="chat-input-row">
+      <input class="small-input" id="doubtInput" placeholder="Type your doubt or question..." onkeydown="if(event.key==='Enter')askDoubt()">
+      <button class="btn btn-primary" onclick="askDoubt()" style="padding:10px 20px">Ask →</button>
+    </div>
+  </div>
+
+  <div class="loading" id="doubtLoading">
+    <div class="spinner"></div>
+    <p>Solving your doubt...</p>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+/* =================================================================
+   ZELVORA CAREER LAB + EXAM COACHING ENGINE
+   ================================================================= */
+
+const API_URL = "https://your-worker.your-subdomain.workers.dev"; // ← UPDATE
+
+/* ===== STATE ===== */
+const S = {
+  token: null,
+  activeModule: "career",
+  // Career
+  careerTool: "resume_audit",
+  // Exam
+  examType: "UPSC",
+  subject: "",
+  examMode: "practice",
+  examHistory: [],
+  // Quiz
+  quizCorrect: 0,
+  quizWrong: 0,
+  quizTotal: 0,
+  // Doubt
+  doubtHistory: [],
+};
+
+const $ = id => document.getElementById(id);
+
+/* ===== SUBJECTS MAP ===== */
+const EXAM_SUBJECTS = {
+  "UPSC": ["General Studies","Indian Polity","History","Geography","Economy","Science","Current Affairs","Ethics","Essay"],
+  "SSC": ["Quantitative Aptitude","English","Reasoning","General Awareness"],
+  "Banking": ["Quantitative Aptitude","English","Reasoning","General Awareness","Computer Knowledge"],
+  "GATE": ["Engineering Mathematics","Digital Logic","Computer Networks","DBMS","OS","Algorithms","Data Structures","Theory of Computation"],
+  "CAT": ["Quantitative Ability","Verbal Ability","Data Interpretation","Logical Reasoning"],
+  "NEET": ["Physics","Chemistry","Biology (Botany)","Biology (Zoology)"],
+  "JEE": ["Physics","Chemistry","Mathematics"],
+  "CLAT": ["English","Legal Reasoning","Logical Reasoning","General Knowledge","Quantitative Techniques"],
+  "UGC NET": ["Paper 1 (Teaching Aptitude)","Paper 2 (Subject)","Research Methodology","ICT"],
+  "Railway": ["Mathematics","General Intelligence","General Science","General Awareness"],
+  "State PSC": ["General Studies","Current Affairs","State History","Geography","Polity"],
+  "IELTS": ["Listening","Reading","Writing","Speaking"],
+  "GRE": ["Verbal Reasoning","Quantitative Reasoning","Analytical Writing"],
+  "TOEFL": ["Reading","Listening","Speaking","Writing"],
+  "Custom": ["Subject 1","Subject 2","Subject 3"],
+};
+
+/* ===== TOKEN ===== */
+function initToken(){
+  const s=localStorage.getItem("zelvora_token");
+  if(s){try{const p=JSON.parse(atob(s));if(Date.now()<p.exp){S.token=s;$("usesDisplay").textContent=p.uses.spoken+" uses";return}}catch(e){}}
+  const d={sub:"demo_"+Date.now(),exp:Date.now()+30*24*3600000,uses:{spoken:500}};
+  S.token=btoa(JSON.stringify(d));
+  localStorage.setItem("zelvora_token",S.token);
+  $("usesDisplay").textContent="500 uses";
+}
+
+/* ===== MODULE SWITCH ===== */
+function switchModule(mod){
+  S.activeModule=mod;
+  document.querySelectorAll('.module').forEach(m=>m.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  $('mod-'+mod).classList.add('active');
+  event.target.classList.add('active');
+}
+
+/* ===== API CALL ===== */
+async function callAPI(params){
+  const res=await fetch(API_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+S.token},
+    body:JSON.stringify(params)
+  });
+  const data=await res.json();
+  if(data.error)throw new Error(data.error);
+  if(data.token){S.token=data.token;localStorage.setItem("zelvora_token",data.token);if(data.remaining!==undefined)$("usesDisplay").textContent=data.remaining+" uses";}
+  return data;
+}
+
+/* ===== MARKDOWN RENDERER ===== */
+function renderMD(text){
+  return text
+    .replace(/^### (.*$)/gm,'<h3>\$1</h3>')
+    .replace(/^## (.*$)/gm,'<h2>\$1</h2>')
+    .replace(/^# (.*$)/gm,'<h1>\$1</h1>')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>\$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em>\$1</em>')
+    .replace(/`(.*?)`/g,'<code>\$1</code>')
+    .replace(/^- (.*$)/gm,'<li>\$1</li>')
+    .replace(/^(\d+)\. (.*$)/gm,'<li>\$1. \$2</li>')
+    .replace(/\n\n/g,'<br><br>')
+    .replace(/\n/g,'<br>');
+}
+
+/* ===== COPY ===== */
+function copyResult(id){
+  const el=$(id);
+  const text=el.innerText;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=el.closest('.result-area').querySelector('.copy-btn');
+    btn.textContent="✅ Copied!";
+    setTimeout(()=>btn.textContent="📋 Copy",2000);
+  });
+}
+
+
+/* ================================================================
+   CAREER LAB
+   ================================================================ */
+
+const CAREER_TOOL_CONFIG = {
+  resume_audit: { title: "📄 Resume Audit", needsJD: false, btnText: "🔍 Audit Resume", loading: "Auditing your resume..." },
+  ats_optimize: { title: "🎯 ATS Optimizer", needsJD: true, btnText: "🎯 Optimize for ATS", loading: "Matching keywords..." },
+  cover_letter: { title: "✉️ Cover Letter Generator", needsJD: true, btnText: "✍️ Generate Letter", loading: "Writing cover letter..." },
+  linkedin_review: { title: "💼 LinkedIn Optimizer", needsJD: false, btnText: "💼 Optimize LinkedIn", loading: "Analyzing for LinkedIn..." },
+  job_match: { title: "🔍 Job Match Analysis", needsJD: true, btnText: "🔍 Analyze Fit", loading: "Analyzing job match..." },
+  salary_negotiate: { title: "💰 Salary Negotiation Coach", needsJD: true, btnText: "💰 Get Scripts", loading: "Building negotiation strategy..." },
+  career_path: { title: "🗺️ Career Path Planner", needsJD: false, btnText: "🗺️ Plan Career", loading: "Mapping your career path..." },
+};
+
+function selectCareerTool(el){
+  document.querySelectorAll('.tool-card').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  S.careerTool=el.dataset.tool;
+  const cfg=CAREER_TOOL_CONFIG[S.careerTool];
+  $("jdSection").style.display=cfg.needsJD?"block":"none";
+  $("careerGoBtn").innerHTML=cfg.btnText;
+  $("careerResult").classList.remove("visible");
+}
+
+async function runCareerTool(){
+  const resume=$("resumeText").value.trim();
+  if(resume.length<50){alert("Please paste your complete resume (at least 50 characters).");return;}
+
+  const cfg=CAREER_TOOL_CONFIG[S.careerTool];
+  const jd=$("jdText").value.trim();
+  if(cfg.needsJD&&!jd){alert("This tool requires a job description. Please paste one.");return;}
+
+  $("careerGoBtn").disabled=true;
+  $("careerLoading").classList.add("visible");
+  $("careerLoadingText").textContent=cfg.loading;
+  $("careerResult").classList.remove("visible");
+
+  try{
+    const data=await callAPI({
+      module:"career",
+      mode:S.careerTool,
+      resume_text:resume,
+      job_description:jd||undefined,
+      text:resume.substring(0,200),
+      quality:"best",
+    });
+
+    $("careerResultTitle").textContent=cfg.title+" — Results";
+    $("careerResultContent").innerHTML=renderMD(data.reply);
+    $("careerResult").classList.add("visible");
+  }catch(e){
+    alert("Error: "+e.message);
+  }finally{
+    $("careerGoBtn").disabled=false;
+    $("careerLoading").classList.remove("visible");
+  }
+}
+
+function clearCareer(){
+  $("resumeText").value="";
+  $("jdText").value="";
+  $("careerResult").classList.remove("visible");
+}
+  <!-- CONTINUING FROM WHERE IT CUT OFF — paste this to replace from the clearCareer function onwards -->
+
+<script>
+/* =================================================================
+   ZELVORA CAREER LAB + EXAM COACHING ENGINE (COMPLETE)
+   ================================================================= */
+
+const API_URL = "https://your-worker.your-subdomain.workers.dev"; // ← UPDATE THIS
+
+/* ===== STATE ===== */
+const S = {
+  token: null,
+  activeModule: "career",
+  careerTool: "resume_audit",
+  examType: "UPSC",
+  subject: "",
+  examMode: "practice",
+  examHistory: [],
+  quizCorrect: 0,
+  quizWrong: 0,
+  quizTotal: 0,
+  doubtHistory: [],
+};
+
+const $ = id => document.getElementById(id);
+
+/* ===== SUBJECTS MAP ===== */
+const EXAM_SUBJECTS = {
+  "UPSC": ["General Studies","Indian Polity","History","Geography","Economy","Science","Current Affairs","Ethics","Essay"],
+  "SSC": ["Quantitative Aptitude","English","Reasoning","General Awareness"],
+  "Banking": ["Quantitative Aptitude","English","Reasoning","General Awareness","Computer Knowledge"],
+  "GATE": ["Engineering Mathematics","Digital Logic","Computer Networks","DBMS","OS","Algorithms","Data Structures","Theory of Computation"],
+  "CAT": ["Quantitative Ability","Verbal Ability","Data Interpretation","Logical Reasoning"],
+  "NEET": ["Physics","Chemistry","Biology (Botany)","Biology (Zoology)"],
+  "JEE": ["Physics","Chemistry","Mathematics"],
+  "CLAT": ["English","Legal Reasoning","Logical Reasoning","General Knowledge","Quantitative Techniques"],
+  "UGC NET": ["Paper 1 (Teaching Aptitude)","Paper 2 (Subject)","Research Methodology","ICT"],
+  "Railway": ["Mathematics","General Intelligence","General Science","General Awareness"],
+  "State PSC": ["General Studies","Current Affairs","State History","Geography","Polity"],
+  "IELTS": ["Listening","Reading","Writing","Speaking"],
+  "GRE": ["Verbal Reasoning","Quantitative Reasoning","Analytical Writing"],
+  "TOEFL": ["Reading","Listening","Speaking","Writing"],
+  "Custom": ["Subject 1","Subject 2","Subject 3"],
+};
+
+/* ===== TOKEN ===== */
+function initToken() {
+  const s = localStorage.getItem("zelvora_token");
+  if (s) {
+    try {
+      const p = JSON.parse(atob(s));
+      if (Date.now() < p.exp) {
+        S.token = s;
+        $("usesDisplay").textContent = p.uses.spoken + " uses";
+        return;
+      }
+    } catch (e) {}
+  }
+  const d = {
+    sub: "demo_" + Date.now(),
+    exp: Date.now() + 30 * 24 * 3600000,
+    uses: { spoken: 500 }
+  };
+  S.token = btoa(JSON.stringify(d));
+  localStorage.setItem("zelvora_token", S.token);
+  $("usesDisplay").textContent = "500 uses";
+}
+
+/* ===== MODULE SWITCH ===== */
+function switchModule(mod) {
+  S.activeModule = mod;
+  document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  $('mod-' + mod).classList.add('active');
+  // Find the clicked tab
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    if (
+      (mod === 'career' && t.textContent.includes('Career')) ||
+      (mod === 'exam' && t.textContent.includes('Exam')) ||
+      (mod === 'doubt' && t.textContent.includes('Doubt'))
+    ) {
+      t.classList.add('active');
+    }
+  });
+}
+
+/* ===== API CALL ===== */
+async function callAPI(params) {
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + S.token
+    },
+    body: JSON.stringify(params)
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  if (data.token) {
+    S.token = data.token;
+    localStorage.setItem("zelvora_token", data.token);
+    if (data.remaining !== undefined) {
+      $("usesDisplay").textContent = data.remaining + " uses";
+    }
+  }
+  return data;
+}
+
+/* ===== MARKDOWN RENDERER ===== */
+function renderMD(text) {
+  return text
+    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`(.*?)`/g, '<code>$1</code>')
+    .replace(/^- (.*$)/gm, '<li>$1</li>')
+    .replace(/^(\d+)\. (.*$)/gm, '<li>$1. $2</li>')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+}
+
+/* ===== COPY RESULT ===== */
+function copyResult(id) {
+  const el = $(id);
+  const text = el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = el.closest('.result-area').querySelector('.copy-btn');
+    const orig = btn.textContent;
+    btn.textContent = "✅ Copied!";
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+
+
+/* ================================================================
+   CAREER LAB
+   ================================================================ */
+
+const CAREER_TOOL_CONFIG = {
+  resume_audit: {
+    title: "📄 Resume Audit",
+    needsJD: false,
+    btnText: "🔍 Audit Resume",
+    loading: "Auditing your resume with AI...",
+    resultTitle: "📄 Resume Audit Report"
+  },
+  ats_optimize: {
+    title: "🎯 ATS Optimizer",
+    needsJD: true,
+    btnText: "🎯 Optimize for ATS",
+    loading: "Matching keywords against job description...",
+    resultTitle: "🎯 ATS Optimization Report"
+  },
+  cover_letter: {
+    title: "✉️ Cover Letter",
+    needsJD: true,
+    btnText: "✍️ Generate Letter",
+    loading: "Writing your cover letter...",
+    resultTitle: "✉️ Your Cover Letter"
+  },
+  linkedin_review: {
+    title: "💼 LinkedIn Review",
+    needsJD: false,
+    btnText: "💼 Optimize LinkedIn",
+    loading: "Optimizing your LinkedIn profile...",
+    resultTitle: "💼 LinkedIn Optimization"
+  },
+  job_match: {
+    title: "🔍 Job Match",
+    needsJD: true,
+    btnText: "🔍 Analyze Fit",
+    loading: "Analyzing your fit for this role...",
+    resultTitle: "🔍 Job Match Analysis"
+  },
+  salary_negotiate: {
+    title: "💰 Salary Coach",
+    needsJD: true,
+    btnText: "💰 Get Scripts",
+    loading: "Building negotiation strategy...",
+    resultTitle: "💰 Salary Negotiation Playbook"
+  },
+  career_path: {
+    title: "🗺️ Career Path",
+    needsJD: false,
+    btnText: "🗺️ Plan Career",
+    loading: "Mapping your career path...",
+    resultTitle: "🗺️ Your Career Roadmap"
+  },
+};
+
+function selectCareerTool(el) {
+  document.querySelectorAll('#careerTools .tool-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  S.careerTool = el.dataset.tool;
+
+  const cfg = CAREER_TOOL_CONFIG[S.careerTool];
+  $("jdSection").style.display = cfg.needsJD ? "block" : "none";
+  $("careerGoBtn").innerHTML = cfg.btnText;
+  $("careerResult").classList.remove("visible");
+}
+
+async function runCareerTool() {
+  const resume = $("resumeText").value.trim();
+  if (resume.length < 50) {
+    alert("Please paste your complete resume (at least 50 characters).");
+    return;
+  }
+
+  const cfg = CAREER_TOOL_CONFIG[S.careerTool];
+  const jd = $("jdText").value.trim();
+
+  if (cfg.needsJD && !jd) {
+    alert("This tool requires a job description. Please paste one.");
+    return;
+  }
+
+  // UI: loading
+  $("careerGoBtn").disabled = true;
+  $("careerLoading").classList.add("visible");
+  $("careerLoadingText").textContent = cfg.loading;
+  $("careerResult").classList.remove("visible");
+
+  try {
+    const data = await callAPI({
+      module: "career",
+      mode: S.careerTool,
+      resume_text: resume,
+      job_description: jd || undefined,
+      text: resume.substring(0, 200),
+      quality: "best",
+    });
+
+    $("careerResultTitle").textContent = cfg.resultTitle;
+    $("careerResultContent").innerHTML = renderMD(data.reply);
+    $("careerResult").classList.add("visible");
+
+    // Scroll to result
+    $("careerResult").scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (e) {
+    alert("Error: " + e.message);
+  } finally {
+    $("careerGoBtn").disabled = false;
+    $("careerLoading").classList.remove("visible");
+  }
+}
+
+function clearCareer() {
+  $("resumeText").value = "";
+  $("jdText").value = "";
+  $("careerResult").classList.remove("visible");
+}
+
+
+/* ================================================================
+   EXAM COACHING
+   ================================================================ */
+
+function selectExam(el) {
+  document.querySelectorAll('.exam-cat').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  S.examType = el.dataset.exam;
+
+  // Show custom input
+  $("customExamWrap").style.display = S.examType === "Custom" ? "block" : "none";
+
+  // Load subjects
+  loadSubjects();
+  clearExam();
+}
+
+function loadSubjects() {
+  const exam = S.examType === "Custom" ? "Custom" : S.examType;
+  const subjects = EXAM_SUBJECTS[exam] || ["General"];
+  const wrap = $("subjectChips");
+  wrap.innerHTML = "";
+
+  subjects.forEach((sub, i) => {
+    const chip = document.createElement("button");
+    chip.className = "sub-chip" + (i === 0 ? " active" : "");
+    chip.textContent = sub;
+    chip.onclick = () => {
+      document.querySelectorAll('.sub-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      S.subject = sub;
+    };
+    wrap.appendChild(chip);
+    if (i === 0) S.subject = sub;
+  });
+}
+
+function selectExamMode(el) {
+  document.querySelectorAll('#examModeTabs .inner-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  S.examMode = el.dataset.mode;
+
+  // Update button text
+  const btnTexts = {
+    practice: "🎯 Generate Question",
+    quick_quiz: "⚡ Start Quick Quiz",
+    mock_test: "📝 Generate Mini Mock (5 Qs)",
+    topic_tutor: "📖 Explain Topic",
+    formula_sheet: "📐 Generate Formula Sheet",
+    previous_year: "📜 Generate PYQ-Style Question",
+    study_plan: "🗓️ Create Study Plan",
+  };
+  $("examGoBtn").textContent = btnTexts[S.examMode] || "🚀 Start";
+}
+
+async function runExamMode() {
+  const examType = S.examType === "Custom"
+    ? ($("customExamName").value.trim() || "Competitive Exam")
+    : S.examType;
+  const subject = S.subject || "General";
+  const topic = $("examTopic").value.trim() || "general";
+  const difficulty = $("examDiff").value;
+
+  // Validate
+  if (S.examMode === "topic_tutor" && !$("examTopic").value.trim()) {
+    alert("Please enter a topic to learn.");
+    return;
+  }
+
+  // UI
+  $("examGoBtn").disabled = true;
+  $("examLoading").classList.add("visible");
+  $("examResult").classList.remove("visible");
+  $("quizArea").classList.remove("visible");
+
+  const loadingTexts = {
+    practice: "Generating exam question...",
+    quick_quiz: "Preparing quick quiz...",
+    mock_test: "Generating 5 mock questions...",
+    topic_tutor: "Preparing topic explanation...",
+    formula_sheet: "Building formula reference...",
+    previous_year: "Creating PYQ-style question...",
+    study_plan: "Building your study plan...",
+  };
+  $("examLoadingText").textContent = loadingTexts[S.examMode] || "Processing...";
+
+  try {
+    // For practice/quick_quiz/previous_year: show as interactive quiz
+    if (["practice", "quick_quiz", "previous_year"].includes(S.examMode)) {
+      const data = await callAPI({
+        module: "exam",
+        mode: S.examMode,
+        exam_type: examType,
+        subject: subject,
+        topic: topic,
+        difficulty: difficulty,
+        question_type: "multiple choice",
+        text: `Generate a ${difficulty} ${subject} question about ${topic} for ${examType} exam.`,
+        history: S.examHistory.slice(-10),
+        quality: S.examMode === "quick_quiz" ? "fast" : "balanced",
+      });
+
+      S.examHistory.push(
+        { role: "user", content: `Generate a question` },
+        { role: "assistant", content: data.reply }
+      );
+
+      displayQuizQuestion(data.reply);
+
+    // For mock_test: show all 5 questions
+    } else if (S.examMode === "mock_test") {
+      const data = await callAPI({
+        module: "exam",
+        mode: "mock_test",
+        exam_type: examType,
+        subject: subject,
+        topic: topic,
+        difficulty: difficulty,
+        text: `Generate a 5-question mini mock test for ${examType} - ${subject} - ${topic}`,
+        quality: "best",
+      });
+
+      S.examHistory = [{ role: "assistant", content: data.reply }];
+
+      $("examResultTitle").textContent = `📝 Mini Mock Test — ${examType} ${subject}`;
+      $("examResultContent").innerHTML = renderMD(data.reply);
+      $("examResult").classList.add("visible");
+
+      // Show answer input
+      addMockTestInput();
+
+    // For everything else: show as formatted result
+    } else {
+      const data = await callAPI({
+        module: "exam",
+        mode: S.examMode,
+        exam_type: examType,
+        subject: subject,
+        topic: topic,
+        difficulty: difficulty,
+        text: S.examMode === "study_plan"
+          ? `Create a complete study plan for ${examType}. I want to focus on ${subject}. My current level is ${difficulty}.`
+          : `${topic || subject} for ${examType}`,
+        quality: "best",
+      });
+
+      const titles = {
+        topic_tutor: `📖 ${topic || subject} — Explained`,
+        formula_sheet: `📐 ${subject} Formula Sheet — ${examType}`,
+        study_plan: `🗓️ Study Plan — ${examType}`,
+      };
+
+      $("examResultTitle").textContent = titles[S.examMode] || "📊 Result";
+      $("examResultContent").innerHTML = renderMD(data.reply);
+      $("examResult").classList.add("visible");
+      $("examResult").scrollIntoView({ behavior: "smooth" });
+    }
+
+  } catch (e) {
+    alert("Error: " + e.message);
+  } finally {
+    $("examGoBtn").disabled = false;
+    $("examLoading").classList.remove("visible");
+  }
+}
+
+/* ===== QUIZ DISPLAY ===== */
+function displayQuizQuestion(text) {
+  const quizArea = $("quizArea");
+  quizArea.innerHTML = "";
+  quizArea.classList.add("visible");
+
+  // Show stats
+  $("quizStats").style.display = "flex";
+
+  // Parse question and options
+  const lines = text.split('\n').filter(l => l.trim());
+  let questionText = "";
+  let options = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    // Check if it's an option line
+    const optMatch = trimmed.match(/^([A-D])[.):\s]+(.+)/i);
+    if (optMatch) {
+      options.push({ letter: optMatch[1].toUpperCase(), text: optMatch[2].trim() });
+    } else if (options.length === 0) {
+      questionText += (questionText ? " " : "") + trimmed;
+    }
+  }
+
+  // If couldn't parse options, show as plain text
+  if (options.length === 0) {
+    quizArea.innerHTML = `
+      <div class="quiz-q">${text}</div>
+      <div class="chat-input-row" style="margin-top:12px">
+        <input class="small-input" id="quizFreeAnswer" placeholder="Type your answer...">
+        <button class="btn btn-primary" onclick="submitFreeAnswer()" style="padding:10px 20px">Submit</button>
+      </div>
+    `;
+    return;
+  }
+
+  // Build question UI
+  const qDiv = document.createElement("div");
+  qDiv.className = "quiz-q";
+  qDiv.textContent = questionText;
+  quizArea.appendChild(qDiv);
+
+  const optWrap = document.createElement("div");
+  optWrap.className = "quiz-options";
+
+  options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "quiz-opt";
+    btn.textContent = `${opt.letter}) ${opt.text}`;
+    btn.dataset.letter = opt.letter;
+    btn.onclick = () => submitQuizAnswer(btn, opt.letter, options);
+    optWrap.appendChild(btn);
+  });
+
+  quizArea.appendChild(optWrap);
+
+  // Next button (hidden initially)
+  const nextRow = document.createElement("div");
+  nextRow.className = "btn-row";
+  nextRow.id = "quizNextRow";
+  nextRow.style.display = "none";
+  nextRow.innerHTML = `
+    <button class="btn btn-primary" onclick="runExamMode()">Next Question →</button>
+    <button class="btn btn-secondary" onclick="showExplanation()">💡 Explain Answer</button>
+  `;
+  quizArea.appendChild(nextRow);
+
+  quizArea.scrollIntoView({ behavior: "smooth" });
+}
+
+async function submitQuizAnswer(btnEl, selected, allOptions) {
+  // Disable all options
+  document.querySelectorAll('.quiz-opt').forEach(b => {
+    b.style.pointerEvents = "none";
+  });
+
+  btnEl.classList.add("selected");
+
+  // Ask AI for the correct answer
+  try {
+    const data = await callAPI({
+      module: "exam",
+      mode: "explain",
+      exam_type: S.examType,
+      subject: S.subject,
+      topic: $("examTopic").value.trim(),
+      text: `The student chose option ${selected}. What is the correct answer? Reply with JUST the letter first (e.g., "Correct answer: B"), then a brief explanation in 2-3 sentences.`,
+      history: S.examHistory.slice(-6),
+      quality: "fast",
+    });
+
+    S.examHistory.push(
+      { role: "user", content: `My answer: ${selected}` },
+      { role: "assistant", content: data.reply }
+    );
+
+    // Parse correct answer from response
+    const reply = data.reply;
+    const correctMatch = reply.match(/correct\s*(?:answer)?[:\s]*([A-D])/i) ||
+                         reply.match(/([A-D])\s*(?:is|was)\s*(?:the\s*)?correct/i) ||
+                         reply.match(/^([A-D])[.)]/m);
+    const correctLetter = correctMatch ? correctMatch[1].toUpperCase() : null;
+
+    // Update UI
+    if (correctLetter) {
+      document.querySelectorAll('.quiz-opt').forEach(b => {
+        if (b.dataset.letter === correctLetter) b.classList.add("correct");
+        if (b.dataset.letter === selected && selected !== correctLetter) b.classList.add("wrong");
+      });
+
+      if (selected === correctLetter) {
+        S.quizCorrect++;
+      } else {
+        S.quizWrong++;
+      }
+    } else {
+      // Couldn't parse — highlight selected
+      btnEl.classList.add("selected");
+      S.quizTotal++;
+    }
+
+    S.quizTotal++;
+    updateQuizStats();
+
+    // Show explanation below
+    const explDiv = document.createElement("div");
+    explDiv.style.cssText = "margin-top:16px;padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:12px;font-size:13px;line-height:1.7;color:var(--muted)";
+    explDiv.innerHTML = renderMD(reply);
+    $("quizArea").appendChild(explDiv);
+
+    // Show next button
+    $("quizNextRow").style.display = "flex";
+
+  } catch (e) {
+    console.error(e);
+    S.quizTotal++;
+    updateQuizStats();
+    $("quizNextRow").style.display = "flex";
+  }
+}
+
+async function submitFreeAnswer() {
+  const answer = $("quizFreeAnswer").value.trim();
+  if (!answer) return;
+
+  $("quizFreeAnswer").disabled = true;
+
+  try {
+    const data = await callAPI({
+      module: "exam",
+      mode: "explain",
+      exam_type: S.examType,
+      subject: S.subject,
+      text: `Student's answer: "${answer}". Is this correct? Give the correct answer and brief explanation.`,
+      history: S.examHistory.slice(-6),
+      quality: "fast",
+    });
+
+    S.examHistory.push(
+      { role: "user", content: answer },
+      { role: "assistant", content: data.reply }
+    );
+
+    S.quizTotal++;
+    // Try to detect if correct
+    const isCorrect = /correct|right|exactly|yes|well done/i.test(data.reply.substring(0, 100));
+    if (isCorrect) S.quizCorrect++;
+    else S.quizWrong++;
+    updateQuizStats();
+
+    const explDiv = document.createElement("div");
+    explDiv.style.cssText = "margin-top:16px;padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:12px;font-size:13px;line-height:1.7;color:var(--muted)";
+    explDiv.innerHTML = renderMD(data.reply);
+    $("quizArea").appendChild(explDiv);
+
+    // Add next button
+    const nextRow = document.createElement("div");
+    nextRow.className = "btn-row";
+    nextRow.innerHTML = `<button class="btn btn-primary" onclick="runExamMode()">Next Question →</button>`;
+    $("quizArea").appendChild(nextRow);
+
+  } catch (e) {
+    alert("Error: " + e.message);
+  }
+}
+
+function updateQuizStats() {
+  $("qCorrect").textContent = S.quizCorrect;
+  $("qWrong").textContent = S.quizWrong;
+  $("qTotal").textContent = S.quizTotal;
+  const acc = S.quizTotal > 0 ? Math.round((S.quizCorrect / S.quizTotal) * 100) : 0;
+  $("qAccuracy").textContent = acc + "%";
+}
+
+async function showExplanation() {
+  try {
+    $("examLoading").classList.add("visible");
+    $("examLoadingText").textContent = "Getting detailed explanation...";
+
+    const data = await callAPI({
+      module: "exam",
+      mode: "explain",
+      exam_type: S.examType,
+      subject: S.subject,
+      topic: $("examTopic").value.trim(),
+      text: "Give a detailed explanation of the last question. Include the concept, why the correct answer is right, why others are wrong, and an exam tip.",
+      history: S.examHistory.slice(-6),
+      quality: "best",
+    });
+
+    $("examResultTitle").textContent = "💡 Detailed Explanation";
+    $("examResultContent").innerHTML = renderMD(data.reply);
+    $("examResult").classList.add("visible");
+    $("examResult").scrollIntoView({ behavior: "smooth" });
+
+  } catch (e) {
+    alert("Error: " + e.message);
+  } finally {
+    $("examLoading").classList.remove("visible");
+  }
+}
+
+/* ===== MOCK TEST ANSWER INPUT ===== */
+function addMockTestInput() {
+  const container = $("examResultContent");
+  const inputDiv = document.createElement("div");
+  inputDiv.style.cssText = "margin-top:20px;padding-top:16px;border-top:1px solid var(--border)";
+  inputDiv.innerHTML = `
+    <div style="margin-bottom:12px;font-weight:700;font-size:14px">📝 Enter Your Answers</div>
+    <div class="chat-input-row">
+      <input class="small-input" id="mockAnswers" placeholder="e.g., 1-A, 2-B, 3-C, 4-D, 5-A" style="flex:1">
+      <button class="btn btn-success" onclick="submitMockTest()" style="padding:10px 20px">Submit Answers</button>
+    </div>
+  `;
+  container.appendChild(inputDiv);
+}
+
+async function submitMockTest() {
+  const answers = $("mockAnswers").value.trim();
+  if (!answers) { alert("Enter your answers first."); return; }
+
+  $("examLoading").classList.add("visible");
+  $("examLoadingText").textContent = "Checking your answers...";
+
+  try {
+    const data = await callAPI({
+      module: "exam",
+      mode: "analyze_score",
+      exam_type: S.examType,
+      subject: S.subject,
+      topic: $("examTopic").value.trim(),
+      text: `The student's answers for the mock test are: ${answers}. Please check each answer, give the score, and provide detailed analysis.`,
+      history: S.examHistory.slice(-4),
+      quality: "best",
+    });
+
+    $("examResultTitle").textContent = `📊 Mock Test Results — ${S.examType} ${S.subject}`;
+    $("examResultContent").innerHTML = renderMD(data.reply);
+    $("examResult").scrollIntoView({ behavior: "smooth" });
+
+  } catch (e) {
+    alert("Error: " + e.message);
+  } finally {
+    $("examLoading").classList.remove("visible");
+  }
+}
+
+function clearExam() {
+  S.examHistory = [];
+  S.quizCorrect = 0;
+  S.quizWrong = 0;
+  S.quizTotal = 0;
+  updateQuizStats();
+  $("quizStats").style.display = "none";
+  $("quizArea").classList.remove("visible");
+  $("quizArea").innerHTML = "";
+  $("examResult").classList.remove("visible");
+  $("examTopic").value = "";
+}
+
+
+/* ================================================================
+   DOUBT SOLVER
+   ================================================================ */
+
+async function askDoubt() {
+  const input = $("doubtInput");
+  const text = input.value.trim();
+  if (!text) return;
+
+  // Add user message
+  addChatMsg("user", text);
+  input.value = "";
+  S.doubtHistory.push({ role: "user", content: text });
+
+  // Loading
+  $("doubtLoading").classList.add("visible");
+
+  try {
+    const data = await callAPI({
+      module: "exam",
+      mode: "doubt_solver",
+      exam_type: $("doubtExam").value.trim() || undefined,
+      subject: $("doubtSubject").value.trim() || undefined,
+      topic: $("doubtTopic").value.trim() || undefined,
+      text: text,
+      history: S.doubtHistory.slice(-16),
+      quality: "balanced",
+    });
+
+    addChatMsg("ai", data.reply);
+    S.doubtHistory.push({ role: "assistant", content: data.reply });
+
+  } catch (e) {
+    addChatMsg("ai", "Sorry, I couldn't process that. Please try again.");
+  } finally {
+    $("doubtLoading").classList.remove("visible");
+  }
+}
+
+function addChatMsg(type, text) {
+  const chat = $("doubtChat");
+  const div = document.createElement("div");
+  div.className = "chat-msg " + type;
+  div.innerHTML = type === "ai" ? renderMD(text) : text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+
+/* ================================================================
+   INIT
+   ================================================================ */
+
+initToken();
+loadSubjects(); // Load initial subjects for UPSC
+
+// Set initial career tool
+selectCareerTool(document.querySelector('#careerTools .tool-card.active'));
+</script>
+</body>
+</html>
