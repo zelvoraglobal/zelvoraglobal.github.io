@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Control</title>
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#020617;--accent:#6366f1;--accent2:#22d3ee;
+  --success:#10b981;--warning:#f59e0b;--danger:#ef4444;
+  --glass:rgba(255,255,255,.05);--gb:rgba(255,255,255,.08);
+  --text:#e5e7eb;--muted:#94a3b8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* Lock Screen */
+.lock-screen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:20px;
+}
+.lock-box{
+  background:var(--glass);border:1px solid var(--gb);
+  border-radius:24px;padding:40px 32px;
+  max-width:380px;width:100%;text-align:center;
+  backdrop-filter:blur(20px);
+  animation:fadeUp .5s ease;
+}
+.lock-box h3{font-size:18px;font-weight:700;margin-bottom:16px;color:var(--muted)}
+.lock-input{
+  width:100%;padding:14px;border-radius:12px;
+  background:rgba(0,0,0,.3);border:1px solid var(--gb);
+  color:#fff;font-size:16px;text-align:center;
+  font-family:monospace;letter-spacing:3px;
+  margin-bottom:12px;
+}
+.lock-input:focus{outline:none;border-color:var(--accent)}
+.lock-btn{
+  width:100%;padding:14px;border:none;border-radius:12px;
+  background:var(--accent);color:#fff;font-weight:700;
+  font-size:14px;cursor:pointer;font-family:inherit;
+}
+.lock-err{color:var(--danger);font-size:13px;margin-top:8px;display:none}
+.lock-attempts{color:var(--muted);font-size:11px;margin-top:12px}
+
+/* Admin Dashboard */
+.admin{display:none;padding:20px;max-width:900px;margin:auto}
+.admin.active{display:block;animation:fadeUp .4s ease}
+
+.admin-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 0 20px;border-bottom:1px solid var(--gb);
+  margin-bottom:24px;
+}
+.admin-header h2{font-size:20px;font-weight:800;color:var(--accent)}
+.admin-header .logout{
+  padding:8px 16px;border:1px solid var(--gb);border-radius:10px;
+  background:none;color:var(--muted);font-size:13px;cursor:pointer;
+  font-family:inherit;font-weight:600;
+}
+.admin-header .logout:hover{color:var(--danger);border-color:rgba(239,68,68,.3)}
+
+/* Stat Grid */
+.admin-stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;margin-bottom:24px;
+}
+.a-stat{
+  background:var(--glass);border:1px solid var(--gb);
+  border-radius:16px;padding:16px;text-align:center;
+}
+.a-stat .v{font-size:24px;font-weight:800;color:var(--accent2)}
+.a-stat .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+
+/* Panels */
+.panel{
+  background:var(--glass);border:1px solid var(--gb);
+  border-radius:20px;padding:24px;margin-bottom:20px;
+  backdrop-filter:blur(16px);
+}
+.panel h3{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.panel h3 .badge{
+  font-size:10px;padding:2px 8px;border-radius:6px;
+  background:rgba(99,102,241,.15);color:#a5b4fc;font-weight:600;
+}
+
+/* Form rows */
+.form-row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.form-group{flex:1;min-width:120px}
+.form-group label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;padding:10px 12px;border-radius:10px;
+  background:rgba(0,0,0,.3);border:1px solid var(--gb);
+  color:#fff;font-size:13px;font-family:inherit;
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent)}
+.form-group textarea{min-height:60px;resize:vertical}
+
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.a-btn{
+  padding:10px 20px;border:none;border-radius:10px;
+  font-size:13px;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:.2s;
+}
+.a-btn:hover{transform:translateY(-1px)}
+.a-btn.primary{background:var(--accent);color:#fff}
+.a-btn.success{background:var(--success);color:#fff}
+.a-btn.warning{background:var(--warning);color:#000}
+.a-btn.danger{background:var(--danger);color:#fff}
+.a-btn.ghost{background:var(--glass);color:var(--muted);border:1px solid var(--gb)}
+
+/* Output */
+.output{
+  background:rgba(0,0,0,.3);border:1px solid var(--gb);
+  border-radius:12px;padding:14px;margin-top:12px;
+  font-family:monospace;font-size:12px;color:var(--accent2);
+  word-break:break-all;max-height:200px;overflow-y:auto;
+  display:none;
+}
+.output.show{display:block;animation:fadeUp .3s ease}
+.output::-webkit-scrollbar{width:4px}
+.output::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px}
+
+/* Token List */
+.token-list{max-height:300px;overflow-y:auto}
+.token-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(0,0,0,.2);margin-bottom:6px;
+  font-size:12px;
+}
+.token-item .info{flex:1}
+.token-item .info .name{font-weight:600;color:#fff}
+.token-item .info .meta{color:var(--muted);font-size:11px;margin-top:2px}
+.token-item .actions{display:flex;gap:4px}
+.token-item .actions button{
+  padding:4px 10px;border:none;border-radius:6px;
+  font-size:11px;cursor:pointer;font-family:inherit;font-weight:600;
+}
+
+/* Quick Links */
+.quick-links{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.q-link{
+  padding:8px 16px;border-radius:10px;
+  background:var(--glass);border:1px solid var(--gb);
+  color:var(--muted);text-decoration:none;font-size:12px;
+  font-weight:600;transition:.2s;
+}
+.q-link:hover{color:#fff;border-color:rgba(99,102,241,.3)}
+
+/* Tabs */
+.admin-tabs{display:flex;gap:4px;background:rgba(0,0,0,.2);border-radius:14px;padding:4px;margin-bottom:20px;overflow-x:auto}
+.a-tab{
+  padding:10px 16px;border:none;border-radius:10px;
+  background:transparent;color:var(--muted);font-size:12px;
+  font-weight:600;cursor:pointer;font-family:inherit;
+  white-space:nowrap;transition:.2s;
+}
+.a-tab.active{background:var(--accent);color:#fff}
+
+/* Responsive */
+@media(max-width:640px){
+  .admin{padding:12px}
+  .form-row{flex-direction:column}
+  .admin-tabs{gap:2px}
+  .a-tab{padding:8px 12px;font-size:11px}
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+
+/* Toast */
+.toast{
+  position:fixed;top:20px;right:20px;z-index:999;
+  padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;
+  backdrop-filter:blur(12px);border:1px solid var(--gb);
+  background:rgba(15,23,42,.9);
+  transform:translateX(140%);transition:.3s cubic-bezier(.16,1,.3,1);
+}
+.toast.show{transform:translateX(0)}
+.toast.ok{border-left:3px solid var(--success)}
+.toast.err{border-left:3px solid var(--danger)}
+</style>
+</head>
+
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ===== LOCK SCREEN ===== -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-box">
+    <div style="font-size:40px;margin-bottom:12px">🔐</div>
+    <h3>System Access</h3>
+    <input type="password" class="lock-input" id="passInput" placeholder="••••••••" 
+           onkeydown="if(event.key==='Enter')attemptLogin()">
+    <button class="lock-btn" onclick="attemptLogin()">Authenticate</button>
+    <div class="lock-err" id="lockErr">Invalid credentials</div>
+    <div class="lock-attempts" id="lockAttempts"></div>
+  </div>
+</div>
+
+<!-- ===== ADMIN DASHBOARD ===== -->
+<div class="admin" id="adminPanel">
+
+  <!-- Header -->
+  <div class="admin-header">
+    <h2>⚙️ Control Panel</h2>
+    <button class="logout" onclick="adminLogout()">🚪 Lock</button>
+  </div>
+
+  <!-- Quick Links -->
+  <div class="quick-links">
+    <a href="index.html" class="q-link" target="_blank">🌐 Live Site</a>
+    <a href="spoken-english-gate.html" class="q-link" target="_blank">🔑 Gate Page</a>
+    <a href="spoken-english.html" class="q-link" target="_blank">🎧 Spoken English</a>
+    <a href="mock-interview.html" class="q-link" target="_blank">🎤 Mock Interview</a>
+    <a href="career-lab.html" class="q-link" target="_blank">🧪 Career Lab</a>
+  </div>
+
+  <!-- Stats -->
+  <div class="admin-stats">
+    <div class="a-stat">
+      <div class="v" id="statTokens">0</div>
+      <div class="l">Tokens Created</div>
+    </div>
+    <div class="a-stat">
+      <div class="v" id="statActive">0</div>
+      <div class="l">Active Now</div>
+    </div>
+    <div class="a-stat">
+      <div class="v" id="statRevenue">₹0</div>
+      <div class="l">Est. Revenue</div>
+    </div>
+    <div class="a-stat">
+      <div class="v" id="statToday">0</div>
+      <div class="l">Today's Tokens</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="admin-tabs">
+    <button class="a-tab active" onclick="showAdminTab('generate')">🎟️ Generate Token</button>
+    <button class="a-tab" onclick="showAdminTab('bulk')">📦 Bulk Generate</button>
+    <button class="a-tab" onclick="showAdminTab('manage')">📋 Manage Tokens</button>
+    <button class="a-tab" onclick="showAdminTab('test')">🧪 Test Token</button>
+    <button class="a-tab" onclick="showAdminTab('config')">⚙️ Config</button>
+    <button class="a-tab" onclick="showAdminTab('analytics')">📊 Analytics</button>
+  </div>
+
+  <!-- ===== TAB: GENERATE TOKEN ===== -->
+  <div class="panel tab-panel" id="tab-generate">
+    <h3>🎟️ Generate Access Token <span class="badge">Single</span></h3>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Plan Type</label>
+        <select id="genPlan" onchange="updateGenPreview()">
+          <option value="trial">⚡ Trial (₹10 / 1 day / 20 uses)</option>
+          <option value="monthly">🚀 Monthly (₹300 / 30 days / 999 uses)</option>
+          <option value="weekly">📅 Weekly (₹100 / 7 days / 100 uses)</option>
+          <option value="lifetime">👑 Lifetime (₹999 / 365 days / 9999 uses)</option>
+          <option value="custom">🛠️ Custom</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="customFields" style="display:none">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Duration (days)</label>
+          <input type="number" id="genDays" value="30" min="1" max="365">
+        </div>
+        <div class="form-group">
+          <label>Spoken Uses</label>
+          <input type="number" id="genSpoken" value="100" min="1" max="99999">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Customer Name (optional)</label>
+        <input type="text" id="genName" placeholder="e.g. Rahul M.">
+      </div>
+      <div class="form-group">
+        <label>Customer Email (optional)</label>
+        <input type="text" id="genEmail" placeholder="e.g. rahul@email.com">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Notes (optional)</label>
+        <input type="text" id="genNotes" placeholder="e.g. Razorpay order #123">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="a-btn primary" onclick="generateToken()">🎟️ Generate Token</button>
+      <button class="a-btn ghost" onclick="generateAndCopy()">📋 Generate & Copy</button>
+    </div>
+
+    <div class="output" id="genOutput"></div>
+  </div>
+
+  <!-- ===== TAB: BULK GENERATE ===== -->
+  <div class="panel tab-panel" id="tab-bulk" style="display:none">
+    <h3>📦 Bulk Generate Tokens <span class="badge">Batch</span></h3>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Plan Type</label>
+        <select id="bulkPlan">
+          <option value="trial">⚡ Trial</option>
+          <option value="monthly">🚀 Monthly</option>
+          <option value="weekly">📅 Weekly</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Quantity</label>
+        <input type="number" id="bulkQty" value="10" min="1" max="100">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Prefix (optional)</label>
+        <input type="text" id="bulkPrefix" placeholder="e.g. BATCH-001">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="a-btn primary" onclick="bulkGenerate()">📦 Generate Batch</button>
+      <button class="a-btn ghost" onclick="exportBulk()">📥 Export CSV</button>
+    </div>
+
+    <div class="output" id="bulkOutput"></div>
+  </div>
+
+  <!-- ===== TAB: MANAGE TOKENS ===== -->
+  <div class="panel tab-panel" id="tab-manage" style="display:none">
+    <h3>📋 Manage Tokens <span class="badge" id="tokenCount">0</span></h3>
+
+    <div class="form-row">
+      <div class="form-group" style="flex:2">
+        <label>Search</label>
+        <input type="text" id="searchTokens" placeholder="Search by name, email, or token..." oninput="renderTokenList()">
+      </div>
+      <div class="form-group">
+        <label>Filter</label>
+        <select id="filterTokens" onchange="renderTokenList()">
+          <option value="all">All</option>
+          <option value="active">Active</option>
+          <option value="expired">Expired</option>
+          <option value="depleted">No Uses Left</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="token-list" id="tokenList"></div>
+
+    <div class="btn-row">
+      <button class="a-btn danger" onclick="clearAllTokens()">🗑️ Clear All Records</button>
+      <button class="a-btn ghost" onclick="exportAllTokens()">📥 Export All</button>
+    </div>
+  </div>
+
+  <!-- ===== TAB: TEST TOKEN ===== -->
+  <div class="panel tab-panel" id="tab-test" style="display:none">
+    <h3>🧪 Test / Inspect Token <span class="badge">Debug</span></h3>
+
+    <div class="form-group">
+      <label>Paste Token</label>
+      <textarea id="testToken" placeholder="Paste a base64 token here to inspect it..."></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="a-btn primary" onclick="inspectToken()">🔍 Inspect</button>
+      <button class="a-btn success" onclick="activateTestToken()">✅ Activate in Browser</button>
+      <button class="a-btn warning" onclick="extendToken()">⏱️ Extend 7 Days</button>
+      <button class="a-btn ghost" onclick="addUsesToToken()">➕ Add 50 Uses</button>
+    </div>
+
+    <div class="output" id="testOutput"></div>
+  </div>
+
+  <!-- ===== TAB: CONFIG ===== -->
+  <div class="panel tab-panel" id="tab-config" style="display:none">
+    <h3>⚙️ Platform Configuration <span class="badge">Settings</span></h3>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Worker API URL</label>
+        <input type="text" id="cfgApi" value="https://late-mouse-4aa2.zelvora-global.workers.dev">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Trial Price (₹)</label>
+        <input type="number" id="cfgTrialPrice" value="10">
+      </div>
+      <div class="form-group">
+        <label>Monthly Price (₹)</label>
+        <input type="number" id="cfgMonthlyPrice" value="300">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Trial Duration (days)</label>
+        <input type="number" id="cfgTrialDays" value="1">
+      </div>
+      <div class="form-group">
+        <label>Trial Uses</label>
+        <input type="number" id="cfgTrialUses" value="20">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Monthly Duration (days)</label>
+        <input type="number" id="cfgMonthlyDays" value="30">
+      </div>
+      <div class="form-group">
+        <label>Monthly Uses</label>
+        <input type="number" id="cfgMonthlyUses" value="999">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Razorpay Trial Link</label>
+        <input type="text" id="cfgRzpTrial" value="https://rzp.io/rzp/7AD6EVmP">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Razorpay Monthly Link</label>
+        <input type="text" id="cfgRzpMonthly" value="https://rzp.io/rzp/dJqre5Sw">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="a-btn primary" onclick="saveConfig()">💾 Save Config</button>
+      <button class="a-btn ghost" onclick="loadConfig()">🔄 Reset to Default</button>
+    </div>
+  </div>
+
+  <!-- ===== TAB: ANALYTICS ===== -->
+  <div class="panel tab-panel" id="tab-analytics" style="display:none">
+    <h3>📊 Analytics Dashboard <span class="badge">Live</span></h3>
+
+    <div class="admin-stats" style="margin-bottom:16px">
+      <div class="a-stat">
+        <div class="v" id="anTrials">0</div>
+        <div class="l">Trial Tokens</div>
+      </div>
+      <div class="a-stat">
+        <div class="v" id="anMonthly">0</div>
+        <div class="l">Monthly Tokens</div>
+      </div>
+      <div class="a-stat">
+        <div class="v" id="anUsed">0</div>
+        <div class="l">Total Uses Consumed</div>
+      </div>
+      <div class="a-stat">
+        <div class="v" id="anAvgUse">0</div>
+        <div class="l">Avg Uses/Token</div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div style="background:rgba(0,0,0,.2);border-radius:12px;padding:14px;max-height:200px;overflow-y:auto">
+      <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px">Recent Activity</div>
+      <div id="activityLog" style="font-size:12px;color:var(--muted)"></div>
+    </div>
+
+    <div class="btn-row" style="margin-top:12px">
+      <button class="a-btn primary" onclick="refreshAnalytics()">🔄 Refresh</button>
+      <button class="a-btn ghost" onclick="exportAnalytics()">📥 Export Report</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== ENGINE ===== -->
+<script>
+/* ===================================================
+   ADMIN ENGINE — ZELVORA CONTROL PANEL
+   =================================================== */
+
+/* 🔐 ADMIN PASSWORD — CHANGE THIS! */
+const ADMIN_HASH = "zelvora2026admin"; // Change to your secure password
+const SESSION_KEY = "zv_admin_session";
+const TOKEN_STORE_KEY = "zv_token_store";
+const CONFIG_KEY = "zv_admin_config";
+const ACTIVITY_KEY = "zv_activity_log";
+
+let attempts = 0;
+const MAX_ATTEMPTS = 5;
+let lockoutUntil = 0;
+
+/* ===== PLAN PRESETS ===== */
+const PLANS = {
+  trial:    { days: 1,   spoken: 20,    label: "Trial",    price: 10   },
+  weekly:   { days: 7,   spoken: 100,   label: "Weekly",   price: 100  },
+  monthly:  { days: 30,  spoken: 999,   label: "Monthly",  price: 300  },
+  lifetime: { days: 365, spoken: 9999,  label: "Lifetime", price: 999  },
+};
+
+/* ===== LOGIN ===== */
+function attemptLogin() {
+  const now = Date.now();
+  if (now < lockoutUntil) {
+    const secs = Math.ceil((lockoutUntil - now) / 1000);
+    document.getElementById('lockErr').style.display = 'block';
+    document.getElementById('lockErr').textContent = `Locked out. Try again in ${secs}s`;
+    return;
+  }
+
+  const pass = document.getElementById('passInput').value;
+
+  if (pass === ADMIN_HASH) {
+    // Success
+    const session = { ts: Date.now(), exp: Date.now() + (4 * 60 * 60 * 1000) }; // 4 hour session
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('adminPanel').classList.add('active');
+    attempts = 0;
+    logActivity('Admin logged in');
+    refreshAll();
+    toast('Authenticated ✅', 'ok');
+  } else {
+    attempts++;
+    document.getElementById('lockErr').style.display = 'block';
+    document.getElementById('lockErr').textContent = `Invalid credentials (${attempts}/${MAX_ATTEMPTS})`;
+    document.getElementById('passInput').value = '';
+
+    if (attempts >= MAX_ATTEMPTS) {
+      lockoutUntil = Date.now() + 60000; // 1 min lockout
+      document.getElementById('lockErr').textContent = 'Too many attempts. Locked for 60s.';
+    }
+  }
+}
+
+function adminLogout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  document.getElementById('adminPanel').classList.remove('active');
+  document.getElementById('lockScreen').style.display = 'flex';
+  document.getElementById('passInput').value = '';
+  logActivity('Admin logged out');
+}
+
+/* Auto-login if session valid */
+(function checkSession() {
+  try {
+    const s = JSON.parse(sessionStorage.getItem(SESSION_KEY));
+    if (s && Date.now() < s.exp) {
+      document.getElementById('lockScreen').style.display = 'none';
+      document.getElementById('adminPanel').classList.add('active');
+      refreshAll();
+    }
+  } catch {}
+})();
+
+/* ===== TABS ===== */
+function showAdminTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.a-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).style.display = 'block';
+  event.target.classList.add('active');
+}
+
+/* ===== TOKEN GENERATION ===== */
+function generateToken() {
+  const plan = document.getElementById('genPlan').value;
+  const name = document.getElementById('genName').value.trim();
+  const email = document.getElementById('genEmail').value.trim();
+  const notes = document.getElementById('genNotes').value.trim();
+
+  let days, spoken;
+  if (plan === 'custom') {
+    days = parseInt(document.getElementById('genDays').value) || 30;
+    spoken = parseInt(document.getElementById('genSpoken').value) || 100;
+  } else {
+    days = PLANS[plan].days;
+    spoken = PLANS[plan].spoken;
+  }
+
+  const payload = {
+    exp: Date.now() + (days * 24 * 60 * 60 * 1000),
+    uses: { spoken },
+    plan: plan === 'custom' ? 'custom' : plan,
+    created: Date.now()
+  };
+
+  const token = btoa(JSON.stringify(payload));
+
+  // Store record
+  const record = {
+    id: 'TK-' + Date.now().toString(36).toUpperCase(),
+    token,
+    name: name || 'Anonymous',
+    email: email || '',
+    notes,
+    plan: plan === 'custom' ? `Custom (${days}d/${spoken}u)` : PLANS[plan].label,
+    days,
+    spoken,
+    created: Date.now(),
+    price: plan === 'custom' ? 0 : (PLANS[plan]?.price || 0)
+  };
+
+  saveTokenRecord(record);
+
+  // Show output
+  const out = document.getElementById('genOutput');
+  out.classList.add('show');
+  out.innerHTML = `
+    <div style="color:var(--success);margin-bottom:8px;font-weight:600">✅ Token Generated!</div>
+    <div style="margin-bottom:6px"><strong>ID:</strong> ${record.id}</div>
+    <div style="margin-bottom:6px"><strong>Plan:</strong> ${record.plan}</div>
+    <div style="margin-bottom:6px"><strong>Uses:</strong> ${spoken}</div>
+    <div style="margin-bottom:6px"><strong>Expires:</strong> ${new Date(payload.exp).toLocaleString()}</div>
+    <div style="margin-bottom:6px"><strong>Customer:</strong> ${record.name}</div>
+    <div style="border-top:1px solid var(--gb);padding-top:8px;margin-top:8px;word-break:break-all">
+      <strong>Token:</strong><br>${token}
+    </div>
+    <div style="margin-top:8px">
+      <strong>Gate URL:</strong><br>
+      <span style="color:var(--accent)">spoken-english-gate.html?code=${encodeURIComponent(token)}</span>
+    </div>
+  `;
+
+  logActivity(`Generated ${record.plan} token for ${record.name}`);
+  refreshAll();
+  toast('Token generated!', 'ok');
+
+  return token;
+}
+
+function generateAndCopy() {
+  const token = generateToken();
+  if (token) {
+    navigator.clipboard.writeText(token).then(() => {
+      toast('Token copied to clipboard!', 'ok');
+    });
+  }
+}
+
+/* Update custom fields visibility */
+document.getElementById('genPlan').addEventListener('change', function() {
+  document.getElementById('customFields').style.display = this.value === 'custom' ? 'block' : 'none';
+});
+
+/* ===== BULK GENERATE ===== */
+function bulkGenerate() {
+  const plan = document.getElementById('bulkPlan').value;
+  const qty = parseInt(document.getElementById('bulkQty').value) || 5;
+  const prefix = document.getElementById('bulkPrefix').value.trim();
+
+  const tokens = [];
+  const p = PLANS[plan];
+
+  for (let i = 0; i < qty; i++) {
+    const payload = {
+      exp: Date.now() + (p.days * 24 * 60 * 60 * 1000),
+      uses: { spoken: p.spoken },
+      plan,
+      created: Date.now()
+    };
+    const token = btoa(JSON.stringify(payload));
+    const record = {
+      id: (prefix || 'BK') + '-' + (i + 1).toString().padStart(3, '0'),
+      token,
+      name: `${prefix || 'Batch'} #${i + 1}`,
+      email: '',
+      notes: `Bulk batch ${prefix || ''}`,
+      plan: p.label,
+      days: p.days,
+      spoken: p.spoken,
+      created: Date.now(),
+      price: p.price
+    };
+    saveTokenRecord(record);
+    tokens.push(record);
+  }
+
+  const out = document.getElementById('bulkOutput');
+  out.classList.add('show');
+  out.innerHTML = `
+    <div style="color:var(--success);margin-bottom:8px;font-weight:600">✅ ${qty} tokens generated!</div>
+    ${tokens.map(t => `<div style="margin-bottom:4px;padding:4px 0;border-bottom:1px solid var(--gb)">
+      <strong>${t.id}</strong>: <span style="font-size:10px">${t.token.substring(0, 40)}...</span>
+    </div>`).join('')}
+  `;
+
+  window._lastBulk = tokens;
+  logActivity(`Bulk generated ${qty} ${p.label} tokens`);
+  refreshAll();
+  toast(`${qty} tokens generated!`, 'ok');
+}
+
+function exportBulk() {
+  if (!window._lastBulk) { toast('Generate batch first', 'err'); return; }
+  const csv = 'ID,Plan,Token,Gate URL\n' +
+    window._lastBulk.map(t =>
+      `"${t.id}","${t.plan}","${t.token}","spoken-english-gate.html?code=${encodeURIComponent(t.token)}"`
+    ).join('\n');
+  downloadCSV(csv, 'zelvora-tokens-batch.csv');
+}
+
+/* ===== TOKEN STORE ===== */
+function getTokenStore() {
+  try { return JSON.parse(localStorage.getItem(TOKEN_STORE_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function saveTokenRecord(record) {
+  const store = getTokenStore();
+  store.unshift(record);
+  localStorage.setItem(TOKEN_STORE_KEY, JSON.stringify(store));
+}
+
+function renderTokenList() {
+  const store = getTokenStore();
+  const search = (document.getElementById('searchTokens')?.value || '').toLowerCase();
+  const filter = document.getElementById('filterTokens')?.value || 'all';
+
+  let filtered = store.filter(t => {
+    const matchSearch = !search ||
+      t.name.toLowerCase().includes(search) ||
+      t.email.toLowerCase().includes(search) ||
+      t.id.toLowerCase().includes(search) ||
+      t.token.toLowerCase().includes(search);
+
+    let matchFilter = true;
+    if (filter !== 'all') {
+      try {
+        const p = JSON.parse(atob(t.token));
+        if (filter === 'active') matchFilter = Date.now() < p.exp && p.uses.spoken > 0;
+        if (filter === 'expired') matchFilter = Date.now() >= p.exp;
+        if (filter === 'depleted') matchFilter = p.uses.spoken <= 0;
+      } catch { matchFilter = false; }
+    }
+
+    return matchSearch && matchFilter;
+  });
+
+  document.getElementById('tokenCount').textContent = filtered.length;
+
+  const list = document.getElementById('tokenList');
+  if (!filtered.length) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">No tokens found</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.slice(0, 50).map((t, i) => {
+    let status = '🟢 Active';
+    let statusColor = 'var(--success)';
+    try {
+      const p = JSON.parse(atob(t.token));
+      if (Date.now() >= p.exp) { status = '🔴 Expired'; statusColor = 'var(--danger)'; }
+      else if (p.uses.spoken <= 0) { status = '🟡 Depleted'; statusColor = 'var(--warning)'; }
+    } catch {}
+
+    return `
+      <div class="token-item">
+        <div class="info">
+          <div class="name">${t.id} — ${t.name}</div>
+          <div class="meta">${t.plan} · ${t.email || 'No email'} · <span style="color:${statusColor}">${status}</span></div>
+        </div>
+        <div class="actions">
+          <button style="background:rgba(99,102,241,.15);color:#a5b4fc" onclick="copyToken(${i})">📋</button>
+          <button style="background:rgba(34,211,238,.15);color:#22d3ee" onclick="viewToken(${i})">👁</button>
+          <button style="background:rgba(239,68,68,.15);color:#fca5a5" onclick="deleteToken(${i})">🗑</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function copyToken(index) {
+  const store = getTokenStore();
+  if (store[index]) {
+    navigator.clipboard.writeText(store[index].token);
+    toast('Token copied!', 'ok');
+  }
+}
+
+function viewToken(index) {
+  const store = getTokenStore();
+  if (store[index]) {
+    document.getElementById('testToken').value = store[index].token;
+    document.querySelectorAll('.a-tab')[3].click(); // Switch to Test tab
+    inspectToken();
+  }
+}
+
+function deleteToken(index) {
+  if (!confirm('Delete this token record?')) return;
+  const store = getTokenStore();
+  store.splice(index, 1);
+  localStorage.setItem(TOKEN_STORE_KEY, JSON.stringify(store));
+  renderTokenList();
+  refreshAll();
+  toast('Token deleted', 'ok');
+}
+
+function clearAllTokens() {
+  if (!confirm('⚠️ Delete ALL token records? This cannot be undone.')) return;
+  if (!confirm('Are you absolutely sure?')) return;
+  localStorage.setItem(TOKEN_STORE_KEY, '[]');
+  renderTokenList();
+  refreshAll();
+  logActivity('Cleared all token records');
+  toast('All records cleared', 'ok');
+}
+
+function exportAllTokens() {
+  const store = getTokenStore();
+  const csv = 'ID,Name,Email,Plan,Created,Token,Gate URL\n' +
+    store.map(t =>
+      `"${t.id}","${t.name}","${t.email}","${t.plan}","${new Date(t.created).toLocaleString()}","${t.token}","spoken-english-gate.html?code=${encodeURIComponent(t.token)}"`
+    ).join('\n');
+  downloadCSV(csv, 'zelvora-all-tokens.csv');
+}
+
+/* ===== TEST / INSPECT TOKEN ===== */
+function inspectToken() {
+  const token = document.getElementById('testToken').value.trim();
+  const out = document.getElementById('testOutput');
+
+  if (!token) { toast('Paste a token first', 'err'); return; }
+
+  try {
+    const p = JSON.parse(atob(token));
+    const expired = Date.now() > p.exp;
+    const noUses = (p.uses?.spoken || 0) <= 0;
+
+    out.classList.add('show');
+    out.innerHTML = `
+      <div style="color:${expired ? 'var(--danger)' : 'var(--success)'};font-weight:600;margin-bottom:8px">
+        ${expired ? '🔴 EXPIRED' : noUses ? '🟡 DEPLETED' : '🟢 ACTIVE'}
+      </div>
+      <div>📋 <strong>Plan:</strong> ${p.plan || 'unknown'}</div>
+      <div>🔢 <strong>Spoken Uses:</strong> ${p.uses?.spoken ?? 'N/A'}</div>
+      <div>📅 <strong>Expires:</strong> ${new Date(p.exp).toLocaleString()}</div>
+      <div>🕐 <strong>Created:</strong> ${p.created ? new Date(p.created).toLocaleString() : 'Unknown'}</div>
+      <div>⏳ <strong>Time Left:</strong> ${expired ? 'Expired' : Math.ceil((p.exp - Date.now()) / (1000*60*60)) + ' hours'}</div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--gb)">
+        <strong>Raw Payload:</strong><br>
+        <pre style="white-space:pre-wrap;font-size:11px">${JSON.stringify(p, null, 2)}</pre>
+      </div>
+    `;
+  } catch {
+    out.classList.add('show');
+    out.innerHTML = '<div style="color:var(--danger)">❌ Invalid token — cannot decode</div>';
+  }
+}
+
+function activateTestToken() {
+  const token = document.getElementById('testToken').value.trim();
+  if (!token) { toast('Paste a token first', 'err'); return; }
+  try {
+    JSON.parse(atob(token));
+    localStorage.setItem('career_token', token);
+    toast('Token activated in this browser!', 'ok');
+    logActivity('Activated token in browser');
+  } catch {
+    toast('Invalid token', 'err');
+  }
+}
+
+function extendToken() {
+  const token = document.getElementById('testToken').value.trim();
+  if (!token) { toast('Paste a token first', 'err'); return; }
+  try {
+    const p = JSON.parse(atob(token));
+    p.exp = Math.max(p.exp, Date.now()) + (7 * 24 * 60 * 60 * 1000);
+    const newToken = btoa(JSON.stringify(p));
+    document.getElementById('testToken').value = newToken;
+    inspectToken();
+    toast('Extended by 7 days! Copy the new token.', 'ok');
+    logActivity('Extended token by 7 days');
+  } catch {
+    toast('Invalid token', 'err');
+  }
+}
+
+function addUsesToToken() {
+  const token = document.getElementById('testToken').value.trim();
+  if (!token) { toast('Paste a token first', 'err'); return; }
+  try {
+    const p = JSON.parse(atob(token));
+    p.uses.spoken = (p.uses.spoken || 0) + 50;
+    const newToken = btoa(JSON.stringify(p));
+    document.getElementById('testToken').value = newToken;
+    inspectToken();
+    toast('Added 50 uses! Copy the new token.', 'ok');
+    logActivity('Added 50 uses to token');
+  } catch {
+    toast('Invalid token', 'err');
+  }
+}
+
+/* ===== CONFIG ===== */
+function saveConfig() {
+  const cfg = {
+    apiUrl: document.getElementById('cfgApi').value,
+    trialPrice: document.getElementById('cfgTrialPrice').value,
+    monthlyPrice: document.getElementById('cfgMonthlyPrice').value,
+    trialDays: document.getElementById('cfgTrialDays').value,
+    trialUses: document.getElementById('cfgTrialUses').value,
+    monthlyDays: document.getElementById('cfgMonthlyDays').value,
+    monthlyUses: document.getElementById('cfgMonthlyUses').value,
+    rzpTrial: document.getElementById('cfgRzpTrial').value,
+    rzpMonthly: document.getElementById('cfgRzpMonthly').value,
+  };
+  localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
+
+  // Update PLANS
+  PLANS.trial.days = parseInt(cfg.trialDays);
+  PLANS.trial.spoken = parseInt(cfg.trialUses);
+  PLANS.trial.price = parseInt(cfg.trialPrice);
+  PLANS.monthly.days = parseInt(cfg.monthlyDays);
+  PLANS.monthly.spoken = parseInt(cfg.monthlyUses);
+  PLANS.monthly.price = parseInt(cfg.monthlyPrice);
+
+  logActivity('Config saved');
+  toast('Configuration saved!', 'ok');
+}
+
+function loadConfig() {
+  try {
+    const cfg = JSON.parse(localStorage.getItem(CONFIG_KEY));
+    if (cfg) {
+      document.getElementById('cfgApi').value = cfg.apiUrl || '';
+      document.getElementById('cfgTrialPrice').value = cfg.trialPrice || 10;
+      document.getElementById('cfgMonthlyPrice').value = cfg.monthlyPrice || 300;
+      document.getElementById('cfgTrialDays').value = cfg.trialDays || 1;
+      document.getElementById('cfgTrialUses').value = cfg.trialUses || 20;
+      document.getElementById('cfgMonthlyDays').value = cfg.monthlyDays || 30;
+      document.getElementById('cfgMonthlyUses').value = cfg.monthlyUses || 999;
+      document.getElementById('cfgRzpTrial').value = cfg.rzpTrial || '';
+      document.getElementById('cfgRzpMonthly').value = cfg.rzpMonthly || '';
+    }
+  } catch {}
+}
+
+/* ===== ANALYTICS ===== */
+function refreshAnalytics() {
+  const store = getTokenStore();
+  let trials = 0, monthly = 0, totalUsed = 0;
+
+  store.forEach(t => {
+    if (t.plan === 'Trial' || t.plan === 'trial') trials++;
+    if (t.plan === 'Monthly' || t.plan === 'monthly') monthly++;
+    try {
+      const p = JSON.parse(atob(t.token));
+      const original = t.spoken || 20;
+      const current = p.uses?.spoken || 0;
+      totalUsed += Math.max(0, original - current);
+    } catch {}
+  });
+
+  document.getElementById('anTrials').textContent = trials;
+  document.getElementById('anMonthly').textContent = monthly;
+  document.getElementById('anUsed').textContent = totalUsed;
+  document.getElementById('anAvgUse').textContent = store.length ? Math.round(totalUsed / store.length) : 0;
+
+  // Activity log
+  const log = JSON.parse(localStorage.getItem(ACTIVITY_KEY) || '[]');
+  document.getElementById('activityLog').innerHTML = log.slice(0, 30).map(l =>
+    `<div style="padding:4px 0;border-bottom:1px solid var(--gb)">${new Date(l.ts).toLocaleString()} — ${l.msg}</div>`
+  ).join('') || '<div>No activity yet</div>';
+}
+
+function exportAnalytics() {
+  const store = getTokenStore();
+  const log = JSON.parse(localStorage.getItem(ACTIVITY_KEY) || '[]');
+  const report = {
+    totalTokens: store.length,
+    generatedAt: new Date().toISOString(),
+    tokens: store,
+    activity: log.slice(0, 100)
+  };
+  const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'zelvora-analytics-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+}
+
+/* ===== REFRESH ALL ===== */
+function refreshAll() {
+  const store = getTokenStore();
+  const today = new Date().toDateString();
+  let active = 0, todayCount = 0, revenue = 0;
+
+  store.forEach(t => {
+    try {
+      const p = JSON.parse(atob(t.token));
+      if (Date.now() < p.exp && (p.uses?.spoken || 0) > 0) active++;
+    } catch {}
+    if (new Date(t.created).toDateString() === today) todayCount++;
+    revenue += t.price || 0;
+  });
+
+  document.getElementById('statTokens').textContent = store.length;
+  document.getElementById('statActive').textContent = active;
+  document.getElementById('statRevenue').textContent = '₹' + revenue.toLocaleString();
+  document.getElementById('statToday').textContent = todayCount;
+
+  renderTokenList();
+  refreshAnalytics();
+  loadConfig();
+}
+
+/* ===== ACTIVITY LOG ===== */
+function logActivity(msg) {
+  const log = JSON.parse(localStorage.getItem(ACTIVITY_KEY) || '[]');
+  log.unshift({ ts: Date.now(), msg });
+  localStorage.setItem(ACTIVITY_KEY, JSON.stringify(log.slice(0, 200)));
+}
+
+/* ===== HELPERS ===== */
+function toast(msg, type = 'ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function downloadCSV(csv, filename) {
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  toast('Downloaded ' + filename, 'ok');
+}
+
+/* ===== KEYBOARD: Enter to login ===== */
+document.getElementById('passInput').focus();
+</script>
+
+</body>
+</html>
