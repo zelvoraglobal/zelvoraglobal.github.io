@@ -4,497 +4,327 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zelvora — AI Mock Interview</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%2322d3ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='%230f172a'/%3E%3Cpath d='M32 38 C32 30 38 24 48 24 L72 24 C82 24 88 30 88 38 L88 42 L52 78 L88 78 L88 82 C88 90 82 96 72 96 L48 96 C38 96 32 90 32 82 L32 78 L68 42 L32 42 Z' fill='url(%23g)'/%3E%3Cpath d='M78 24 C84 24 90 20 94 14 C92 22 88 30 82 34 L78 24Z' fill='url(%23g)' opacity='0.8'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  :root {
-    --bg-primary: #060610;
-    --bg-secondary: #0e0e1a;
-    --bg-card: #161625;
-    --bg-glass: rgba(22, 22, 37, 0.8);
-    --accent: #8b5cf6;
-    --accent-glow: rgba(139, 92, 246, 0.3);
-    --accent-secondary: #06b6d4;
-    --gold: #f59e0b;
-    --text-primary: #f0f0f5;
-    --text-secondary: #8888a0;
-    --text-dim: #55556a;
-    --border: rgba(139, 92, 246, 0.15);
-    --danger: #ef4444;
-    --success: #10b981;
+  :root{
+    --bg:#020617;--bg2:#0f172a;--card:#1e293b;
+    --accent:#6366f1;--accent2:#22d3ee;--accent3:#a855f7;
+    --success:#10b981;--warning:#f59e0b;--danger:#ef4444;
+    --text:#e5e7eb;--muted:#94a3b8;--dim:#475569;
+    --glass:rgba(255,255,255,.05);--border:rgba(255,255,255,.08);
   }
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+  body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
-  /* ===== BG ===== */
-  .ambient-bg {
-    position: fixed; inset: 0; z-index: 0; overflow: hidden;
-  }
+  /* ===== AMBIENT ===== */
+  .amb{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .amb .o{position:absolute;border-radius:50%;filter:blur(110px);opacity:.12;animation:of 25s ease-in-out infinite alternate}
+  .amb .o:nth-child(1){width:480px;height:480px;background:var(--accent3);top:-12%;right:-6%}
+  .amb .o:nth-child(2){width:380px;height:380px;background:var(--accent2);bottom:-10%;left:-6%;animation-delay:9s}
+  .amb .o:nth-child(3){width:260px;height:260px;background:var(--accent);top:40%;left:28%;animation-delay:16s}
+  .amb .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(99,102,241,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.02) 1px,transparent 1px);background-size:56px 56px}
+  @keyframes of{0%{transform:translate(0,0) scale(1)}33%{transform:translate(45px,-30px) scale(1.1)}66%{transform:translate(-25px,40px) scale(.92)}100%{transform:translate(15px,-18px) scale(1.03)}}
 
-  .ambient-bg .grid {
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(rgba(139,92,246,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(139,92,246,0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-  }
-
-  .ambient-bg .orb {
-    position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.1;
-    animation: orbFloat 25s ease-in-out infinite;
-  }
-
-  .ambient-bg .orb:nth-child(2) {
-    width: 500px; height: 500px; background: var(--accent);
-    top: -150px; right: -100px;
-  }
-
-  .ambient-bg .orb:nth-child(3) {
-    width: 400px; height: 400px; background: var(--accent-secondary);
-    bottom: -100px; left: -100px; animation-delay: -10s;
-  }
-
-  @keyframes orbFloat {
-    0%, 100% { transform: translate(0,0) scale(1); }
-    33% { transform: translate(40px,-30px) scale(1.1); }
-    66% { transform: translate(-30px, 40px) scale(0.9); }
-  }
+  /* ===== NAV ===== */
+  .nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(2,6,23,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+  .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text);font-weight:800;font-size:17px}
+  .nav-logo svg{width:30px;height:30px}
+  .nav-logo em{font-style:normal;font-size:10px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;margin-left:2px}
+  .nav-right{display:flex;align-items:center;gap:10px}
+  .nav-back{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;color:var(--muted);background:var(--glass);border:1px solid var(--border);text-decoration:none;transition:.2s}
+  .nav-back:hover{color:var(--text);border-color:var(--accent)}
+  .uses-badge{font-size:11px;color:var(--accent);background:rgba(99,102,241,.12);padding:5px 12px;border-radius:16px;font-weight:700}
 
   /* ===== APP ===== */
-  .app {
-    position: relative; z-index: 1;
-    max-width: 960px; margin: 0 auto; padding: 20px;
-    min-height: 100vh; display: flex; flex-direction: column;
-  }
-
-  /* ===== HEADER ===== */
-  .header {
-    text-align: center; padding: 24px 0 16px;
-  }
-
-  .header .logo {
-    font-size: 13px; font-weight: 600; letter-spacing: 4px;
-    text-transform: uppercase; color: var(--accent); margin-bottom: 6px;
-  }
-
-  .header h1 {
-    font-size: 26px; font-weight: 800;
-    background: linear-gradient(135deg, var(--text-primary), var(--accent));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  }
-
-  /* ===== SETUP SCREEN ===== */
-  .setup-screen {
-    flex: 1; display: flex; align-items: center; justify-content: center;
-  }
-
-  .setup-card {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: 24px; padding: 40px; max-width: 500px; width: 100%;
-    text-align: center;
-  }
-
-  .setup-card h2 {
-    font-size: 22px; margin-bottom: 8px;
-  }
-
-  .setup-card .desc {
-    color: var(--text-secondary); font-size: 14px; margin-bottom: 28px;
-  }
-
-  .field-group {
-    text-align: left; margin-bottom: 20px;
-  }
-
-  .field-group label {
-    display: block; font-size: 13px; color: var(--text-secondary);
-    margin-bottom: 8px; font-weight: 500;
-  }
-
-  .field-input {
-    width: 100%; padding: 12px 16px; background: var(--bg-secondary);
-    border: 1px solid var(--border); border-radius: 12px;
-    color: var(--text-primary); font-size: 14px; font-family: inherit;
-    outline: none; transition: border-color 0.3s;
-  }
-
-  .field-input:focus { border-color: var(--accent); }
-
-  .field-input option { background: var(--bg-secondary); color: var(--text-primary); }
-
-  .role-chips {
-    display: flex; flex-wrap: wrap; gap: 8px;
-  }
-
-  .role-chip {
-    padding: 8px 16px; border: 1px solid var(--border); border-radius: 20px;
-    background: transparent; color: var(--text-secondary); font-size: 13px;
-    cursor: pointer; transition: all 0.3s; font-family: inherit;
-  }
-
-  .role-chip:hover, .role-chip.selected {
-    border-color: var(--accent); color: var(--accent);
-    background: rgba(139,92,246,0.1);
-  }
-
-  .start-btn {
-    width: 100%; padding: 14px; background: linear-gradient(135deg, var(--accent), #7c3aed);
-    border: none; border-radius: 14px; color: white; font-size: 16px;
-    font-weight: 700; cursor: pointer; font-family: inherit;
-    transition: transform 0.2s, box-shadow 0.3s; margin-top: 8px;
-  }
-
-  .start-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(139,92,246,0.3);
-  }
-
-  /* ===== INTERVIEW SCREEN ===== */
-  .interview-screen {
-    flex: 1; display: none; flex-direction: column;
-  }
-
-  .interview-screen.active { display: flex; }
-  .setup-screen.hidden { display: none; }
-
-  /* ===== INTERVIEWER CARD ===== */
-  .interviewer-bar {
-    display: flex; align-items: center; gap: 14px;
-    padding: 16px 20px; background: var(--bg-glass);
-    backdrop-filter: blur(20px); border: 1px solid var(--border);
-    border-radius: 16px; margin-bottom: 16px;
-  }
-
-  .interviewer-avatar {
-    width: 48px; height: 48px; border-radius: 14px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px; flex-shrink: 0;
-  }
-
-  .interviewer-info {
-    flex: 1;
-  }
-
-  .interviewer-name {
-    font-weight: 700; font-size: 15px;
-  }
-
-  .interviewer-role {
-    font-size: 12px; color: var(--text-secondary);
-  }
-
-  .interview-meta {
-    display: flex; gap: 16px; align-items: center;
-  }
-
-  .meta-badge {
-    font-size: 11px; padding: 4px 10px; border-radius: 8px;
-    font-weight: 600;
-  }
-
-  .meta-badge.question {
-    background: rgba(139,92,246,0.15); color: var(--accent);
-  }
-
-  .meta-badge.time {
-    background: rgba(6,182,212,0.15); color: var(--accent-secondary);
-  }
-
-  /* ===== STATUS ===== */
-  .int-status {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 10px; font-size: 13px; color: var(--text-secondary);
-  }
-
-  .int-status .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--text-dim); transition: all 0.3s;
-  }
-
-  .int-status .dot.listening { background: var(--danger); animation: pulse 1s infinite; }
-  .int-status .dot.speaking { background: var(--success); animation: pulse 0.8s infinite; }
-  .int-status .dot.thinking { background: var(--gold); animation: pulse 0.5s infinite; }
-
-  @keyframes pulse {
-    0%,100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.4); }
-  }
-
-  /* ===== VOICE ORB ===== */
-  .int-orb-wrap {
-    display: flex; flex-direction: column; align-items: center; padding: 16px 0;
-  }
-
-  .int-orb {
-    width: 120px; height: 120px; border-radius: 50%; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 40px; transition: all 0.4s; position: relative;
-    background: radial-gradient(circle at 35% 35%, #3a3560, #1a1540);
-  }
-
-  .int-orb.listening {
-    background: radial-gradient(circle at 35% 35%, var(--danger), #991b1b);
-    animation: breathe 1.5s ease-in-out infinite;
-  }
-
-  .int-orb.speaking {
-    background: radial-gradient(circle at 35% 35%, var(--success), #065f46);
-    animation: breathe 0.8s ease-in-out infinite;
-  }
-
-  .int-orb.thinking {
-    background: radial-gradient(circle at 35% 35%, var(--gold), #92400e);
-    animation: spin 2s linear infinite;
-  }
-
-  @keyframes breathe {
-    0%,100% { transform: scale(1); }
-    50% { transform: scale(1.06); }
-  }
-
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
-  .int-orb-label {
-    font-size: 13px; color: var(--text-secondary); margin-top: 10px;
-  }
-
-  /* ===== WAVEFORM ===== */
-  .wave-bar-wrap {
-    display: flex; align-items: center; justify-content: center;
-    gap: 3px; height: 30px; margin: 10px 0;
-  }
-
-  .wave-bar-wrap .b {
-    width: 3px; height: 6px; background: var(--accent);
-    border-radius: 3px; transition: height 0.1s;
-  }
-
-  .wave-bar-wrap.active .b {
-    animation: wb 0.5s ease-in-out infinite;
-  }
-
-  .wave-bar-wrap .b:nth-child(1) { animation-delay: 0s; }
-  .wave-bar-wrap .b:nth-child(2) { animation-delay: 0.08s; }
-  .wave-bar-wrap .b:nth-child(3) { animation-delay: 0.16s; }
-  .wave-bar-wrap .b:nth-child(4) { animation-delay: 0.24s; }
-  .wave-bar-wrap .b:nth-child(5) { animation-delay: 0.32s; }
-  .wave-bar-wrap .b:nth-child(6) { animation-delay: 0.24s; }
-  .wave-bar-wrap .b:nth-child(7) { animation-delay: 0.16s; }
-
-  @keyframes wb {
-    0%,100% { height: 6px; }
-    50% { height: 26px; }
-  }
-
-  /* ===== TRANSCRIPT ===== */
-  .live-t {
-    text-align: center; min-height: 20px; font-size: 13px;
-    color: var(--text-dim); font-style: italic; padding: 6px;
-  }
-
-  /* ===== CHAT ===== */
-  .int-chat {
-    flex: 1; overflow-y: auto; padding: 8px 0;
-    display: flex; flex-direction: column; gap: 10px;
-    max-height: 40vh; scroll-behavior: smooth;
-  }
-
-  .int-chat::-webkit-scrollbar { width: 3px; }
-  .int-chat::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-  .int-msg {
-    max-width: 85%; padding: 12px 16px; border-radius: 16px;
-    font-size: 13px; line-height: 1.6; animation: slideUp 0.3s ease-out;
-  }
-
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .int-msg.interviewer {
-    align-self: flex-start;
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-bottom-left-radius: 4px;
-  }
-
-  .int-msg.candidate {
-    align-self: flex-end;
-    background: linear-gradient(135deg, var(--accent), #7c3aed);
-    color: white; border-bottom-right-radius: 4px;
-  }
-
-  .int-msg .ts {
-    font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 4px; display: block;
-  }
-
-  .int-msg.interviewer .ts { color: var(--text-dim); }
-
-  /* ===== INTERVIEW CONTROLS ===== */
-  .int-controls {
-    display: flex; align-items: center; justify-content: center;
-    gap: 10px; padding: 16px 0; flex-wrap: wrap;
-  }
-
-  .int-btn {
-    padding: 10px 18px; border: 1px solid var(--border);
-    border-radius: 12px; background: var(--bg-glass);
-    backdrop-filter: blur(10px); color: var(--text-secondary);
-    font-size: 13px; font-weight: 500; cursor: pointer;
-    transition: all 0.3s; font-family: inherit;
-    display: flex; align-items: center; gap: 6px;
-  }
-
-  .int-btn:hover {
-    border-color: var(--accent); color: var(--text-primary);
-  }
-
-  .int-btn.end {
-    border-color: var(--danger); color: var(--danger);
-  }
-
-  .int-btn.end:hover {
-    background: rgba(239,68,68,0.1);
-  }
-
-  /* ===== SCORE CARD ===== */
-  .score-overlay {
-    position: fixed; inset: 0; z-index: 100;
-    background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-    display: none; align-items: center; justify-content: center;
-    padding: 20px;
-  }
-
-  .score-overlay.open { display: flex; }
-
-  .score-card {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: 24px; padding: 36px; max-width: 480px; width: 100%;
-    text-align: center; animation: slideUp 0.4s ease-out;
-  }
-
-  .score-card h2 { font-size: 24px; margin-bottom: 6px; }
-
-  .score-ring {
-    width: 100px; height: 100px; margin: 20px auto;
-    position: relative;
-  }
-
-  .score-ring svg {
-    width: 100%; height: 100%; transform: rotate(-90deg);
-  }
-
-  .score-ring .bg {
-    fill: none; stroke: var(--border); stroke-width: 8;
-  }
-
-  .score-ring .fg {
-    fill: none; stroke: var(--accent); stroke-width: 8;
-    stroke-linecap: round; transition: stroke-dashoffset 1s ease-out;
-  }
-
-  .score-ring .val {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px; font-weight: 800; color: var(--accent);
-  }
-
-  .score-metrics {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-    margin: 20px 0; text-align: left;
-  }
-
-  .score-metric {
-    padding: 12px; background: var(--bg-secondary);
-    border-radius: 12px; border: 1px solid var(--border);
-  }
-
-  .score-metric .label {
-    font-size: 11px; color: var(--text-dim);
-    text-transform: uppercase; letter-spacing: 1px;
-  }
-
-  .score-metric .value {
-    font-size: 18px; font-weight: 700; margin-top: 4px;
-  }
-
-  .score-feedback {
-    text-align: left; font-size: 13px; color: var(--text-secondary);
-    line-height: 1.7; margin: 16px 0; padding: 16px;
-    background: var(--bg-secondary); border-radius: 12px;
-    border: 1px solid var(--border); max-height: 200px; overflow-y: auto;
-  }
-
-  .score-close {
-    padding: 12px 32px; background: var(--accent); border: none;
-    border-radius: 12px; color: white; font-size: 14px;
-    font-weight: 600; cursor: pointer; font-family: inherit;
-    transition: transform 0.2s;
-  }
-
-  .score-close:hover { transform: scale(1.05); }
-
-  /* ===== VOICE SELECT ===== */
-  .voice-sel {
-    display: flex; align-items: center; gap: 8px;
-    justify-content: center; margin-bottom: 12px; flex-wrap: wrap;
-  }
-
-  .v-chip {
-    padding: 5px 12px; border: 1px solid var(--border); border-radius: 16px;
-    font-size: 11px; color: var(--text-secondary); cursor: pointer;
-    transition: all 0.3s; background: transparent; font-family: inherit;
-  }
-
-  .v-chip:hover, .v-chip.sel {
-    border-color: var(--accent); color: var(--accent);
-    background: rgba(139,92,246,0.1);
-  }
-
-  @media (max-width: 600px) {
-    .app { padding: 12px; }
-    .setup-card { padding: 24px; }
-    .int-orb { width: 100px; height: 100px; font-size: 32px; }
-    .int-chat { max-height: 30vh; }
-    .interviewer-bar { flex-direction: column; text-align: center; }
-    .score-metrics { grid-template-columns: 1fr; }
+  .app{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:16px;min-height:calc(100vh - 58px);display:flex;flex-direction:column}
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+  @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  @keyframes ringPulse{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.5);opacity:0}}
+  @keyframes waveB{0%,100%{height:6px}50%{height:24px}}
+
+  /* ============================================
+     SETUP SCREEN
+     ============================================ */
+  .setup-screen{flex:1;display:flex;align-items:center;justify-content:center;padding:20px 0}
+  .setup-screen.hidden{display:none}
+
+  .setup-card{
+    background:var(--glass);border:1px solid var(--border);
+    border-radius:24px;padding:36px;max-width:560px;width:100%;
+    backdrop-filter:blur(16px);animation:fadeIn .5s ease;
+  }
+  .setup-header{text-align:center;margin-bottom:28px}
+  .setup-header .icon-wrap{
+    width:64px;height:64px;border-radius:18px;margin:0 auto 16px;
+    background:linear-gradient(135deg,var(--accent),var(--accent3));
+    display:flex;align-items:center;justify-content:center;font-size:30px;
+  }
+  .setup-header h2{font-size:22px;font-weight:800}
+  .setup-header p{color:var(--muted);font-size:13px;margin-top:6px}
+
+  .field-group{margin-bottom:20px}
+  .field-group label{display:block;font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:600;letter-spacing:.3px}
+
+  .field-input{
+    width:100%;padding:11px 16px;background:var(--bg);
+    border:1px solid var(--border);border-radius:12px;
+    color:var(--text);font-size:13px;font-family:inherit;
+    outline:none;transition:border-color .2s;
+  }
+  .field-input:focus{border-color:var(--accent)}
+  .field-input::placeholder{color:var(--dim)}
+  select.field-input{cursor:pointer}
+  select.field-input option{background:var(--bg2);color:var(--text)}
+
+  .role-chips{display:flex;flex-wrap:wrap;gap:7px}
+  .role-chip{
+    padding:8px 15px;border:1px solid var(--border);border-radius:20px;
+    background:transparent;color:var(--muted);font-size:12px;font-weight:600;
+    cursor:pointer;transition:.25s;font-family:inherit;
+  }
+  .role-chip:hover,.role-chip.selected{border-color:var(--accent);color:var(--accent);background:rgba(99,102,241,.08)}
+
+  .start-btn{
+    width:100%;padding:14px;margin-top:8px;
+    background:linear-gradient(135deg,var(--accent),#7c3aed);
+    border:none;border-radius:14px;color:#fff;
+    font-size:15px;font-weight:700;cursor:pointer;
+    font-family:inherit;transition:all .25s;
+    box-shadow:0 6px 25px rgba(99,102,241,.3);
+  }
+  .start-btn:hover{transform:translateY(-2px);box-shadow:0 10px 35px rgba(99,102,241,.4)}
+
+  /* ============================================
+     INTERVIEW SCREEN
+     ============================================ */
+  .interview-screen{flex:1;display:none;flex-direction:column;animation:fadeIn .4s ease}
+  .interview-screen.active{display:flex}
+
+  /* INTERVIEWER BAR */
+  .interviewer-bar{
+    display:flex;align-items:center;gap:14px;
+    padding:14px 18px;background:var(--glass);backdrop-filter:blur(16px);
+    border:1px solid var(--border);border-radius:16px;margin-bottom:12px;
+  }
+  .interviewer-avatar{
+    width:46px;height:46px;border-radius:14px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;flex-shrink:0;
+  }
+  .interviewer-info{flex:1}
+  .interviewer-name{font-weight:700;font-size:14px}
+  .interviewer-detail{font-size:11px;color:var(--muted);margin-top:2px}
+  .int-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .meta-pill{
+    font-size:10px;padding:4px 10px;border-radius:8px;font-weight:700;
+    white-space:nowrap;
+  }
+  .meta-pill.q{background:rgba(99,102,241,.15);color:var(--accent)}
+  .meta-pill.time{background:rgba(34,211,238,.12);color:var(--accent2)}
+  .meta-pill.type{background:rgba(168,85,247,.12);color:var(--accent3)}
+  .meta-pill.model{background:rgba(16,185,129,.12);color:var(--success);font-size:9px}
+
+  /* STATUS */
+  .int-status{display:flex;align-items:center;justify-content:center;gap:7px;padding:8px;font-size:12px;color:var(--muted)}
+  .int-dot{width:7px;height:7px;border-radius:50%;background:var(--dim);transition:.3s}
+  .int-dot.listening{background:var(--danger);box-shadow:0 0 8px var(--danger);animation:pulse 1s infinite}
+  .int-dot.speaking{background:var(--success);box-shadow:0 0 8px var(--success);animation:pulse .8s infinite}
+  .int-dot.thinking{background:var(--warning);box-shadow:0 0 8px var(--warning);animation:pulse .5s infinite}
+
+  /* VOICE SELECT */
+  .voice-sel{display:flex;align-items:center;gap:6px;justify-content:center;margin-bottom:8px;flex-wrap:wrap}
+  .voice-sel .lbl{font-size:10px;color:var(--dim)}
+  .v-chip{
+    padding:4px 11px;border:1px solid var(--border);border-radius:14px;
+    font-size:10px;color:var(--muted);cursor:pointer;transition:.2s;
+    background:none;font-family:inherit;
+  }
+  .v-chip:hover,.v-chip.sel{border-color:var(--accent);color:var(--accent);background:rgba(99,102,241,.08)}
+
+  /* ORB */
+  .int-orb-wrap{display:flex;flex-direction:column;align-items:center;padding:10px 0}
+  .int-orb{
+    width:120px;height:120px;border-radius:50%;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:38px;transition:.4s;position:relative;
+    background:radial-gradient(circle at 35% 35%,#3a3565,#1a1540);
+  }
+  .int-orb:hover{transform:scale(1.05)}
+  .int-orb.listening{background:radial-gradient(circle at 35% 35%,var(--danger),#991b1b);animation:breathe 1.5s ease-in-out infinite}
+  .int-orb.speaking{background:radial-gradient(circle at 35% 35%,var(--success),#065f46);animation:breathe .8s ease-in-out infinite}
+  .int-orb.thinking{background:radial-gradient(circle at 35% 35%,var(--warning),#92400e);animation:spin 2s linear infinite}
+  .int-orb-ring{
+    position:absolute;inset:-8px;border-radius:50%;
+    border:2px solid transparent;opacity:0;transition:.3s;
+  }
+  .int-orb.listening .int-orb-ring{opacity:1;border-color:var(--danger);animation:ringPulse 1.5s ease-out infinite}
+  .int-orb.speaking .int-orb-ring{opacity:1;border-color:var(--success);animation:ringPulse .8s ease-out infinite}
+  .int-orb-label{font-size:12px;color:var(--muted);margin-top:8px}
+
+  /* WAVEFORM */
+  .wave-wrap{display:flex;align-items:center;justify-content:center;gap:2.5px;height:28px;margin:8px 0}
+  .wave-wrap .b{width:3px;height:6px;background:var(--accent);border-radius:3px;transition:height .1s}
+  .wave-wrap.active .b{animation:waveB .5s ease-in-out infinite}
+  .wave-wrap .b:nth-child(1){animation-delay:0s}
+  .wave-wrap .b:nth-child(2){animation-delay:.07s}
+  .wave-wrap .b:nth-child(3){animation-delay:.14s}
+  .wave-wrap .b:nth-child(4){animation-delay:.21s}
+  .wave-wrap .b:nth-child(5){animation-delay:.28s}
+  .wave-wrap .b:nth-child(6){animation-delay:.21s}
+  .wave-wrap .b:nth-child(7){animation-delay:.14s}
+
+  /* LIVE TRANSCRIPT */
+  .live-t{text-align:center;min-height:20px;font-size:12px;color:var(--dim);font-style:italic;padding:4px 12px;max-width:500px;margin:0 auto;word-break:break-word}
+
+  /* CHAT */
+  .int-chat{
+    flex:1;overflow-y:auto;padding:6px 0;
+    display:flex;flex-direction:column;gap:10px;
+    max-height:38vh;scroll-behavior:smooth;
+  }
+  .int-chat::-webkit-scrollbar{width:3px}
+  .int-chat::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  .int-msg{
+    max-width:86%;padding:12px 16px;border-radius:16px;
+    font-size:13px;line-height:1.65;animation:slideUp .3s ease-out;
+  }
+  .int-msg.interviewer{
+    align-self:flex-start;background:var(--card);
+    border:1px solid var(--border);border-bottom-left-radius:5px;
+  }
+  .int-msg.candidate{
+    align-self:flex-end;
+    background:linear-gradient(135deg,var(--accent),#7c3aed);
+    color:#fff;border-bottom-right-radius:5px;
+  }
+  .int-msg .ts{font-size:10px;color:rgba(255,255,255,.3);margin-top:4px;display:block}
+  .int-msg.interviewer .ts{color:var(--dim)}
+
+  /* CONTROLS */
+  .int-controls{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 0;flex-wrap:wrap}
+  .int-btn{
+    padding:8px 16px;border:1px solid var(--border);border-radius:10px;
+    background:var(--glass);backdrop-filter:blur(8px);color:var(--muted);
+    font-size:12px;font-weight:600;cursor:pointer;transition:.25s;
+    font-family:inherit;display:flex;align-items:center;gap:5px;
+  }
+  .int-btn:hover{border-color:var(--accent);color:var(--text)}
+  .int-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(99,102,241,.1)}
+  .int-btn.end{border-color:var(--danger);color:var(--danger)}
+  .int-btn.end:hover{background:rgba(239,68,68,.08)}
+
+  /* ============================================
+     SCORE OVERLAY
+     ============================================ */
+  .score-overlay{
+    position:fixed;inset:0;z-index:200;
+    background:rgba(0,0,0,.85);backdrop-filter:blur(12px);
+    display:none;align-items:center;justify-content:center;padding:20px;
+  }
+  .score-overlay.open{display:flex}
+
+  .score-card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:24px;padding:32px;max-width:520px;width:100%;
+    text-align:center;animation:slideUp .5s ease-out;
+    max-height:90vh;overflow-y:auto;
+  }
+  .score-card h2{font-size:22px;font-weight:800;margin-bottom:4px}
+  .score-subtitle{font-size:13px;color:var(--muted);margin-bottom:4px}
+
+  .score-ring{width:110px;height:110px;margin:16px auto;position:relative}
+  .score-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .score-ring .bg{fill:none;stroke:var(--border);stroke-width:8}
+  .score-ring .fg{fill:none;stroke:var(--accent);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1)}
+  .score-ring .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800}
+  .score-ring .val .grade{font-size:13px;color:var(--muted);display:block;font-weight:600;margin-top:2px}
+
+  .score-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:16px 0;text-align:left}
+  .score-metric{padding:12px;background:var(--bg2);border-radius:12px;border:1px solid var(--border)}
+  .score-metric .label{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.8px}
+  .score-metric .value{font-size:17px;font-weight:700;margin-top:3px}
+
+  .score-feedback{
+    text-align:left;font-size:13px;color:var(--muted);line-height:1.75;
+    margin:14px 0;padding:16px;background:var(--bg2);border-radius:12px;
+    border:1px solid var(--border);max-height:200px;overflow-y:auto;
+  }
+
+  .score-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .score-btn{
+    padding:12px 28px;border-radius:12px;font-size:14px;font-weight:700;
+    cursor:pointer;font-family:inherit;transition:.25s;border:none;
+  }
+  .score-btn:hover{transform:translateY(-1px)}
+  .score-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent3));color:#fff;box-shadow:0 4px 20px rgba(99,102,241,.3)}
+  .score-btn.secondary{background:var(--glass);color:var(--text);border:1px solid var(--border)}
+
+  /* ===== RESPONSIVE ===== */
+  @media(max-width:640px){
+    .app{padding:10px}
+    .setup-card{padding:24px}
+    .int-orb{width:100px;height:100px;font-size:30px}
+    .int-chat{max-height:30vh}
+    .int-msg{max-width:92%;font-size:12px}
+    .interviewer-bar{flex-direction:column;text-align:center;gap:10px}
+    .int-meta{justify-content:center}
+    .score-metrics{grid-template-columns:1fr}
+    .score-card{padding:24px}
+    .role-chips{gap:5px}
+    .role-chip{padding:6px 12px;font-size:11px}
   }
 </style>
 </head>
 <body>
 
-<div class="ambient-bg">
+<!-- AMBIENT -->
+<div class="amb">
   <div class="grid"></div>
-  <div class="orb"></div>
-  <div class="orb"></div>
+  <div class="o"></div><div class="o"></div><div class="o"></div>
 </div>
 
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <svg viewBox="0 0 200 200" fill="none">
+      <path d="M60 20 C35 20 20 35 20 60 L20 140 C20 165 35 180 60 180 L140 180 C165 180 180 165 180 140 L180 60 C180 35 165 20 140 20Z" fill="url(#ng)" opacity=".1"/>
+      <path d="M56 58 C56 48 63 42 74 42 L126 42 C137 42 144 48 144 58 L144 64 L82 126 L144 126 L144 142 C144 152 137 158 126 158 L74 158 C63 158 56 152 56 142 L56 136 L118 74 L56 74Z" fill="url(#ng)"/>
+      <path d="M134 42 C142 36 152 26 158 16 C156 28 150 42 142 50 L134 42Z" fill="url(#ng)" opacity=".75"/>
+      <defs><linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient></defs>
+    </svg>
+    ZELVORA <em>AI</em>
+  </a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-back">← Home</a>
+    <div class="uses-badge" id="usesDisplay">∞ uses</div>
+  </div>
+</nav>
+
+<!-- APP -->
 <div class="app">
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="logo">✦ ZELVORA</div>
-    <h1>AI Mock Interview</h1>
-  </div>
-
-  <!-- ===== SETUP SCREEN ===== -->
+  <!-- ==========================================
+       SETUP SCREEN
+       ========================================== -->
   <div class="setup-screen" id="setupScreen">
     <div class="setup-card">
-      <h2>🎯 Set Up Your Interview</h2>
-      <p class="desc">Realistic AI interviewer with voice — completely hands-free</p>
+      <div class="setup-header">
+        <div class="icon-wrap">🎤</div>
+        <h2>AI Mock Interview</h2>
+        <p>Realistic voice-to-voice interview practice — completely hands-free</p>
+      </div>
 
+      <!-- JOB ROLE -->
       <div class="field-group">
         <label>Position / Job Role</label>
         <div class="role-chips" id="roleChips">
@@ -503,15 +333,30 @@
           <button class="role-chip" data-role="Data Scientist">🧪 Data Scientist</button>
           <button class="role-chip" data-role="UX Designer">🎨 UX Designer</button>
           <button class="role-chip" data-role="Marketing Manager">📈 Marketing</button>
+          <button class="role-chip" data-role="Business Analyst">📋 Business Analyst</button>
           <button class="role-chip" data-role="Sales Executive">🤝 Sales</button>
+          <button class="role-chip" data-role="HR Manager">👥 HR Manager</button>
         </div>
       </div>
 
+      <!-- CUSTOM ROLE -->
       <div class="field-group">
         <label>Custom Role (optional)</label>
-        <input class="field-input" type="text" id="customRole" placeholder="e.g., DevOps Engineer at Google">
+        <input class="field-input" type="text" id="customRole" placeholder="e.g., DevOps Engineer at Google, Senior Frontend Developer...">
       </div>
 
+      <!-- INTERVIEW TYPE -->
+      <div class="field-group">
+        <label>Interview Type</label>
+        <select class="field-input" id="interviewType">
+          <option value="behavioral" selected>🧠 Behavioral (STAR Method)</option>
+          <option value="technical">💻 Technical</option>
+          <option value="hr">🤝 HR / Culture Fit</option>
+          <option value="case_study">📊 Case Study</option>
+        </select>
+      </div>
+
+      <!-- DIFFICULTY -->
       <div class="field-group">
         <label>Difficulty</label>
         <select class="field-input" id="difficultySelect">
@@ -522,11 +367,27 @@
         </select>
       </div>
 
-      <button class="start-btn" onclick="startInterview()">🎙️ Start Interview</button>
+      <!-- MAX QUESTIONS -->
+      <div class="field-group">
+        <label>Number of Questions</label>
+        <select class="field-input" id="maxQSelect">
+          <option value="5">5 Questions (Quick)</option>
+          <option value="8">8 Questions (Standard)</option>
+          <option value="10" selected>10 Questions (Full)</option>
+          <option value="15">15 Questions (Thorough)</option>
+        </select>
+      </div>
+
+      <!-- START -->
+      <button class="start-btn" onclick="startInterview()">
+        🎙️ Start Interview
+      </button>
     </div>
   </div>
 
-  <!-- ===== INTERVIEW SCREEN ===== -->
+  <!-- ==========================================
+       INTERVIEW SCREEN
+       ========================================== -->
   <div class="interview-screen" id="interviewScreen">
 
     <!-- Interviewer Bar -->
@@ -534,35 +395,38 @@
       <div class="interviewer-avatar">👔</div>
       <div class="interviewer-info">
         <div class="interviewer-name">Zelvora Interviewer</div>
-        <div class="interviewer-role" id="intJobLabel">Software Engineer Interview</div>
+        <div class="interviewer-detail" id="intDetail">Software Engineer — Behavioral</div>
       </div>
-      <div class="interview-meta">
-        <div class="meta-badge question" id="questionBadge">Q 1/10</div>
-        <div class="meta-badge time" id="timeBadge">00:00</div>
+      <div class="int-meta">
+        <div class="meta-pill q" id="qBadge">Q 1/10</div>
+        <div class="meta-pill time" id="timeBadge">0:00</div>
+        <div class="meta-pill type" id="typeBadge">Behavioral</div>
+        <div class="meta-pill model" id="modelBadge">—</div>
       </div>
     </div>
 
     <!-- Voice Select -->
-    <div class="voice-sel" id="intVoiceSelector">
-      <span style="font-size:11px;color:var(--text-dim)">Voice:</span>
+    <div class="voice-sel" id="intVoiceSel">
+      <span class="lbl">Voice:</span>
     </div>
 
     <!-- Status -->
     <div class="int-status">
-      <div class="dot" id="intDot"></div>
+      <div class="int-dot" id="intDot"></div>
       <span id="intStatusText">Ready</span>
     </div>
 
     <!-- Orb -->
     <div class="int-orb-wrap">
-      <div class="int-orb" id="intOrb" onclick="toggleInterview()">
+      <div class="int-orb" id="intOrb" onclick="toggleListen()">
         <span id="intOrbIcon">🎙️</span>
+        <div class="int-orb-ring"></div>
       </div>
       <div class="int-orb-label" id="intOrbLabel">Tap to respond</div>
     </div>
 
     <!-- Wave -->
-    <div class="wave-bar-wrap" id="intWave">
+    <div class="wave-wrap" id="intWave">
       <div class="b"></div><div class="b"></div><div class="b"></div>
       <div class="b"></div><div class="b"></div><div class="b"></div><div class="b"></div>
     </div>
@@ -575,32 +439,39 @@
 
     <!-- Controls -->
     <div class="int-controls">
-      <button class="int-btn" id="intAutoBtn" onclick="toggleIntAuto()">🔄 Auto: ON</button>
+      <button class="int-btn active" id="intAutoBtn" onclick="toggleAuto()">🔄 Auto: ON</button>
+      <button class="int-btn" id="intMuteBtn" onclick="toggleIntMute()">🔊 Voice: ON</button>
       <button class="int-btn" onclick="skipQuestion()">⏭️ Skip</button>
       <button class="int-btn end" onclick="endInterview()">🏁 End Interview</button>
     </div>
   </div>
 
-</div>
+</div><!-- /app -->
 
-<!-- SCORE OVERLAY -->
+<!-- ==========================================
+     SCORE OVERLAY
+     ========================================== -->
 <div class="score-overlay" id="scoreOverlay">
   <div class="score-card">
     <h2>📋 Interview Complete</h2>
-    <p style="color:var(--text-secondary);font-size:13px;margin-bottom:4px" id="scoreRole"></p>
+    <p class="score-subtitle" id="scoreSubtitle">Software Engineer — Behavioral</p>
 
     <div class="score-ring">
       <svg viewBox="0 0 100 100">
         <circle class="bg" cx="50" cy="50" r="42"></circle>
-        <circle class="fg" id="scoreCircle" cx="50" cy="50" r="42"
-                stroke-dasharray="264" stroke-dashoffset="264"></circle>
+        <circle class="fg" id="scoreCircle" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264"></circle>
       </svg>
-      <div class="val" id="scoreVal">0</div>
+      <div class="val">
+        <div>
+          <span id="scoreVal">0</span>
+          <span class="grade" id="scoreGrade">—</span>
+        </div>
+      </div>
     </div>
 
     <div class="score-metrics">
       <div class="score-metric">
-        <div class="label">Questions</div>
+        <div class="label">Questions Answered</div>
         <div class="value" id="scoreQuestions">0</div>
       </div>
       <div class="score-metric">
@@ -609,37 +480,49 @@
       </div>
       <div class="score-metric">
         <div class="label">Avg Response</div>
-        <div class="value" id="scoreAvgLen">0 words</div>
+        <div class="value" id="scoreAvgWords">0 words</div>
       </div>
       <div class="score-metric">
         <div class="label">Difficulty</div>
-        <div class="value" id="scoreDiff">—</div>
+        <div class="value" id="scoreDifficulty">—</div>
       </div>
     </div>
 
-    <div class="score-feedback" id="scoreFeedback"></div>
+    <div class="score-feedback" id="scoreFeedback">Loading feedback...</div>
 
-    <button class="score-close" onclick="closeScore()">Done</button>
+    <div class="score-actions">
+      <button class="score-btn primary" onclick="closeScore()">✅ Done</button>
+      <button class="score-btn secondary" onclick="retryInterview()">🔄 Try Again</button>
+      <button class="score-btn secondary" onclick="copyFeedback()">📋 Copy Feedback</button>
+    </div>
   </div>
 </div>
 
+
+<!-- ================================================================
+     JAVASCRIPT ENGINE
+     ================================================================ -->
 <script>
-/* ============================================================
-   ZELVORA MOCK INTERVIEW ENGINE
-   ============================================================ */
+/* =================================================================
+   ZELVORA MOCK INTERVIEW ENGINE (FINAL)
+   Connects to: Universal Worker.js v4
+   Module: "interview"
+   ================================================================= */
 
-const API_URL = "https://late-mouse-4aa2.zelvora-global.workers.dev/"; // ← UPDATE
+const API_URL = "https://your-worker.your-subdomain.workers.dev"; // ← UPDATE THIS
 
-// ===== STATE =====
-let iv = {
+/* ===== STATE ===== */
+const iv = {
   active: false,
-  phase: "idle",
+  phase: "idle",          // idle | listening | thinking | speaking
   history: [],
   jobRole: "Software Engineer",
+  interviewType: "behavioral",
   difficulty: "intermediate",
-  questionNum: 0,
   maxQuestions: 10,
+  questionNum: 0,
   autoListen: true,
+  muted: false,
   token: null,
   selectedVoice: null,
   startTime: null,
@@ -647,24 +530,35 @@ let iv = {
   userWordCounts: [],
 };
 
-// ===== DOM =====
+/* ===== DOM ===== */
 const $ = id => document.getElementById(id);
 
-// ===== TOKEN =====
+
+/* ================================================================
+   TOKEN
+   ================================================================ */
 function initToken() {
-  const stored = localStorage.getItem("zelvora_token");
-  if (stored) {
+  const s = localStorage.getItem("zelvora_token");
+  if (s) {
     try {
-      const p = JSON.parse(atob(stored));
-      if (Date.now() < p.exp) { iv.token = stored; return; }
-    } catch(e) {}
+      const p = JSON.parse(atob(s));
+      if (Date.now() < p.exp) {
+        iv.token = s;
+        $("usesDisplay").textContent = p.uses.spoken + " uses";
+        return;
+      }
+    } catch (e) {}
   }
-  const demo = { sub: "demo_" + Date.now(), exp: Date.now() + 30*24*60*60*1000, uses: { spoken: 500 } };
-  iv.token = btoa(JSON.stringify(demo));
+  const d = { sub: "demo_" + Date.now(), exp: Date.now() + 30 * 24 * 3600000, uses: { spoken: 500 } };
+  iv.token = btoa(JSON.stringify(d));
   localStorage.setItem("zelvora_token", iv.token);
+  $("usesDisplay").textContent = "500 uses";
 }
 
-// ===== ROLE CHIPS =====
+
+/* ================================================================
+   ROLE CHIPS
+   ================================================================ */
 document.querySelectorAll(".role-chip").forEach(chip => {
   chip.onclick = () => {
     document.querySelectorAll(".role-chip").forEach(c => c.classList.remove("selected"));
@@ -672,23 +566,30 @@ document.querySelectorAll(".role-chip").forEach(chip => {
   };
 });
 
-// ===== SPEECH RECOGNITION =====
+
+/* ================================================================
+   SPEECH RECOGNITION
+   ================================================================ */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null;
 
 function setupRec() {
-  if (!SR) return false;
+  if (!SR) {
+    alert("Speech recognition not supported. Please use Chrome or Edge.");
+    return false;
+  }
+
   rec = new SR();
   rec.continuous = true;
   rec.interimResults = true;
   rec.lang = "en-US";
 
-  let final = "";
+  let finalT = "";
   let sTimer = null;
 
   rec.onstart = () => {
-    setIntPhase("listening");
-    final = "";
+    setPhase("listening");
+    finalT = "";
     $("intLiveT").textContent = "Listening...";
   };
 
@@ -696,27 +597,31 @@ function setupRec() {
     let interim = "";
     for (let i = e.resultIndex; i < e.results.length; i++) {
       const t = e.results[i][0].transcript;
-      if (e.results[i].isFinal) final += t + " ";
+      if (e.results[i].isFinal) finalT += t + " ";
       else interim = t;
     }
-    $("intLiveT").textContent = final + interim;
+    $("intLiveT").textContent = finalT + interim;
+
     clearTimeout(sTimer);
     sTimer = setTimeout(() => {
-      if (final.trim().length > 2) rec.stop();
+      if (finalT.trim().length > 2) rec.stop();
     }, 4000);
   };
 
   rec.onend = () => {
     clearTimeout(sTimer);
-    if (iv.phase === "listening" && final.trim().length > 2) {
-      processAnswer(final.trim());
+    if (iv.phase === "listening" && finalT.trim().length > 2) {
+      processAnswer(finalT.trim());
     } else if (iv.active && iv.phase === "listening") {
       startRec();
     }
   };
 
   rec.onerror = (e) => {
-    if (e.error === "no-speech" && iv.active) setTimeout(() => startRec(), 500);
+    console.warn("STT error:", e.error);
+    if (e.error === "no-speech" && iv.active) {
+      setTimeout(() => startRec(), 500);
+    }
   };
 
   return true;
@@ -724,43 +629,45 @@ function setupRec() {
 
 function startRec() {
   if (!rec || iv.phase === "speaking" || iv.phase === "thinking") return;
-  try { rec.start(); } catch(e) {}
+  try { rec.start(); } catch (e) {}
 }
 
 function stopRec() {
-  if (rec) try { rec.stop(); } catch(e) {}
+  if (rec) try { rec.stop(); } catch (e) {}
 }
 
-// ===== TTS =====
+
+/* ================================================================
+   SPEECH SYNTHESIS (TTS)
+   ================================================================ */
 async function getVoices() {
   return new Promise(r => {
     const v = speechSynthesis.getVoices();
     if (v.length) return r(v);
     speechSynthesis.onvoiceschanged = () => r(speechSynthesis.getVoices());
-    setTimeout(() => r(speechSynthesis.getVoices()), 1000);
+    setTimeout(() => r(speechSynthesis.getVoices()), 1500);
   });
 }
 
 async function populateVoices() {
   const voices = await getVoices();
-  const sel = $("intVoiceSelector");
+  const sel = $("intVoiceSel");
 
-  // Prefer deeper/professional voices for interviewer
+  // Prefer deeper/professional voices
+  const keywords = ["Daniel","David","Mark","Google","Natural","Microsoft","Rishi","Alex","James","Thomas","Aaron"];
   const preferred = voices.filter(v =>
-    v.lang.startsWith("en") && (
-      v.name.includes("Daniel") || v.name.includes("David") ||
-      v.name.includes("Mark") || v.name.includes("Google") ||
-      v.name.includes("Natural") || v.name.includes("Microsoft") ||
-      v.name.includes("Rishi") || v.name.includes("Alex")
-    )
+    v.lang.startsWith("en") && keywords.some(k => v.name.includes(k))
   );
 
-  const list = preferred.length > 0 ? preferred.slice(0,5) : voices.filter(v => v.lang.startsWith("en")).slice(0,5);
+  const list = preferred.length > 0
+    ? preferred.slice(0, 5)
+    : voices.filter(v => v.lang.startsWith("en")).slice(0, 5);
 
   list.forEach((v, i) => {
     const chip = document.createElement("button");
     chip.className = "v-chip" + (i === 0 ? " sel" : "");
-    chip.textContent = v.name.replace(/Microsoft |Google |Apple /g,"").split(" ")[0];
+    chip.textContent = v.name.replace(/Microsoft |Google |Apple /g, "").split(" ")[0];
+    chip.title = v.name;
     chip.onclick = () => {
       document.querySelectorAll(".v-chip").forEach(c => c.classList.remove("sel"));
       chip.classList.add("sel");
@@ -770,22 +677,29 @@ async function populateVoices() {
     if (i === 0) iv.selectedVoice = v;
   });
 
-  if (list.length === 0) iv.selectedVoice = voices.find(v => v.lang.startsWith("en")) || voices[0];
+  if (list.length === 0) {
+    iv.selectedVoice = voices.find(v => v.lang.startsWith("en")) || voices[0];
+  }
 }
 
 function speak(text) {
   return new Promise(resolve => {
+    if (iv.muted) { resolve(); return; }
+
     speechSynthesis.cancel();
-    setIntPhase("speaking");
+    setPhase("speaking");
+
+    const rate = 0.93;
+    const pitch = 0.95;
 
     if (text.length > 200) {
       const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
       let i = 0;
       function next() {
-        if (i >= sentences.length) { setIntPhase("idle"); resolve(); return; }
+        if (i >= sentences.length) { setPhase("idle"); resolve(); return; }
         const u = new SpeechSynthesisUtterance(sentences[i].trim());
         u.voice = iv.selectedVoice;
-        u.rate = 0.92; u.pitch = 0.95; u.volume = 1;
+        u.rate = rate; u.pitch = pitch; u.volume = 1;
         u.onend = () => { i++; next(); };
         u.onerror = () => { i++; next(); };
         speechSynthesis.speak(u);
@@ -794,117 +708,169 @@ function speak(text) {
     } else {
       const u = new SpeechSynthesisUtterance(text);
       u.voice = iv.selectedVoice;
-      u.rate = 0.92; u.pitch = 0.95; u.volume = 1;
-      u.onend = () => { setIntPhase("idle"); resolve(); };
-      u.onerror = () => { setIntPhase("idle"); resolve(); };
+      u.rate = rate; u.pitch = pitch; u.volume = 1;
+      u.onend = () => { setPhase("idle"); resolve(); };
+      u.onerror = () => { setPhase("idle"); resolve(); };
       speechSynthesis.speak(u);
     }
   });
 }
 
-// ===== AI =====
-const res = await fetch(API_URL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${iv.token}`
-  },
-  body: JSON.stringify({
-    text,
-    history: iv.history.slice(-20),
-    mode: "interview",
-    job_role: iv.jobRole,
-    difficulty: iv.difficulty,
-    quality: "best"       // ← Quality priority for interviews
-  })
-});
+
+/* ================================================================
+   AI API — Connects to Universal Worker v4
+   ================================================================ */
+async function callIntAI(text, mode) {
+  setPhase("thinking");
+
+  const isStart = text === "__start_interview__";
+
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${iv.token}`,
+    },
+    body: JSON.stringify({
+      // Universal worker params
+      module: "interview",
+      mode: isStart ? "start" : mode,
+      quality: "best",
+
+      // Interview params
+      text: text,
+      history: iv.history.slice(-20),
+      job_role: iv.jobRole,
+      interview_type: iv.interviewType,
+      difficulty: iv.difficulty,
+    })
+  });
+
   const data = await res.json();
+
   if (data.error) throw new Error(data.error);
 
+  // Update token
   if (data.token) {
     iv.token = data.token;
     localStorage.setItem("zelvora_token", data.token);
+  }
+  if (data.remaining !== undefined) {
+    $("usesDisplay").textContent = data.remaining + " uses";
+  }
+  if (data.model) {
+    $("modelBadge").textContent = data.model.replace("llama-", "L").replace("-instruct", "").replace("-fast", "⚡");
   }
 
   return data.reply;
 }
 
-// ===== INTERVIEW FLOW =====
+
+/* ================================================================
+   INTERVIEW FLOW
+   ================================================================ */
 async function startInterview() {
-  // Get settings
+  // Read setup
   const selectedChip = document.querySelector(".role-chip.selected");
-  iv.jobRole = $("customRole").value.trim() || (selectedChip ? selectedChip.dataset.role : "Software Engineer");
+  iv.jobRole = $("customRole").value.trim() ||
+    (selectedChip ? selectedChip.dataset.role : "Software Engineer");
+  iv.interviewType = $("interviewType").value;
   iv.difficulty = $("difficultySelect").value;
+  iv.maxQuestions = parseInt($("maxQSelect").value);
   iv.history = [];
   iv.questionNum = 1;
   iv.userWordCounts = [];
 
-  $("intJobLabel").textContent = `${iv.jobRole} — ${iv.difficulty.charAt(0).toUpperCase() + iv.difficulty.slice(1)}`;
-  $("questionBadge").textContent = `Q 1/${iv.maxQuestions}`;
+  // Type labels
+  const typeLabels = {
+    behavioral: "🧠 Behavioral",
+    technical: "💻 Technical",
+    hr: "🤝 HR",
+    case_study: "📊 Case Study"
+  };
+  const diffLabels = {
+    beginner: "🟢 Beginner",
+    intermediate: "🟡 Intermediate",
+    advanced: "🔴 Advanced",
+    faang: "⚫ FAANG"
+  };
+
+  // Update UI
+  $("intDetail").textContent = `${iv.jobRole} — ${typeLabels[iv.interviewType] || iv.interviewType} — ${diffLabels[iv.difficulty] || iv.difficulty}`;
+  $("qBadge").textContent = `Q 1/${iv.maxQuestions}`;
+  $("typeBadge").textContent = typeLabels[iv.interviewType] || iv.interviewType;
 
   // Switch screens
   $("setupScreen").classList.add("hidden");
   $("interviewScreen").classList.add("active");
 
   // Setup
-  if (!setupRec()) { alert("Browser not supported. Use Chrome."); return; }
+  if (!setupRec()) return;
   iv.active = true;
 
   // Timer
   iv.startTime = Date.now();
   iv.timerInterval = setInterval(updateTimer, 1000);
 
-  // Get first question from AI
+  // Get first question
   try {
-    const greeting = await callIntAI("", true);
-    addIntMsg("interviewer", greeting);
+    const greeting = await callIntAI("__start_interview__", "start");
+    addMsg("interviewer", greeting);
     iv.history.push({ role: "assistant", content: greeting });
 
     await speak(greeting);
+    if (iv.active && iv.autoListen) setTimeout(() => startRec(), 500);
 
-    if (iv.active && iv.autoListen) {
-      setTimeout(() => startRec(), 500);
-    }
-  } catch(e) {
-    addIntMsg("interviewer", "Hello! Let's begin. Tell me about yourself.");
-    iv.history.push({ role: "assistant", content: "Hello! Let's begin. Tell me about yourself." });
-    await speak("Hello! Let's begin. Tell me about yourself.");
+  } catch (e) {
+    console.error("Start error:", e);
+    const fb = `Hello! Welcome to your ${iv.interviewType} interview for the ${iv.jobRole} position. I'll be asking you about ${iv.maxQuestions} questions today. Let's start — could you tell me a little about yourself?`;
+    addMsg("interviewer", fb);
+    iv.history.push({ role: "assistant", content: fb });
+    await speak(fb);
     if (iv.active && iv.autoListen) setTimeout(() => startRec(), 500);
   }
 }
 
 async function processAnswer(text) {
-  addIntMsg("candidate", text);
+  addMsg("candidate", text);
   iv.history.push({ role: "user", content: text });
   iv.userWordCounts.push(text.split(/\s+/).length);
   $("intLiveT").textContent = "";
 
   iv.questionNum++;
-  $("questionBadge").textContent = `Q ${Math.min(iv.questionNum, iv.maxQuestions)}/${iv.maxQuestions}`;
+  $("qBadge").textContent = `Q ${Math.min(iv.questionNum, iv.maxQuestions)}/${iv.maxQuestions}`;
 
+  // End check
   if (iv.questionNum > iv.maxQuestions) {
     await endInterview();
     return;
   }
 
   try {
-    const reply = await callIntAI(text);
-    addIntMsg("interviewer", reply);
+    const reply = await callIntAI(text, iv.interviewType);
+    addMsg("interviewer", reply);
     iv.history.push({ role: "assistant", content: reply });
 
     await speak(reply);
+    if (iv.active && iv.autoListen) setTimeout(() => startRec(), 400);
 
-    if (iv.active && iv.autoListen) {
-      setTimeout(() => startRec(), 400);
+  } catch (e) {
+    console.error("AI error:", e);
+
+    let fb = "That's interesting. Could you elaborate a bit more on that point?";
+    if (e.message === "Usage limit reached") {
+      fb = "Your usage limit has been reached. Please upgrade to continue.";
+      iv.active = false;
     }
-  } catch(e) {
-    addIntMsg("interviewer", "Interesting. Can you elaborate on that?");
-    await speak("Interesting. Can you elaborate on that?");
+
+    addMsg("interviewer", fb);
+    iv.history.push({ role: "assistant", content: fb });
+    await speak(fb);
     if (iv.active && iv.autoListen) setTimeout(() => startRec(), 400);
   }
 }
 
-function toggleInterview() {
+function toggleListen() {
   if (iv.phase === "listening") {
     stopRec();
   } else if (iv.phase === "idle" && iv.active) {
@@ -914,7 +880,7 @@ function toggleInterview() {
 
 function skipQuestion() {
   stopRec();
-  processAnswer("I'd like to skip this question and move to the next one.");
+  processAnswer("I'd like to skip this question and move to the next one, please.");
 }
 
 async function endInterview() {
@@ -922,51 +888,74 @@ async function endInterview() {
   stopRec();
   speechSynthesis.cancel();
   clearInterval(iv.timerInterval);
-  setIntPhase("idle");
+  setPhase("idle");
 
-  // Calculate score
+  // Calculate stats
   const duration = Math.floor((Date.now() - iv.startTime) / 1000);
+  const totalWords = iv.userWordCounts.reduce((a, b) => a + b, 0);
   const avgWords = iv.userWordCounts.length > 0
-    ? Math.round(iv.userWordCounts.reduce((a,b) => a+b, 0) / iv.userWordCounts.length) : 0;
+    ? Math.round(totalWords / iv.userWordCounts.length) : 0;
+  const questionsAnswered = iv.questionNum - 1;
 
-  // Simple scoring heuristic
-  let score = 50;
-  score += Math.min(iv.questionNum - 1, 10) * 3; // Up to 30 for answering questions
-  score += Math.min(avgWords, 50) * 0.3; // Up to 15 for detailed answers
-  score += duration > 120 ? 5 : 0; // Bonus for longer sessions
+  // Score calculation
+  let score = 40;
+  score += Math.min(questionsAnswered, iv.maxQuestions) * (30 / iv.maxQuestions);
+  score += Math.min(avgWords, 80) * 0.2;
+  score += duration > 120 ? 5 : 0;
+  score += duration > 300 ? 5 : 0;
+  // Difficulty bonus
+  const diffBonus = { beginner: 0, intermediate: 3, advanced: 5, faang: 8 };
+  score += diffBonus[iv.difficulty] || 0;
   score = Math.min(Math.round(score), 100);
 
+  // Grade
+  const grade = score >= 90 ? "A+" : score >= 80 ? "A" : score >= 70 ? "B+" :
+                score >= 60 ? "B" : score >= 50 ? "C" : "D";
+
   // Get AI feedback
-  let feedback = "Great effort! Keep practicing to improve your interview skills.";
+  let feedback = "Good effort! Keep practicing to improve your interview performance.";
   try {
-    const fbReply = await callIntAI(
-      "The interview is over. Please give a brief overall assessment of the candidate's performance. " +
-      "Cover: communication clarity, answer quality, confidence, and areas for improvement. " +
-      "Be specific and constructive. 4-5 sentences max."
+    feedback = await callIntAI(
+      `The interview is complete. Candidate answered ${questionsAnswered} questions in ${formatTime(duration)}. Average answer was ${avgWords} words. Interview type: ${iv.interviewType}. Difficulty: ${iv.difficulty}. Give your final assessment.`,
+      "feedback"
     );
-    feedback = fbReply;
-  } catch(e) {}
+  } catch (e) {
+    console.error("Feedback error:", e);
+  }
 
   // Show score
   showScore({
     score,
-    questions: iv.questionNum - 1,
+    grade,
+    questions: questionsAnswered,
     duration: formatTime(duration),
     avgWords: avgWords + " words",
     difficulty: iv.difficulty,
     role: iv.jobRole,
+    type: iv.interviewType,
     feedback,
   });
 }
 
+
+/* ================================================================
+   SCORE DISPLAY
+   ================================================================ */
 function showScore(data) {
-  $("scoreRole").textContent = data.role + " — " + data.difficulty;
+  const typeNames = { behavioral: "Behavioral", technical: "Technical", hr: "HR", case_study: "Case Study" };
+
+  $("scoreSubtitle").textContent = `${data.role} — ${typeNames[data.type] || data.type} — ${data.difficulty}`;
   $("scoreQuestions").textContent = data.questions;
   $("scoreDuration").textContent = data.duration;
-  $("scoreAvgLen").textContent = data.avgWords;
-  $("scoreDiff").textContent = data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1);
+  $("scoreAvgWords").textContent = data.avgWords;
+  $("scoreDifficulty").textContent = data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1);
   $("scoreFeedback").textContent = data.feedback;
   $("scoreVal").textContent = data.score;
+  $("scoreGrade").textContent = data.grade;
+
+  // Color the score ring based on grade
+  const colors = { "A+": "#10b981", "A": "#10b981", "B+": "#6366f1", "B": "#6366f1", "C": "#f59e0b", "D": "#ef4444" };
+  $("scoreCircle").style.stroke = colors[data.grade] || "var(--accent)";
 
   // Animate ring
   const circumference = 264;
@@ -981,41 +970,74 @@ function showScore(data) {
 
 function closeScore() {
   $("scoreOverlay").classList.remove("open");
-  // Back to setup
-  $("setupScreen").classList.remove("hidden");
+  backToSetup();
+}
+
+function retryInterview() {
+  $("scoreOverlay").classList.remove("open");
+  // Keep same settings, just restart
   $("interviewScreen").classList.remove("active");
+  $("setupScreen").classList.remove("hidden");
   $("intChat").innerHTML = "";
   iv.history = [];
   iv.questionNum = 0;
 }
 
-// ===== UI =====
-function setIntPhase(phase) {
+function backToSetup() {
+  $("interviewScreen").classList.remove("active");
+  $("setupScreen").classList.remove("hidden");
+  $("intChat").innerHTML = "";
+  iv.history = [];
+  iv.questionNum = 0;
+}
+
+function copyFeedback() {
+  const text = $("scoreFeedback").textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btns = document.querySelectorAll(".score-btn.secondary");
+    btns[1].textContent = "✅ Copied!";
+    setTimeout(() => { btns[1].textContent = "📋 Copy Feedback"; }, 2000);
+  });
+}
+
+
+/* ================================================================
+   UI HELPERS
+   ================================================================ */
+function setPhase(phase) {
   iv.phase = phase;
+
   const orb = $("intOrb");
   orb.className = "int-orb " + phase;
+
   const wave = $("intWave");
   wave.classList.toggle("active", phase === "listening" || phase === "speaking");
 
   const icons = { idle: "🎙️", listening: "👂", thinking: "🧠", speaking: "🗣️" };
   const labels = { idle: "Tap to respond", listening: "Listening...", thinking: "Processing...", speaking: "Interviewer speaking" };
-  const statuses = { idle: "Ready", listening: "Your turn", thinking: "Processing", speaking: "Interviewer" };
-  const dotClass = { idle: "", listening: "listening", thinking: "thinking", speaking: "speaking" };
+  const statuses = { idle: "Ready", listening: "Your turn — speak", thinking: "Processing", speaking: "Interviewer talking" };
+  const dots = { idle: "", listening: "listening", thinking: "thinking", speaking: "speaking" };
 
   $("intOrbIcon").textContent = icons[phase] || "🎙️";
   $("intOrbLabel").textContent = labels[phase] || "";
   $("intStatusText").textContent = statuses[phase] || "";
-  $("intDot").className = "dot " + (dotClass[phase] || "");
+  $("intDot").className = "int-dot " + (dots[phase] || "");
 }
 
-function addIntMsg(type, text) {
+function addMsg(type, text) {
   const div = document.createElement("div");
   div.className = `int-msg ${type}`;
   const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  const label = type === "interviewer" ? "👔 Interviewer" : "🎤 You";
-  div.innerHTML = `${text}<span class="ts">${label} · ${time}</span>`;
+  const icon = type === "interviewer" ? "👔 Interviewer" : "🎤 You";
+  div.innerHTML = `${escapeHtml(text)}<span class="ts">${icon} · ${time}</span>`;
   $("intChat").appendChild(div);
   $("intChat").scrollTop = $("intChat").scrollHeight;
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
 }
 
 function updateTimer() {
@@ -1029,18 +1051,69 @@ function formatTime(s) {
   return `${m}:${sec.toString().padStart(2, '0')}`;
 }
 
-function toggleIntAuto() {
+
+/* ================================================================
+   CONTROLS
+   ================================================================ */
+function toggleAuto() {
   iv.autoListen = !iv.autoListen;
-  $("intAutoBtn").textContent = `🔄 Auto: ${iv.autoListen ? "ON" : "OFF"}`;
+  const btn = $("intAutoBtn");
+  btn.textContent = `🔄 Auto: ${iv.autoListen ? "ON" : "OFF"}`;
+  btn.classList.toggle("active", iv.autoListen);
 }
 
-// ===== INIT =====
-initToken();
-populateVoices();
+function toggleIntMute() {
+  iv.muted = !iv.muted;
+  const btn = $("intMuteBtn");
+  btn.textContent = iv.muted ? "🔇 Voice: OFF" : "🔊 Voice: ON";
+  if (iv.muted) speechSynthesis.cancel();
+}
 
+
+/* ================================================================
+   KEYBOARD SHORTCUTS
+   ================================================================ */
+document.addEventListener("keydown", (e) => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT") return;
+
+  // Space to toggle listen
+  if (e.code === "Space" && iv.active) {
+    e.preventDefault();
+    toggleListen();
+  }
+  // Escape to end
+  if (e.code === "Escape" && iv.active) {
+    e.preventDefault();
+    endInterview();
+  }
+  // S to skip
+  if (e.code === "KeyS" && iv.active && iv.phase === "listening") {
+    e.preventDefault();
+    skipQuestion();
+  }
+});
+
+
+/* ================================================================
+   CHROME TTS KEEP-ALIVE
+   ================================================================ */
 setInterval(() => {
   if (iv.phase === "speaking") speechSynthesis.resume();
 }, 5000);
+
+
+/* ================================================================
+   INIT
+   ================================================================ */
+initToken();
+populateVoices();
+
+// Browser check
+if (!SR) {
+  document.querySelector(".start-btn").textContent = "❌ Browser Not Supported — Use Chrome";
+  document.querySelector(".start-btn").disabled = true;
+  document.querySelector(".start-btn").style.opacity = "0.5";
+}
 </script>
 </body>
 </html>
