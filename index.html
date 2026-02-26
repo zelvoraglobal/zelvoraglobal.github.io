@@ -2,185 +2,836 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Zelvora AI | Career & Spoken English</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Zelvora AI — Career Coaching & Spoken English Platform</title>
+<meta name="description" content="AI-powered career coaching, spoken English practice, mock interviews, and resume optimization. Built by Simpatico HR.">
+<meta property="og:title" content="Zelvora AI — Career & Language Coaching">
+<meta property="og:description" content="Practice spoken English, ace mock interviews, and land your dream job with AI-powered tools.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --bg:#020617;
-  --card:#0f172a;
-  --accent:#6366f1;
-  --text:#e5e7eb;
-  --muted:#94a3b8;
+:root {
+  --bg: #020617;
+  --card: #0f172a;
+  --accent: #6366f1;
+  --accent2: #22d3ee;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --glass: rgba(255,255,255,.05);
+  --glass-border: rgba(255,255,255,.08);
 }
 
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:'Plus Jakarta Sans',system-ui;
-  background:radial-gradient(circle at top,#0f172a,#020617);
-  color:var(--text);
-  min-height:100vh;
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-.nav{
-  padding:20px 8%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom:1px solid rgba(255,255,255,.08);
+/* ===== ANIMATED BACKGROUND ===== */
+.bg-effects {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none; overflow: hidden;
 }
-.logo{
-  font-weight:800;
-  font-size:20px;
+.bg-orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(100px); opacity: .2;
+  animation: orbFloat 20s ease-in-out infinite alternate;
 }
-.logo span{color:var(--accent)}
-.nav a{
-  color:var(--muted);
-  text-decoration:none;
-  margin-left:20px;
-  font-size:14px;
-}
-.nav a:hover{color:#fff}
+.bg-orb:nth-child(1) { width:500px; height:500px; background:#6366f1; top:-15%; left:-10%; }
+.bg-orb:nth-child(2) { width:400px; height:400px; background:#22d3ee; bottom:-10%; right:-10%; animation-delay:5s; }
+.bg-orb:nth-child(3) { width:300px; height:300px; background:#a855f7; top:50%; left:40%; animation-delay:10s; }
+.bg-orb:nth-child(4) { width:250px; height:250px; background:#f43f5e; bottom:30%; left:15%; animation-delay:15s; }
 
-.hero{
-  max-width:1000px;
-  margin:auto;
-  padding:90px 20px 70px;
-  text-align:center;
-}
-.hero h1{
-  font-size:clamp(2.2rem,5vw,3.5rem);
-  font-weight:800;
-  margin-bottom:16px;
-}
-.hero p{
-  color:var(--muted);
-  max-width:650px;
-  margin:auto;
-  line-height:1.6;
+@keyframes orbFloat {
+  0%   { transform: translate(0,0) scale(1); }
+  33%  { transform: translate(60px,-40px) scale(1.15); }
+  66%  { transform: translate(-30px,50px) scale(.9); }
+  100% { transform: translate(20px,-20px) scale(1.05); }
 }
 
-.grid{
-  max-width:1100px;
-  margin:auto;
-  padding:0 20px 100px;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:24px;
+/* Particle grid */
+.particles {
+  position: fixed; inset: 0; z-index: 0;
+  background-image: radial-gradient(rgba(99,102,241,.15) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: .4;
 }
 
-.card{
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:24px;
-  padding:28px;
-  backdrop-filter:blur(18px);
-  transition:.3s;
+/* ===== NAV ===== */
+.nav {
+  position: fixed; top:0; left:0; right:0; z-index:100;
+  padding: 16px 6%;
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(2,6,23,.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  transition: all .3s;
 }
-.card:hover{
-  transform:translateY(-6px);
-  border-color:rgba(99,102,241,.5);
+.nav.scrolled {
+  padding: 12px 6%;
+  background: rgba(2,6,23,.92);
 }
-.card h3{
-  margin-top:0;
-  font-size:20px;
+.logo {
+  font-weight: 800; font-size: 22px;
+  display: flex; align-items: center; gap: 8px;
 }
-.card p{
-  color:var(--muted);
-  font-size:14px;
-  line-height:1.6;
+.logo-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), #a855f7);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
 }
-.card a{
-  display:block;
-  margin-top:18px;
-  padding:14px;
-  text-align:center;
-  border-radius:14px;
-  text-decoration:none;
-  font-weight:700;
+.logo span { color: var(--accent); }
+
+.nav-links { display: flex; align-items: center; gap: 8px; }
+.nav-links a {
+  color: var(--muted); text-decoration: none;
+  font-size: 14px; font-weight: 500;
+  padding: 8px 16px; border-radius: 10px;
+  transition: all .2s;
+}
+.nav-links a:hover { color: #fff; background: rgba(255,255,255,.06); }
+.nav-links .nav-cta {
+  background: var(--accent); color: #fff !important;
+  font-weight: 600; padding: 8px 20px;
+}
+.nav-links .nav-cta:hover { background: #4f46e5; }
+
+/* Mobile menu */
+.menu-toggle {
+  display: none; background: none; border: none;
+  color: #fff; font-size: 24px; cursor: pointer;
+  padding: 8px;
+}
+@media (max-width: 768px) {
+  .menu-toggle { display: block; }
+  .nav-links {
+    display: none; position: absolute;
+    top: 100%; left: 0; right: 0;
+    background: rgba(15,23,42,.98);
+    backdrop-filter: blur(20px);
+    flex-direction: column; padding: 16px;
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a { width: 100%; text-align: center; padding: 14px; }
 }
 
-.primary{
-  background:var(--accent);
-  color:white;
+/* ===== HERO ===== */
+.hero {
+  position: relative; z-index: 1;
+  max-width: 900px; margin: auto;
+  padding: 160px 24px 80px;
+  text-align: center;
 }
-.secondary{
-  border:1px solid rgba(255,255,255,.15);
-  color:white;
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 16px 6px 8px;
+  background: rgba(99,102,241,.12);
+  border: 1px solid rgba(99,102,241,.25);
+  border-radius: 100px;
+  font-size: 13px; font-weight: 600;
+  color: #a5b4fc;
+  margin-bottom: 24px;
+  animation: fadeDown .6s ease;
 }
-.secondary:hover{background:rgba(255,255,255,.08)}
+.hero-badge .pulse-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--success);
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:.4; transform:scale(1.4); }
+}
 
-.footer{
-  text-align:center;
-  font-size:13px;
-  color:var(--muted);
-  padding:40px 0;
-  border-top:1px solid rgba(255,255,255,.08);
+.hero h1 {
+  font-size: clamp(2.4rem, 5.5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  animation: fadeUp .6s ease;
+}
+.hero h1 .gradient-text {
+  background: linear-gradient(135deg, #6366f1, #22d3ee, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero p {
+  color: var(--muted); font-size: 18px;
+  max-width: 600px; margin: 0 auto 32px;
+  line-height: 1.7;
+  animation: fadeUp .6s ease .1s both;
+}
+
+.hero-actions {
+  display: flex; gap: 14px;
+  justify-content: center; flex-wrap: wrap;
+  animation: fadeUp .6s ease .2s both;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 16px 32px; border-radius: 14px;
+  text-decoration: none; font-weight: 700;
+  font-size: 15px; transition: all .25s;
+  border: none; cursor: pointer;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  box-shadow: 0 8px 30px rgba(99,102,241,.35);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(99,102,241,.5);
+}
+.btn-secondary {
+  background: var(--glass);
+  color: #fff;
+  border: 1px solid var(--glass-border);
+}
+.btn-secondary:hover {
+  background: rgba(255,255,255,.1);
+  transform: translateY(-2px);
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(24px); }
+  to { opacity:1; transform:translateY(0); }
+}
+@keyframes fadeDown {
+  from { opacity:0; transform:translateY(-12px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+/* ===== TRUST BAR ===== */
+.trust-bar {
+  position: relative; z-index: 1;
+  max-width: 800px; margin: -20px auto 60px;
+  display: flex; justify-content: center;
+  gap: 40px; flex-wrap: wrap;
+  padding: 0 24px;
+  animation: fadeUp .6s ease .3s both;
+}
+.trust-item {
+  text-align: center;
+}
+.trust-item .num {
+  font-size: 28px; font-weight: 800; color: #fff;
+}
+.trust-item .num span { color: var(--accent); }
+.trust-item .desc {
+  font-size: 12px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .8px;
+  margin-top: 2px;
+}
+
+/* ===== SECTION TITLES ===== */
+.section-title {
+  position: relative; z-index: 1;
+  text-align: center;
+  max-width: 600px; margin: 0 auto 50px;
+  padding: 0 24px;
+}
+.section-title h2 {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 800; margin-bottom: 12px;
+}
+.section-title p {
+  color: var(--muted); font-size: 15px; line-height: 1.6;
+}
+
+/* ===== FEATURE CARDS ===== */
+.features {
+  position: relative; z-index: 1;
+  max-width: 1100px; margin: auto;
+  padding: 0 24px 100px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.feature-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 32px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: all .35s cubic-bezier(.16,1,.3,1);
+  position: relative; overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0; transition: opacity .3s;
+}
+.feature-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(99,102,241,.3);
+  box-shadow: 0 20px 60px rgba(99,102,241,.1);
+}
+.feature-card:hover::before { opacity: 1; }
+
+.card-icon {
+  width: 56px; height: 56px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; margin-bottom: 20px;
+}
+.card-icon.purple { background: rgba(99,102,241,.15); }
+.card-icon.cyan   { background: rgba(34,211,238,.15); }
+.card-icon.green  { background: rgba(16,185,129,.15); }
+.card-icon.amber  { background: rgba(245,158,11,.15); }
+
+.feature-card h3 {
+  font-size: 20px; font-weight: 700; margin-bottom: 10px;
+}
+.feature-card p {
+  color: var(--muted); font-size: 14px;
+  line-height: 1.7; margin-bottom: 20px;
+}
+
+.feature-tags {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px;
+}
+.tag {
+  padding: 4px 12px; border-radius: 8px;
+  font-size: 11px; font-weight: 600;
+  background: rgba(255,255,255,.06);
+  color: var(--muted);
+  border: 1px solid rgba(255,255,255,.06);
+}
+
+.card-link {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px 24px;
+  border-radius: 14px;
+  text-decoration: none;
+  font-weight: 700; font-size: 14px;
+  transition: all .25s;
+}
+.card-link.primary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+}
+.card-link.primary:hover {
+  box-shadow: 0 8px 25px rgba(99,102,241,.35);
+  transform: translateY(-1px);
+}
+.card-link.outline {
+  border: 1px solid rgba(255,255,255,.12);
+  color: #fff;
+}
+.card-link.outline:hover {
+  background: rgba(255,255,255,.06);
+}
+
+/* ===== HOW IT WORKS ===== */
+.steps-section {
+  position: relative; z-index: 1;
+  max-width: 900px; margin: auto;
+  padding: 0 24px 100px;
+}
+.steps {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 20px;
+}
+.step {
+  text-align: center; padding: 24px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  transition: all .3s;
+}
+.step:hover { transform: translateY(-4px); border-color: rgba(99,102,241,.25); }
+.step-num {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), #a855f7);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 18px;
+  margin-bottom: 14px;
+}
+.step h4 { font-size: 16px; margin-bottom: 6px; }
+.step p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ===== TESTIMONIALS ===== */
+.testimonials {
+  position: relative; z-index: 1;
+  max-width: 1100px; margin: auto;
+  padding: 0 24px 100px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+  gap: 20px;
+}
+.testimonial {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 28px;
+  transition: all .3s;
+}
+.testimonial:hover { transform: translateY(-4px); border-color: rgba(34,211,238,.2); }
+.testimonial .stars { color: #fbbf24; font-size: 14px; margin-bottom: 12px; }
+.testimonial .quote {
+  font-size: 14px; color: var(--text);
+  line-height: 1.7; margin-bottom: 16px;
+  font-style: italic;
+}
+.testimonial .author {
+  display: flex; align-items: center; gap: 12px;
+}
+.testimonial .avatar {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 16px;
+}
+.testimonial .name { font-weight: 600; font-size: 14px; }
+.testimonial .role { font-size: 12px; color: var(--muted); }
+
+/* ===== CTA SECTION ===== */
+.cta-section {
+  position: relative; z-index: 1;
+  max-width: 800px; margin: 0 auto;
+  padding: 0 24px 100px;
+}
+.cta-box {
+  background: linear-gradient(135deg, rgba(99,102,241,.15), rgba(168,85,247,.1));
+  border: 1px solid rgba(99,102,241,.2);
+  border-radius: 28px;
+  padding: 60px 40px;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.cta-box::before {
+  content: '';
+  position: absolute; top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle, rgba(99,102,241,.08) 0%, transparent 60%);
+  animation: cta-glow 6s ease-in-out infinite;
+}
+@keyframes cta-glow {
+  0%,100% { transform: translate(0,0); }
+  50% { transform: translate(5%,5%); }
+}
+.cta-box h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800; margin-bottom: 12px;
+  position: relative;
+}
+.cta-box p {
+  color: var(--muted); font-size: 15px;
+  margin-bottom: 28px; position: relative;
+}
+.cta-box .btn { position: relative; }
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative; z-index: 1;
+  border-top: 1px solid var(--glass-border);
+  padding: 40px 6%;
+}
+.footer-inner {
+  max-width: 1100px; margin: auto;
+  display: flex; justify-content: space-between;
+  align-items: center; flex-wrap: wrap; gap: 16px;
+}
+.footer-brand {
+  font-weight: 700; font-size: 16px;
+}
+.footer-brand span { color: var(--accent); }
+.footer-brand p {
+  font-size: 12px; color: var(--muted); margin-top: 4px;
+}
+.footer-links {
+  display: flex; gap: 20px;
+}
+.footer-links a {
+  color: var(--muted); text-decoration: none;
+  font-size: 13px; transition: color .2s;
+}
+.footer-links a:hover { color: #fff; }
+.footer-copy {
+  width: 100%; text-align: center;
+  font-size: 12px; color: var(--muted);
+  margin-top: 20px; padding-top: 20px;
+  border-top: 1px solid var(--glass-border);
+}
+
+/* ===== SCROLL ANIMATIONS ===== */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: all .7s cubic-bezier(.16,1,.3,1);
+}
+.reveal.visible {
+  opacity: 1; transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .hero { padding: 130px 16px 60px; }
+  .hero p { font-size: 16px; }
+  .trust-bar { gap: 24px; }
+  .features { padding: 0 16px 80px; }
+  .cta-box { padding: 40px 24px; }
+  .footer-inner { justify-content: center; text-align: center; }
+  .footer-links { justify-content: center; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="nav">
-  <div class="logo">ZELVORA <span>AI</span></div>
-  <div>
+<!-- Background Effects -->
+<div class="bg-effects">
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+</div>
+<div class="particles"></div>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
+  <div class="logo">
+    <div class="logo-icon">✦</div>
+    ZELVORA <span>AI</span>
+  </div>
+
+  <button class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle menu">☰</button>
+
+  <div class="nav-links" id="navLinks">
+    <a href="#features">Features</a>
+    <a href="#how-it-works">How It Works</a>
     <a href="career-lab.html">Career Lab</a>
-    <a href="spoken-english-gate.html">Spoken English</a>
+    <a href="spoken-english-gate.html" class="nav-cta">Get Started →</a>
   </div>
-</div>
+</nav>
 
+<!-- ===== HERO ===== -->
 <section class="hero">
-  <h1>AI-Powered Career & Language Coaching</h1>
+  <div class="hero-badge">
+    <div class="pulse-dot"></div>
+    AI-Powered · 3,200+ Active Learners
+  </div>
+
+  <h1>
+    Master English &<br>
+    <span class="gradient-text">Land Your Dream Job</span>
+  </h1>
+
   <p>
-    Practice spoken English, attend real-time AI mock interviews,
-    and prepare for jobs with professional-grade feedback.
+    Practice spoken English hands-free, ace AI mock interviews,
+    optimize your resume, and get professional-grade career feedback — all in one platform.
   </p>
+
+  <div class="hero-actions">
+    <a href="spoken-english-gate.html" class="btn btn-primary">
+      🎧 Start Speaking Free
+    </a>
+    <a href="#features" class="btn btn-secondary">
+      Explore Features ↓
+    </a>
+  </div>
 </section>
 
-<section class="grid">
-
-  <div class="card">
-    <h3>🎧 Spoken English</h3>
-    <p>
-      Hands-free voice practice with instant AI feedback on fluency,
-      grammar, and confidence.
-    </p>
-    <a href="spoken-english-gate.html" class="primary">
-      Start Spoken English
-    </a>
+<!-- ===== TRUST BAR ===== -->
+<div class="trust-bar">
+  <div class="trust-item">
+    <div class="num" id="counterUsers">3,200<span>+</span></div>
+    <div class="desc">Active Learners</div>
   </div>
-
-  <div class="card">
-    <h3>🎤 Live Mock Interview</h3>
-    <p>
-      Real interview simulation with AI follow-up questions,
-      resume-based evaluation, and final scoring.
-    </p>
-    <a href="evalis-interview.html" class="secondary">
-      Launch Interview
-    </a>
+  <div class="trust-item">
+    <div class="num">50K<span>+</span></div>
+    <div class="desc">Voice Sessions</div>
   </div>
-
-  <div class="card">
-    <h3>🧪 Career Lab</h3>
-    <p>
-      Resume audit, ATS optimization, interview practice,
-      and career tools — all in one place.
-    </p>
-    <a href="career-lab.html" class="secondary">
-      Enter Career Lab
-    </a>
+  <div class="trust-item">
+    <div class="num">4.9<span>★</span></div>
+    <div class="desc">User Rating</div>
   </div>
-
-</section>
-
-<div class="footer">
-  © 2026 Zelvora / Simpatico HR · AI Career Platform
+  <div class="trust-item">
+    <div class="num">100<span>%</span></div>
+    <div class="desc">Free to Start</div>
+  </div>
 </div>
+
+<!-- ===== FEATURES ===== -->
+<div class="section-title reveal" id="features">
+  <h2>Everything You Need to Succeed</h2>
+  <p>Four powerful AI tools designed to transform your career and communication skills.</p>
+</div>
+
+<section class="features">
+
+  <!-- Card 1: Spoken English -->
+  <div class="feature-card reveal">
+    <div class="card-icon purple">🎧</div>
+    <h3>Spoken English Tutor</h3>
+    <p>
+      Hands-free continuous voice practice with real-time AI corrections.
+      Improve fluency, grammar, pronunciation, and confidence with 4 training modes.
+    </p>
+    <div class="feature-tags">
+      <span class="tag">Hands-Free</span>
+      <span class="tag">Grammar Fix</span>
+      <span class="tag">Roleplay</span>
+      <span class="tag">Debate</span>
+    </div>
+    <a href="spoken-english-gate.html" class="card-link primary">
+      Start Practicing →
+    </a>
+  </div>
+
+  <!-- Card 2: Mock Interview -->
+  <div class="feature-card reveal">
+    <div class="card-icon cyan">🎤</div>
+    <h3>AI Mock Interview</h3>
+    <p>
+      Realistic interview simulations with follow-up questions,
+      resume-based evaluation, body language tips, and detailed scoring.
+    </p>
+    <div class="feature-tags">
+      <span class="tag">Voice-Based</span>
+      <span class="tag">Resume Aware</span>
+      <span class="tag">Scoring</span>
+      <span class="tag">Feedback</span>
+    </div>
+    <a href="evalis-interview.html" class="card-link outline">
+      Launch Interview →
+    </a>
+  </div>
+
+  <!-- Card 3: Career Lab -->
+  <div class="feature-card reveal">
+    <div class="card-icon green">🧪</div>
+    <h3>Career Lab</h3>
+    <p>
+      Complete career toolkit — resume audit, ATS optimization,
+      cover letter builder, LinkedIn review, and job-match analysis.
+    </p>
+    <div class="feature-tags">
+      <span class="tag">Resume Audit</span>
+      <span class="tag">ATS Check</span>
+      <span class="tag">Cover Letter</span>
+      <span class="tag">LinkedIn</span>
+    </div>
+    <a href="career-lab.html" class="card-link outline">
+      Enter Career Lab →
+    </a>
+  </div>
+
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<div class="section-title reveal" id="how-it-works">
+  <h2>How It Works</h2>
+  <p>Get started in under 60 seconds — no downloads, no sign-ups.</p>
+</div>
+
+<section class="steps-section">
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">1</div>
+      <h4>Choose a Tool</h4>
+      <p>Pick Spoken English, Mock Interview, or Career Lab based on your goal.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">2</div>
+      <h4>Enter Access Code</h4>
+      <p>Use your Zelvora access code to unlock your personalized sessions.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">3</div>
+      <h4>Speak & Practice</h4>
+      <p>Talk hands-free — AI listens, corrects, and coaches you in real-time.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">4</div>
+      <h4>Track Progress</h4>
+      <p>See your score, streak, vocabulary growth, and fluency improvements.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIALS ===== -->
+<div class="section-title reveal">
+  <h2>Loved by Learners</h2>
+  <p>Real feedback from people who improved their English and careers.</p>
+</div>
+
+<section class="testimonials">
+  <div class="testimonial reveal">
+    <div class="stars">★★★★★</div>
+    <div class="quote">
+      "I practiced speaking for 2 weeks and my confidence in interviews went through the roof. The AI corrections are incredibly helpful."
+    </div>
+    <div class="author">
+      <div class="avatar">R</div>
+      <div>
+        <div class="name">Rahul M.</div>
+        <div class="role">Software Engineer, Bangalore</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="testimonial reveal">
+    <div class="stars">★★★★★</div>
+    <div class="quote">
+      "The roleplay mode is a game-changer. I practiced hotel check-ins and job interviews — felt like talking to a real person."
+    </div>
+    <div class="author">
+      <div class="avatar">S</div>
+      <div>
+        <div class="name">Sneha P.</div>
+        <div class="role">MBA Graduate, Mumbai</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="testimonial reveal">
+    <div class="stars">★★★★★</div>
+    <div class="quote">
+      "Career Lab helped me fix my resume and I got 3x more interview calls within a week. Best free tool I've ever used."
+    </div>
+    <div class="author">
+      <div class="avatar">A</div>
+      <div>
+        <div class="name">Ahmed K.</div>
+        <div class="role">Fresh Graduate, Dubai</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta-section">
+  <div class="cta-box reveal">
+    <h2>Ready to Sound Fluent & Land That Job?</h2>
+    <p>Join thousands of learners already improving their English and career with AI.</p>
+    <a href="spoken-english-gate.html" class="btn btn-primary">
+      🚀 Start Free Now
+    </a>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      ZELVORA <span>AI</span>
+      <p>AI-Powered Career & Language Platform</p>
+    </div>
+    <div class="footer-links">
+      <a href="spoken-english-gate.html">Spoken English</a>
+      <a href="evalis-interview.html">Mock Interview</a>
+      <a href="career-lab.html">Career Lab</a>
+    </div>
+    <div class="footer-copy">
+      © 2026 Zelvora AI · Simpatico HR Pvt Ltd · All rights reserved
+    </div>
+  </div>
+</footer>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+/* ===== Mobile Menu Toggle ===== */
+function toggleMenu() {
+  document.getElementById('navLinks').classList.toggle('open');
+}
+
+// Close menu on link click (mobile)
+document.querySelectorAll('.nav-links a').forEach(a => {
+  a.addEventListener('click', () => {
+    document.getElementById('navLinks').classList.remove('open');
+  });
+});
+
+/* ===== Navbar Scroll Effect ===== */
+let lastScroll = 0;
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('nav');
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+/* ===== Scroll Reveal Animation ===== */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      // Stagger animations
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+      }, i * 100);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ===== Animated Counter ===== */
+function animateCounter(el, target, suffix = '') {
+  let current = 0;
+  const step = Math.ceil(target / 60);
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) {
+      current = target;
+      clearInterval(timer);
+    }
+    el.innerHTML = current.toLocaleString() + suffix;
+  }, 25);
+}
+
+// Trigger counter when trust bar is visible
+const trustObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      // Animate the first counter as example
+      const el = document.getElementById('counterUsers');
+      animateCounter(el, 3200, '<span>+</span>');
+      trustObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+
+trustObserver.observe(document.querySelector('.trust-bar'));
+
+/* ===== Smooth Scroll for Anchor Links ===== */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+/* ===== Keyboard Accessibility: Enter on cards ===== */
+document.querySelectorAll('.feature-card').forEach(card => {
+  card.setAttribute('tabindex', '0');
+  card.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const link = card.querySelector('a');
+      if (link) link.click();
+    }
+  });
+});
+</script>
 
 </body>
 </html>
