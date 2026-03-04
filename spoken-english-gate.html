@@ -343,7 +343,6 @@ function showTab(id) {
 
 /* ===== PAYMENT ===== */
 function trialPay() {
-  // Save pending plan info so we can handle return
   sessionStorage.setItem('pendingPlan', 'trial');
   window.location.href = TRIAL_LINK;
 }
@@ -364,7 +363,6 @@ function activateCode() {
   }
 
   try {
-    // Try to parse as base64 token
     const payload = JSON.parse(atob(code));
 
     if (!payload.exp || !payload.uses) {
@@ -382,8 +380,8 @@ function activateCode() {
       return;
     }
 
-    // Valid! Store token
-    localStorage.setItem('career_token', code);
+    // CHANGED HERE: Now saves as zelvora_token
+    localStorage.setItem('zelvora_token', code);
     showMsg(msgEl, `✅ Activated! ${payload.uses.spoken} uses remaining. Redirecting...`, 'ok');
 
     setTimeout(() => {
@@ -399,7 +397,8 @@ function activateCode() {
 /* ===== RENDER SESSION ===== */
 function renderSession() {
   const container = document.getElementById('sessionInfo');
-  const token = localStorage.getItem('career_token');
+  // CHANGED HERE: Now looks for zelvora_token
+  const token = localStorage.getItem('zelvora_token');
 
   if (!token) {
     container.innerHTML = `
@@ -446,7 +445,6 @@ function renderSession() {
       return;
     }
 
-    // Active session!
     const timeLeft = d.exp - now;
     const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
     const daysLeft = Math.floor(hoursLeft / 24);
@@ -455,7 +453,7 @@ function renderSession() {
     container.innerHTML = `
       <div class="session-card">
         <h4>✅ Active Session</h4>
-        <div class="uses">${uses} <span>uses remaining</span></div>
+        <div class="uses">${uses === 999999 ? 'Unlimited' : uses} <span>uses remaining</span></div>
         <div class="expires">⏱ ${timeStr} · Expires ${expDate.toLocaleDateString()}</div>
       </div>
 
@@ -464,6 +462,9 @@ function renderSession() {
       </a>
       <a href="mock-interview.html" class="go-btn go-interview">
         🎤 Open Mock Interview
+      </a>
+      <a href="career-lab.html" class="go-btn go-interview" style="background:linear-gradient(135deg,#10b981,#059669);">
+        🧪 Open Career Lab
       </a>
 
       <button class="logout-btn" onclick="logout()">
@@ -483,7 +484,8 @@ function renderSession() {
 
 /* ===== LOGOUT ===== */
 function logout() {
-  localStorage.removeItem('career_token');
+  // CHANGED HERE
+  localStorage.removeItem('zelvora_token');
   sessionStorage.clear();
   renderSession();
   document.querySelectorAll('.tab')[0].click();
@@ -496,34 +498,28 @@ function showMsg(el, text, type) {
   setTimeout(() => el.classList.remove('show'), 5000);
 }
 
-/* ===== AUTO-DETECT: Check if user already has session ===== */
+/* ===== AUTO-DETECT ===== */
 (function init() {
-  const token = localStorage.getItem('career_token');
+  // CHANGED HERE
+  const token = localStorage.getItem('zelvora_token');
   if (token) {
     try {
       const d = JSON.parse(atob(token));
       if (Date.now() < d.exp && d.uses?.spoken > 0) {
-        // Auto-show active session tab
-        setTimeout(() => {
-          document.querySelectorAll('.tab')[2].click();
-        }, 300);
+        setTimeout(() => { document.querySelectorAll('.tab')[2].click(); }, 300);
       }
     } catch {}
   }
 
-  // Check if returning from payment
   const pending = sessionStorage.getItem('pendingPlan');
   if (pending) {
     sessionStorage.removeItem('pendingPlan');
-    // Show code entry tab with message
     setTimeout(() => {
       document.querySelectorAll('.tab')[1].click();
-      const msgEl = document.getElementById('codeMsg');
-      showMsg(msgEl, '💳 Payment started! Once completed, paste your access code here.', 'ok');
+      showMsg(document.getElementById('codeMsg'), '💳 Payment started! Once completed, paste your access code here.', 'ok');
     }, 500);
   }
 
-  // Check URL params (for callback redirect)
   const params = new URLSearchParams(window.location.search);
   const codeParam = params.get('code') || params.get('token');
   if (codeParam) {
@@ -532,11 +528,9 @@ function showMsg(el, text, type) {
       document.getElementById('codeInput').value = codeParam;
       activateCode();
     }, 500);
-    // Clean URL
     window.history.replaceState({}, '', window.location.pathname);
   }
 })();
 </script>
-
 </body>
 </html>
