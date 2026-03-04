@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>mock Admin | Simpatico HR</title>
+  <title>Zelvora AI | Admin Panel</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
@@ -89,15 +89,14 @@
   <div class="toast-box" id="toasts"></div>
 
   <nav class="top-nav">
-    <a class="top-logo" href="evalis-platform.html">SIMPATICO <span>HR</span></a>
+    <a class="top-logo" href="index.html">ZELVORA <span>AI</span></a>
     <div class="top-links">
-      <a class="top-link" href="evalis-platform.html">🏠 Platform</a>
+      <a class="top-link" href="index.html">🏠 Home</a>
       <a class="top-link" href="career-lab.html">🧠 Career Lab</a>
       <span class="top-link" style="color:var(--yellow);">🔐 Admin</span>
     </div>
   </nav>
 
-  <!-- LOGIN -->
   <div id="loginScreen">
     <div class="login-card">
       <div style="font-size:3rem;margin-bottom:12px;">🔐</div>
@@ -109,7 +108,6 @@
     </div>
   </div>
 
-  <!-- ADMIN -->
   <div class="admin-wrap" id="adminWrap">
     <div class="container">
       <div class="admin-header">
@@ -132,9 +130,6 @@
         <button class="admin-tab" onclick="showTab('settings')">⚙️ Set</button>
       </div>
 
-      <!-- ═══════════════════════════════════════ -->
-      <!-- DASHBOARD -->
-      <!-- ═══════════════════════════════════════ -->
       <div id="tab-dashboard">
         <div class="stat-grid">
           <div class="stat-card"><div class="stat-num" style="color:#10b981;" id="sRevenue">₹0</div><div class="stat-lbl">Revenue</div></div>
@@ -151,9 +146,6 @@
         </div></div>
       </div>
 
-      <!-- ═══════════════════════════════════════ -->
-      <!-- 🎫 INTERVIEW TOKEN GENERATOR (NEW/FIXED) -->
-      <!-- ═══════════════════════════════════════ -->
       <div id="tab-tokens" class="hidden">
         <div class="card">
           <h3>🎫 Generate Interview Token</h3>
@@ -238,7 +230,6 @@
             </div>
           </div>
 
-          <!-- Trial & Attempts -->
           <div class="row3" style="margin-top:4px;">
             <div>
               <label>🎟️ Token Type</label>
@@ -258,7 +249,6 @@
             </div>
           </div>
 
-          <!-- Auto Notify -->
           <div style="background:rgba(99,102,241,.05);border:1px solid rgba(99,102,241,.15);border-radius:12px;padding:12px;margin-top:10px;">
             <div style="font-size:0.82rem;font-weight:700;color:#a5b4fc;margin-bottom:10px;">⚡ Auto Notify After Generation</div>
             <div class="row2">
@@ -276,7 +266,6 @@
           <button class="btn btn-primary btn-full" onclick="generateToken()" style="margin-top:16px;">🎫 Generate Interview Token</button>
         </div>
 
-        <!-- Generated Token Display -->
         <div class="card hidden" id="tokenResultCard">
           <h3>✅ Token Generated!</h3>
           <div class="invite-card">
@@ -290,7 +279,6 @@
             <div style="font-size:0.72rem;color:var(--muted);margin-top:4px;" id="tokenResultAttempts"></div>
             <div style="font-size:0.72rem;color:var(--muted);margin-top:4px;" id="tokenResultExpiry">—</div>
           </div>
-          <!-- Action buttons -->
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
             <button class="btn" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:11px;" onclick="openEmailClient()">📧 Open Email</button>
             <button class="btn" style="background:linear-gradient(135deg,#25d366,#128c7e);padding:11px;" onclick="openWhatsApp()">💬 Open WhatsApp</button>
@@ -299,7 +287,6 @@
           </div>
         </div>
 
-        <!-- Bulk Token Generator -->
         <div class="card">
           <h3>📦 Bulk Generate</h3>
           <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px;">Paste emails (one per line) to generate tokens for multiple candidates at once.</p>
@@ -320,7 +307,6 @@
           <div id="bulkResults" class="hidden" style="margin-top:12px;"></div>
         </div>
 
-        <!-- All Tokens -->
         <div class="card">
           <h3>📋 All Interview Tokens</h3>
           <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
@@ -334,9 +320,6 @@
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════ -->
-      <!-- EDITOR -->
-      <!-- ═══════════════════════════════════════ -->
       <div id="tab-editor" class="hidden">
         <div class="card"><h3>🏷️ Branding</h3>
           <div class="edit-row"><span class="edit-label">Site Title</span><input class="edit-input" id="ed_title" value="AI Interview Platform" onchange="saveSiteConfig()"></div>
@@ -364,9 +347,6 @@
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════ -->
-      <!-- PAYMENTS -->
-      <!-- ═══════════════════════════════════════ -->
       <div id="tab-payments" class="hidden">
         <div class="stat-grid">
           <div class="stat-card"><div class="stat-num" style="color:#10b981;" id="pTotal">₹0</div><div class="stat-lbl">Revenue</div></div>
@@ -393,7 +373,6 @@
         </div>
       </div>
 
-      <!-- ACCESS CODES -->
       <div id="tab-access" class="hidden">
         <div class="card"><h3>🔑 Generate Code</h3>
           <div class="row2"><div><label>Code *</label><input type="text" id="ac_code" placeholder="CAMPUS2025"></div><div><label>Max Uses</label><input type="number" id="ac_max" value="50"></div></div>
@@ -403,7 +382,6 @@
         <div class="card"><h3>📋 All Codes</h3><div id="codesList">Loading...</div></div>
       </div>
 
-      <!-- CLIENTS -->
       <div id="tab-clients" class="hidden">
         <div class="stat-grid">
           <div class="stat-card"><div class="stat-num" style="color:#10b981;" id="clTotal">0</div><div class="stat-lbl">Total</div></div>
@@ -420,18 +398,13 @@
         <div class="card"><h3>📋 All Clients</h3><div id="clientsList">Loading...</div></div>
       </div>
 
-      <!-- JOBS -->
       <div id="tab-jobs" class="hidden"><div class="card"><h3>💼 All Jobs</h3><div id="adminJobsList"><span class="loading"></span></div></div></div>
 
-      <!-- CANDIDATES -->
       <div id="tab-candidates" class="hidden">
         <div class="card"><h3>👥 Applications</h3><div id="adminCandList"><span class="loading"></span></div></div>
         <div class="card"><h3>🎤 Interviews</h3><div id="adminIntList"><span class="loading"></span></div></div>
       </div>
 
-      <!-- ═══════════════════════════════════════ -->
-      <!-- 📈 USAGE ANALYTICS (NEW) -->
-      <!-- ═══════════════════════════════════════ -->
       <div id="tab-usage" class="hidden">
         <div class="stat-grid">
           <div class="stat-card"><div class="stat-num" style="color:#10b981;" id="uToday">0</div><div class="stat-lbl">Today</div></div>
@@ -457,9 +430,6 @@
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════ -->
-      <!-- 📣 NOTIFY TAB -->
-      <!-- ═══════════════════════════════════════ -->
       <div id="tab-notify" class="hidden">
         <div class="card">
           <h3>📧 Email Template</h3>
@@ -521,15 +491,11 @@ Good luck! 🍀
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════ -->
-      <!-- 💎 PLANS TAB -->
-      <!-- ═══════════════════════════════════════ -->
       <div id="tab-plans" class="hidden">
         <div class="card">
           <h3>💎 Mock Interview Plans</h3>
           <p style="font-size:0.82rem;color:var(--muted);margin-bottom:14px;">Configure pricing tiers shown on the paywall. Each plan can have its own price, duration, and features.</p>
 
-          <!-- Plan 1 -->
           <div style="border:1px solid rgba(16,185,129,.2);border-radius:12px;padding:14px;margin-bottom:10px;background:rgba(16,185,129,.03);">
             <div style="font-weight:700;color:#10b981;margin-bottom:8px;">🥉 Plan 1 — Basic</div>
             <div class="row3">
@@ -542,7 +508,6 @@ AI feedback
 Resume-based questions</textarea></div>
           </div>
 
-          <!-- Plan 2 -->
           <div style="border:1px solid rgba(99,102,241,.3);border-radius:12px;padding:14px;margin-bottom:10px;background:rgba(99,102,241,.05);">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
               <span style="font-weight:700;color:#6366f1;">🥈 Plan 2 — Pro</span>
@@ -559,7 +524,6 @@ Multi-language support
 Resume-based questions</textarea></div>
           </div>
 
-          <!-- Plan 3 -->
           <div style="border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:14px;margin-bottom:14px;background:rgba(245,158,11,.03);">
             <div style="font-weight:700;color:#f59e0b;margin-bottom:8px;">🥇 Plan 3 — Elite</div>
             <div class="row3">
@@ -612,7 +576,6 @@ Multi-language + resume
         </div>
       </div>
 
-      <!-- SETTINGS -->
       <div id="tab-settings" class="hidden">
         <div class="card"><h3>🔐 Passwords</h3>
           <div class="edit-row"><span class="edit-label">Admin Pass</span><input class="edit-input" type="password" id="set_adminPass" placeholder="Min 6 chars"><button class="btn btn-primary" onclick="changeAdminPass()" style="margin-left:8px;">Change</button></div>
@@ -814,7 +777,7 @@ async function generateToken(){
 
     // Step 3: Build the interview URL
     const baseUrl=window.location.origin;
-    const fullUrl=baseUrl+'/evalis-platform.html?token='+token;
+    const fullUrl=baseUrl+'/mock-interview.html?token='+token;
 
     // Step 4: Store and display result
     _lastGeneratedToken={name,email,phone,role,level,token,url:fullUrl,expires,type,questions,lang,tokenType,maxAttempts,trialDays};
@@ -949,7 +912,7 @@ function copyWhatsApp(){
 // Resend from token list — opens email or WA with stored candidate info
 function resendToken(token,role,email,phone){
   // Build a minimal token object for templates
-  const url=window.location.origin+'/evalis-platform.html?token='+token;
+  const url=window.location.origin+'/mock-interview.html?token='+token;
   const tmp={name:email?email.split('@')[0]:'Candidate',email:email||'',phone:phone||'',role:role||'Interview',level:'',url,expires:new Date(Date.now()+72*3600000),questions:10};
   _lastGeneratedToken=tmp;
   // Open WA if phone available, else email
@@ -980,7 +943,7 @@ async function loadAllTokens(){
       const isExpired=exp&&exp<now&&i.status!=='completed';
       const sc={pending:'#f59e0b',in_progress:'#3b82f6',completed:'#10b981'}[i.status]||'#94a3b8';
       const sb={pending:'rgba(245,158,11,.15)',in_progress:'rgba(59,130,246,.15)',completed:'rgba(16,185,129,.15)'}[i.status]||'rgba(255,255,255,.05)';
-      const url=window.location.origin+'/evalis-platform.html?token='+i.token;
+      const url=window.location.origin+'/mock-interview.html?token='+i.token;
       const maxAtt=i.max_attempts||1;
       const usedAtt=i.attempts_used||0;
       const attPct=Math.min(100,Math.round((usedAtt/maxAtt)*100));
@@ -1025,6 +988,8 @@ function quickWA(phone,role,url){
   window.open('https://wa.me/'+cleanPhone+'?text='+msg,'_blank');
   toast('💬 WhatsApp opened!');
 }
+
+async function bulkGenerateTokens(){
   const emails=document.getElementById('tk_bulkEmails').value.trim().split('\n').map(e=>e.trim()).filter(e=>e&&e.includes('@'));
   const role=document.getElementById('tk_bulkRole').value.trim();
   const level=document.getElementById('tk_bulkLevel').value;
@@ -1057,7 +1022,7 @@ function quickWA(phone,role,url){
         created_at:new Date().toISOString()
       });
 
-      const url=window.location.origin+'/evalis-interview.html?token='+token;
+      const url=window.location.origin+'/mock-interview.html?token='+token;
       results.push({email,token,url,ok:true});
     }catch(e){
       results.push({email,token:'',url:'',ok:false,error:e.message});
@@ -1076,54 +1041,6 @@ function quickWA(phone,role,url){
 
   toast('✅ Generated '+results.filter(r=>r.ok).length+'/'+emails.length+' tokens');
   loadAllTokens();
-}
-
-// Load All Tokens
-let _tokenFilter='all';
-function filterTokens(f){_tokenFilter=f;loadAllTokens()}
-
-async function loadAllTokens(){
-  const el=document.getElementById('allTokensList');
-  el.innerHTML='<span class="loading"></span> Loading...';
-  try{
-    const data=await db('select','interviews',null,null,null,'created_at.desc');
-    let arr=Array.isArray(data)?data:[];
-    const now=new Date();
-
-    if(_tokenFilter==='expired')arr=arr.filter(i=>i.expires_at&&new Date(i.expires_at)<now&&i.status!=='completed');
-    else if(_tokenFilter!=='all')arr=arr.filter(i=>i.status===_tokenFilter);
-
-    if(!arr.length){el.innerHTML='<p style="color:var(--muted);text-align:center;padding:20px;">No tokens found</p>';return}
-
-    el.innerHTML=arr.slice(0,50).map(i=>{
-      const exp=i.expires_at?new Date(i.expires_at):null;
-      const isExpired=exp&&exp<now&&i.status!=='completed';
-      const sc={pending:'#f59e0b',in_progress:'#3b82f6',completed:'#10b981'}[i.status]||'#94a3b8';
-      const sb={pending:'rgba(245,158,11,.15)',in_progress:'rgba(59,130,246,.15)',completed:'rgba(16,185,129,.15)'}[i.status]||'rgba(255,255,255,.05)';
-      const url=window.location.origin+'/'+(i.interview_type==='real'?'evalis-interview.html':'evalis-platform.html')+'?token='+i.token;
-
-      return`<div style="padding:12px;border-bottom:1px solid var(--border);${isExpired?'opacity:0.5;':''}">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
-          <div>
-            <div style="font-weight:700;font-size:0.9rem;">${i.interview_role||'?'} — ${i.interview_level||''}</div>
-            <div style="font-size:0.72rem;color:var(--muted);">Token: ${(i.token||'?').substring(0,16)}... • ${i.created_at?new Date(i.created_at).toLocaleDateString():''}</div>
-          </div>
-          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-            ${i.overall_score?`<span class="score-badge" style="background:rgba(16,185,129,.15);color:${i.overall_score>=70?'#10b981':i.overall_score>=50?'#f59e0b':'#ef4444'};">${i.overall_score}/100</span>`:''}
-            <span class="status-pill" style="background:${isExpired?'rgba(239,68,68,.15)':sb};color:${isExpired?'#ef4444':sc};">${isExpired?'Expired':i.status||'?'}</span>
-            <span class="status-pill" style="color:${i.interview_type==='real'?'#ef4444':'#10b981'};">${i.interview_type==='real'?'🔒':'🎯'}</span>
-          </div>
-        </div>
-        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
-          <button class="btn btn-accent" style="padding:3px 10px;font-size:0.72rem;" onclick="navigator.clipboard?.writeText('${url}');toast('📋 URL copied!')">📋 URL</button>
-          <button class="btn" style="padding:3px 10px;font-size:0.72rem;background:rgba(245,158,11,.15);color:#f59e0b;" onclick="navigator.clipboard?.writeText('${i.token}');toast('📋 Token copied!')">🔑 Token</button>
-          ${i.status==='pending'&&!isExpired?`<button class="btn btn-save" style="padding:3px 10px;font-size:0.72rem;" onclick="resendToken('${i.token}','${(i.interview_role||'').replace(/'/g,"\\'")}')">📧 Resend</button>`:''}
-          ${i.status==='completed'?`<button class="btn" style="padding:3px 10px;font-size:0.72rem;background:rgba(59,130,246,.15);color:#3b82f6;" onclick="viewResult('${i.id}')">📊 Results</button>`:''}
-          <button class="btn btn-danger" style="padding:3px 10px;font-size:0.72rem;" onclick="revokeToken('${i.id}')">🗑️</button>
-        </div>
-      </div>`;
-    }).join('');
-  }catch(e){el.innerHTML='<p style="color:var(--red);">'+e.message+'</p>'}
 }
 
 async function viewResult(id){
@@ -1335,12 +1252,19 @@ Please complete your AI interview using the link below:
 
 🔗 {link}
 
-Details: {questions} questions • Expires: {expires}
+📋 Details:
+• Role: {role} ({level})
+• Questions: {questions}
+• Expires: {expires}
 
-⚠️ Use Chrome/Edge, enable camera & microphone. Single attempt only.
+⚠️ Important:
+• Use Chrome or Edge browser
+• Enable camera and microphone
+• Single attempt only — do not close the browser
 
 Best regards,
-{sender}`;
+{sender}
+Simpatico HR Consultancy`;
   document.getElementById('nt_emailBody').value=getConfig('notifyEmailBody',defaultEmail);
   const defaultWA=`🎤 *Interview Invitation*
 
@@ -1368,7 +1292,7 @@ function saveNotifyConfig(){
 function testEmailNotify(){
   const email=document.getElementById('nt_testEmail').value.trim();
   if(!email){toast('❌ Enter test email');return}
-  const tmp={name:'Test Candidate',email,phone:'',role:'Frontend Developer',level:'Mid-Level',url:window.location.origin+'/evalis-platform.html?token=TEST',expires:new Date(Date.now()+72*3600000),questions:10};
+  const tmp={name:'Test Candidate',email,phone:'',role:'Frontend Developer',level:'Mid-Level',url:window.location.origin+'/mock-interview.html?token=TEST',expires:new Date(Date.now()+72*3600000),questions:10};
   _lastGeneratedToken=tmp;
   openEmailClient();
 }
@@ -1376,7 +1300,7 @@ function testEmailNotify(){
 function testWANotify(){
   const phone=document.getElementById('nt_testPhone').value.trim().replace(/[\s\-\(\)]/g,'');
   if(!phone){toast('❌ Enter test phone number');return}
-  const tmp={name:'Test Candidate',email:'',phone,role:'Frontend Developer',level:'Mid-Level',url:window.location.origin+'/evalis-platform.html?token=TEST',expires:new Date(Date.now()+72*3600000),questions:10};
+  const tmp={name:'Test Candidate',email:'',phone,role:'Frontend Developer',level:'Mid-Level',url:window.location.origin+'/mock-interview.html?token=TEST',expires:new Date(Date.now()+72*3600000),questions:10};
   _lastGeneratedToken=tmp;
   openWhatsApp();
 }
