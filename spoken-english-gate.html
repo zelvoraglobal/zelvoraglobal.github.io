@@ -174,6 +174,11 @@ function openRazorpay(amountInPaise, planName) {
     "name": "Zelvora AI",
     "description": planName,
     "theme": { "color": "#6366f1" },
+    "prefill": {
+      "name": "",
+      "email": "",
+      "contact": ""
+    },
     "handler": async function (response) {
       const msgEl = document.getElementById('codeMsg');
       showTab('code'); 
