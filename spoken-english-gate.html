@@ -6,6 +6,7 @@
 <title>Zelvora AI — Unlock Access</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <style>
 :root {
@@ -21,8 +22,6 @@ body{
   min-height:100vh;overflow-x:hidden;
   display:flex;align-items:center;justify-content:center;
 }
-
-/* BG */
 .bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .bg .orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.18;animation:orbF 20s ease-in-out infinite alternate}
 .bg .orb:nth-child(1){width:450px;height:450px;background:#6366f1;top:-12%;left:-8%}
@@ -30,306 +29,132 @@ body{
 .bg .orb:nth-child(3){width:280px;height:280px;background:#a855f7;top:50%;left:55%;animation-delay:10s}
 @keyframes orbF{0%{transform:translate(0,0) scale(1)}50%{transform:translate(50px,-30px) scale(1.12)}100%{transform:translate(-20px,30px) scale(.92)}}
 .dots{position:fixed;inset:0;z-index:0;background-image:radial-gradient(rgba(99,102,241,.12) 1px,transparent 1px);background-size:36px 36px;opacity:.3}
-
-/* CONTAINER */
-.gate-wrap{
-  position:relative;z-index:1;
-  width:100%;max-width:440px;
-  padding:20px;
-}
-
-/* CARD */
-.gate-card{
-  background:var(--glass);
-  border:1px solid var(--glass-b);
-  border-radius:28px;
-  padding:32px 28px;
-  backdrop-filter:blur(24px);
-  -webkit-backdrop-filter:blur(24px);
-  box-shadow:0 40px 80px rgba(0,0,0,.4);
-  animation:slideUp .5s cubic-bezier(.16,1,.3,1);
-}
+.gate-wrap{position:relative;z-index:1;width:100%;max-width:440px;padding:20px;}
+.gate-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:28px;padding:32px 28px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 40px 80px rgba(0,0,0,.4);animation:slideUp .5s cubic-bezier(.16,1,.3,1);}
 @keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-
-/* Header */
 .gate-header{text-align:center;margin-bottom:24px}
-.gate-logo{
-  width:56px;height:56px;border-radius:16px;
-  background:linear-gradient(135deg,var(--accent),#a855f7);
-  display:inline-flex;align-items:center;justify-content:center;
-  font-size:26px;margin-bottom:14px;
-}
-.gate-header h2{
-  font-size:22px;font-weight:800;margin-bottom:4px;
-  background:linear-gradient(135deg,#6366f1,#22d3ee);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-}
+.gate-logo{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--accent),#a855f7);display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:14px;}
+.gate-header h2{font-size:22px;font-weight:800;margin-bottom:4px;background:linear-gradient(135deg,#6366f1,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .gate-header p{font-size:13px;color:var(--muted);line-height:1.5}
-
-/* Tabs */
-.tabs{
-  display:flex;gap:4px;
-  background:rgba(0,0,0,.2);border-radius:14px;padding:4px;
-  margin-bottom:24px;
-}
-.tab{
-  flex:1;padding:10px;border:none;border-radius:10px;
-  background:transparent;color:var(--muted);
-  font-size:13px;font-weight:600;cursor:pointer;
-  font-family:inherit;transition:.2s;
-}
+.tabs{display:flex;gap:4px;background:rgba(0,0,0,.2);border-radius:14px;padding:4px;margin-bottom:24px;}
+.tab{flex:1;padding:10px;border:none;border-radius:10px;background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s;}
 .tab.active{background:var(--accent);color:#fff;box-shadow:0 4px 15px rgba(99,102,241,.3)}
-
-/* Sections */
 .section{display:none}
 .section.active{display:block;animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
-/* Plans */
-.plan{
-  background:rgba(0,0,0,.2);border:1px solid var(--glass-b);
-  border-radius:18px;padding:20px;margin-bottom:12px;
-  transition:.3s;cursor:pointer;position:relative;
-}
+.plan{background:rgba(0,0,0,.2);border:1px solid var(--glass-b);border-radius:18px;padding:20px;margin-bottom:12px;transition:.3s;cursor:pointer;position:relative;}
 .plan:hover{border-color:rgba(99,102,241,.3);transform:translateY(-2px)}
 .plan.popular{border-color:rgba(99,102,241,.4)}
-.plan.popular::after{
-  content:'POPULAR';position:absolute;top:-10px;right:16px;
-  background:linear-gradient(135deg,#6366f1,#a855f7);
-  color:#fff;font-size:10px;font-weight:700;
-  padding:3px 10px;border-radius:6px;letter-spacing:.5px;
-}
+.plan.popular::after{content:'POPULAR';position:absolute;top:-10px;right:16px;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:6px;letter-spacing:.5px;}
 .plan-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .plan-name{font-size:16px;font-weight:700}
 .plan-price{font-size:22px;font-weight:800;color:var(--accent2)}
 .plan-price small{font-size:12px;color:var(--muted);font-weight:500}
 .plan-features{display:flex;flex-wrap:wrap;gap:6px}
-.plan-feat{
-  font-size:11px;padding:3px 10px;border-radius:6px;
-  background:rgba(255,255,255,.05);color:var(--muted);
-}
-
-.pay-btn{
-  width:100%;padding:14px;border:none;border-radius:14px;
-  font-size:14px;font-weight:700;cursor:pointer;
-  font-family:inherit;transition:.25s;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-}
+.plan-feat{font-size:11px;padding:3px 10px;border-radius:6px;background:rgba(255,255,255,.05);color:var(--muted);}
+.pay-btn{width:100%;padding:14px;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:.25s;display:flex;align-items:center;justify-content:center;gap:8px;}
 .pay-btn:hover{transform:translateY(-2px)}
-.pay-trial{
-  background:linear-gradient(135deg,var(--success),#059669);color:#fff;
-  box-shadow:0 6px 20px rgba(16,185,129,.3);margin-bottom:10px;
-}
-.pay-monthly{
-  background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;
-  box-shadow:0 6px 20px rgba(99,102,241,.3);
-}
-
-.divider{
-  display:flex;align-items:center;gap:12px;
-  margin:20px 0;color:var(--muted);font-size:12px;
-}
+.pay-trial{background:linear-gradient(135deg,var(--success),#059669);color:#fff;box-shadow:0 6px 20px rgba(16,185,129,.3);margin-bottom:10px;}
+.pay-monthly{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;box-shadow:0 6px 20px rgba(99,102,241,.3);}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:12px;}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--glass-b)}
-
-/* Access Code Input */
 .code-group{margin-bottom:16px}
-.code-group label{
-  display:block;font-size:11px;font-weight:600;
-  color:var(--muted);text-transform:uppercase;
-  letter-spacing:.6px;margin-bottom:6px;
-}
-.code-input{
-  width:100%;padding:14px 16px;border-radius:12px;
-  background:rgba(0,0,0,.3);border:1px solid var(--glass-b);
-  color:#fff;font-size:15px;font-family:inherit;
-  text-align:center;letter-spacing:2px;
-  transition:.2s;
-}
-.code-input:focus{
-  outline:none;border-color:var(--accent);
-  box-shadow:0 0 0 3px rgba(99,102,241,.15);
-}
+.code-group label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
+.code-input{width:100%;padding:14px 16px;border-radius:12px;background:rgba(0,0,0,.3);border:1px solid var(--glass-b);color:#fff;font-size:15px;font-family:inherit;text-align:center;letter-spacing:2px;transition:.2s;}
+.code-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.15);}
 .code-input::placeholder{letter-spacing:0;font-size:13px;color:rgba(255,255,255,.2)}
-
-.activate-btn{
-  width:100%;padding:14px;border:none;border-radius:14px;
-  background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;
-  font-size:14px;font-weight:700;cursor:pointer;
-  font-family:inherit;transition:.25s;
-}
+.activate-btn{width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:.25s;}
 .activate-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,.35)}
-
-/* Status Messages */
-.msg{
-  padding:12px 16px;border-radius:12px;
-  font-size:13px;margin-top:12px;
-  display:none;animation:fadeIn .3s ease;
-}
+.msg{padding:12px 16px;border-radius:12px;font-size:13px;margin-top:12px;display:none;animation:fadeIn .3s ease;}
 .msg.show{display:block}
 .msg.ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:#34d399}
 .msg.err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:#fca5a5}
-
-/* Active Session Card */
-.session-card{
-  background:rgba(16,185,129,.08);
-  border:1px solid rgba(16,185,129,.2);
-  border-radius:18px;padding:20px;
-  margin-bottom:16px;text-align:center;
-}
+.session-card{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:18px;padding:20px;margin-bottom:16px;text-align:center;}
 .session-card h4{color:var(--success);font-size:15px;margin-bottom:6px}
 .session-card .uses{font-size:32px;font-weight:800;color:#fff}
 .session-card .uses span{font-size:14px;color:var(--muted);font-weight:500}
 .session-card .expires{font-size:12px;color:var(--muted);margin-top:4px}
-
-.go-btn{
-  width:100%;padding:14px;border:none;border-radius:14px;
-  font-size:14px;font-weight:700;cursor:pointer;
-  font-family:inherit;transition:.25s;margin-bottom:8px;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  text-decoration:none;
-}
+.go-btn{width:100%;padding:14px;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:.25s;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;}
 .go-spoken{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff}
 .go-interview{background:linear-gradient(135deg,var(--accent2),#0891b2);color:#fff}
 .go-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,0,0,.3)}
-
-.logout-btn{
-  width:100%;padding:10px;border:none;border-radius:10px;
-  background:rgba(239,68,68,.1);color:#fca5a5;
-  font-size:12px;font-weight:600;cursor:pointer;
-  font-family:inherit;margin-top:8px;transition:.2s;
-}
+.logout-btn{width:100%;padding:10px;border:none;border-radius:10px;background:rgba(239,68,68,.1);color:#fca5a5;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:8px;transition:.2s;}
 .logout-btn:hover{background:rgba(239,68,68,.2)}
-
-/* Footer */
-.gate-footer{
-  text-align:center;padding-top:16px;
-}
-.gate-footer a{
-  color:var(--muted);font-size:12px;text-decoration:none;
-  transition:.2s;
-}
+.gate-footer{text-align:center;padding-top:16px;}
+.gate-footer a{color:var(--muted);font-size:12px;text-decoration:none;transition:.2s;}
 .gate-footer a:hover{color:#fff}
-
-/* Guarantee */
-.guarantee{
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  font-size:11px;color:var(--muted);margin-top:14px;
-}
-
-/* Responsive */
-@media(max-width:480px){
-  .gate-wrap{padding:12px}
-  .gate-card{padding:24px 18px;border-radius:22px}
-}
+.guarantee{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:var(--muted);margin-top:14px;}
+@media(max-width:480px){.gate-wrap{padding:12px}.gate-card{padding:24px 18px;border-radius:22px}}
 </style>
 </head>
 
 <body>
-
-<div class="bg">
-  <div class="orb"></div><div class="orb"></div><div class="orb"></div>
-</div>
+<div class="bg"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
 <div class="dots"></div>
 
 <div class="gate-wrap">
   <div class="gate-card">
-
-    <!-- Header -->
     <div class="gate-header">
       <div class="gate-logo">✦</div>
       <h2>Zelvora AI Access</h2>
       <p>Unlock Spoken English Tutor & AI Mock Interview</p>
     </div>
 
-    <!-- Tabs -->
     <div class="tabs">
       <button class="tab active" onclick="showTab('buy')">💳 Get Access</button>
       <button class="tab" onclick="showTab('code')">🔑 Enter Code</button>
       <button class="tab" onclick="showTab('active')">✅ My Session</button>
     </div>
 
-    <!-- ===== TAB 1: BUY ACCESS ===== -->
     <div class="section active" id="sec-buy">
-
-      <!-- Trial Plan -->
       <div class="plan" onclick="trialPay()">
         <div class="plan-top">
           <div class="plan-name">⚡ Trial</div>
           <div class="plan-price">₹10 <small>/ 1 day</small></div>
         </div>
         <div class="plan-features">
-          <span class="plan-feat">20 AI turns</span>
-          <span class="plan-feat">24 hours</span>
-          <span class="plan-feat">All features</span>
+          <span class="plan-feat">20 AI turns</span><span class="plan-feat">24 hours</span><span class="plan-feat">All features</span>
         </div>
       </div>
 
-      <!-- Monthly Plan -->
       <div class="plan popular" onclick="monthlyPay()">
         <div class="plan-top">
           <div class="plan-name">🚀 Monthly</div>
           <div class="plan-price">₹300 <small>/ 30 days</small></div>
         </div>
         <div class="plan-features">
-          <span class="plan-feat">Unlimited turns</span>
-          <span class="plan-feat">30 days</span>
-          <span class="plan-feat">All modes</span>
-          <span class="plan-feat">Priority AI</span>
+          <span class="plan-feat">Unlimited turns</span><span class="plan-feat">30 days</span><span class="plan-feat">All modes</span><span class="plan-feat">Priority AI</span>
         </div>
       </div>
 
-      <button class="pay-btn pay-trial" onclick="trialPay()">
-        ⚡ Start Trial — ₹10
-      </button>
-      <button class="pay-btn pay-monthly" onclick="monthlyPay()">
-        🚀 Go Monthly — ₹300
-      </button>
-
-      <div class="guarantee">
-        🔒 Secure payment via Razorpay · Instant activation
-      </div>
+      <button class="pay-btn pay-trial" onclick="trialPay()">⚡ Start Trial — ₹10</button>
+      <button class="pay-btn pay-monthly" onclick="monthlyPay()">🚀 Go Monthly — ₹300</button>
+      <div class="guarantee">🔒 Secure payment via Razorpay · Instant activation</div>
     </div>
 
-    <!-- ===== TAB 2: ENTER CODE ===== -->
     <div class="section" id="sec-code">
       <div class="code-group">
         <label>Access Code</label>
-        <input type="text" class="code-input" id="codeInput"
-               placeholder="Paste your access code here"
-               spellcheck="false" autocomplete="off">
+        <input type="text" class="code-input" id="codeInput" placeholder="Paste your access code here" spellcheck="false" autocomplete="off">
       </div>
-      <button class="activate-btn" onclick="activateCode()">
-        🔓 Activate Access
-      </button>
+      <button class="activate-btn" onclick="activateCode()">🔓 Activate Access</button>
       <div class="msg" id="codeMsg"></div>
-
       <div class="divider">or</div>
-
-      <p style="font-size:12px;color:var(--muted);text-align:center;line-height:1.6">
-        After payment, you'll receive an access code via email or redirect.
-        Paste it above to activate your session.
-      </p>
+      <p style="font-size:12px;color:var(--muted);text-align:center;line-height:1.6">After payment, you'll instantly unlock access. You will also receive an email with your code for backup.</p>
     </div>
 
-    <!-- ===== TAB 3: ACTIVE SESSION ===== -->
     <div class="section" id="sec-active">
-      <div id="sessionInfo">
-        <!-- Filled by JS -->
-      </div>
+      <div id="sessionInfo"></div>
     </div>
 
-    <!-- Footer -->
-    <div class="gate-footer">
-      <a href="index.html">← Back to Home</a>
-    </div>
-
+    <div class="gate-footer"><a href="index.html">← Back to Home</a></div>
   </div>
 </div>
 
 <script>
 /* ===== CONFIG ===== */
-const TRIAL_LINK  = "https://rzp.io/rzp/7AD6EVmP";
-const MONTHLY_LINK = "https://rzp.io/rzp/dJqre5Sw";
+const RZP_KEY_ID = "rzp_live_RvhHi7Pjg1SFkF"; // IMPORTANT: Change to your real key
+const WORKER_URL = "https://late-mouse-4aa2.zelvora-global.workers.dev/verify-payment";
 
 /* ===== TABS ===== */
 function showTab(id) {
@@ -337,67 +162,76 @@ function showTab(id) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
   event.target.classList.add('active');
-
   if (id === 'active') renderSession();
 }
 
-/* ===== PAYMENT ===== */
-function trialPay() {
-  sessionStorage.setItem('pendingPlan', 'trial');
-  window.location.href = TRIAL_LINK;
+/* ===== INSTANT PAYMENT POP-UP ===== */
+function openRazorpay(amountInPaise, planName) {
+  var options = {
+    "key": RZP_KEY_ID,
+    "amount": amountInPaise, 
+    "currency": "INR",
+    "name": "Zelvora AI",
+    "description": planName,
+    "theme": { "color": "#6366f1" },
+    "handler": async function (response) {
+      const msgEl = document.getElementById('codeMsg');
+      showTab('code'); 
+      showMsg(msgEl, "⏳ Payment received! Unlocking your account...", "ok");
+
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ payment_id: response.razorpay_payment_id })
+        });
+        
+        const data = await res.json();
+        
+        if (data.success && data.token) {
+          localStorage.setItem('zelvora_token', data.token);
+          showMsg(msgEl, "✅ Account Unlocked!", "ok");
+          setTimeout(() => {
+            showTab('active');
+            document.querySelectorAll('.tab')[2].click();
+          }, 1000);
+        } else {
+          showMsg(msgEl, "Payment verification failed. Please contact support.", "err");
+        }
+      } catch (e) {
+        showMsg(msgEl, "Network error during verification. Check your email for code.", "err");
+      }
+    }
+  };
+  var rzp = new Razorpay(options);
+  rzp.open();
 }
 
-function monthlyPay() {
-  sessionStorage.setItem('pendingPlan', 'monthly');
-  window.location.href = MONTHLY_LINK;
-}
+function trialPay() { openRazorpay(1000, "Trial Plan (24 Hours)"); }
+function monthlyPay() { openRazorpay(30000, "Monthly Plan"); }
 
-/* ===== ACTIVATE CODE ===== */
+/* ===== MANUAL CODE ACTIVATION ===== */
 function activateCode() {
   const code = document.getElementById('codeInput').value.trim();
   const msgEl = document.getElementById('codeMsg');
-
-  if (!code) {
-    showMsg(msgEl, 'Please enter your access code.', 'err');
-    return;
-  }
+  if (!code) { showMsg(msgEl, 'Please enter your access code.', 'err'); return; }
 
   try {
     const payload = JSON.parse(atob(code));
+    if (Date.now() > payload.exp) { showMsg(msgEl, 'This code has expired.', 'err'); return; }
+    if (payload.uses.spoken <= 0) { showMsg(msgEl, 'No uses remaining.', 'err'); return; }
 
-    if (!payload.exp || !payload.uses) {
-      showMsg(msgEl, 'Invalid code format. Please check and try again.', 'err');
-      return;
-    }
-
-    if (Date.now() > payload.exp) {
-      showMsg(msgEl, 'This code has expired. Please purchase a new plan.', 'err');
-      return;
-    }
-
-    if (payload.uses.spoken <= 0) {
-      showMsg(msgEl, 'This code has no remaining uses. Please upgrade.', 'err');
-      return;
-    }
-
-    // CHANGED HERE: Now saves as zelvora_token
     localStorage.setItem('zelvora_token', code);
-    showMsg(msgEl, `✅ Activated! ${payload.uses.spoken} uses remaining. Redirecting...`, 'ok');
-
-    setTimeout(() => {
-      showTab('active');
-      document.querySelectorAll('.tab')[2].click();
-    }, 1500);
-
+    showMsg(msgEl, `✅ Activated! Redirecting...`, 'ok');
+    setTimeout(() => { showTab('active'); document.querySelectorAll('.tab')[2].click(); }, 1500);
   } catch {
-    showMsg(msgEl, 'Invalid code. Please paste the exact code you received.', 'err');
+    showMsg(msgEl, 'Invalid code.', 'err');
   }
 }
 
 /* ===== RENDER SESSION ===== */
 function renderSession() {
   const container = document.getElementById('sessionInfo');
-  // CHANGED HERE: Now looks for zelvora_token
   const token = localStorage.getItem('zelvora_token');
 
   if (!token) {
@@ -405,43 +239,24 @@ function renderSession() {
       <div style="text-align:center;padding:30px 0">
         <div style="font-size:40px;margin-bottom:12px">🔒</div>
         <h4 style="margin-bottom:6px;color:var(--muted)">No Active Session</h4>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">
-          Purchase a plan or enter an access code to get started.
-        </p>
-        <button class="activate-btn" onclick="document.querySelectorAll('.tab')[0].click()">
-          Get Access →
-        </button>
-      </div>
-    `;
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Purchase a plan to get started.</p>
+        <button class="activate-btn" onclick="document.querySelectorAll('.tab')[0].click()">Get Access →</button>
+      </div>`;
     return;
   }
 
   try {
     const d = JSON.parse(atob(token));
     const uses = d.uses?.spoken ?? 0;
-    const expDate = new Date(d.exp);
     const now = Date.now();
-    const expired = now > d.exp;
-    const noUses = uses <= 0;
-
-    if (expired || noUses) {
+    if (now > d.exp || uses <= 0) {
       container.innerHTML = `
         <div style="text-align:center;padding:20px 0">
           <div style="font-size:40px;margin-bottom:12px">⏰</div>
-          <h4 style="color:var(--danger);margin-bottom:6px">
-            ${expired ? 'Session Expired' : 'No Uses Remaining'}
-          </h4>
-          <p style="font-size:13px;color:var(--muted);margin-bottom:16px">
-            ${expired ? 'Your access has expired.' : 'You\'ve used all your turns.'} Please renew to continue.
-          </p>
-          <button class="pay-btn pay-monthly" onclick="monthlyPay()">
-            🚀 Renew — ₹300/month
-          </button>
-          <button class="logout-btn" onclick="logout()">
-            Clear & Start Fresh
-          </button>
-        </div>
-      `;
+          <h4 style="color:var(--danger);margin-bottom:6px">Session Expired</h4>
+          <button class="pay-btn pay-monthly" onclick="monthlyPay()">🚀 Renew — ₹300/month</button>
+          <button class="logout-btn" onclick="logout()">Clear & Start Fresh</button>
+        </div>`;
       return;
     }
 
@@ -454,44 +269,22 @@ function renderSession() {
       <div class="session-card">
         <h4>✅ Active Session</h4>
         <div class="uses">${uses === 999999 ? 'Unlimited' : uses} <span>uses remaining</span></div>
-        <div class="expires">⏱ ${timeStr} · Expires ${expDate.toLocaleDateString()}</div>
+        <div class="expires">⏱ ${timeStr}</div>
       </div>
-
-      <a href="spoken-english.html" class="go-btn go-spoken">
-        🎧 Open Spoken English Tutor
-      </a>
-      <a href="mock-interview.html" class="go-btn go-interview">
-        🎤 Open Mock Interview
-      </a>
-      <a href="career-lab.html" class="go-btn go-interview" style="background:linear-gradient(135deg,#10b981,#059669);">
-        🧪 Open Career Lab
-      </a>
-
-      <button class="logout-btn" onclick="logout()">
-        🚪 Sign Out / Clear Session
-      </button>
+      <a href="spoken-english.html" class="go-btn go-spoken">🎧 Open Spoken English Tutor</a>
+      <a href="mock-interview.html" class="go-btn go-interview">🎤 Open Mock Interview</a>
+      <a href="career-lab.html" class="go-btn go-interview" style="background:linear-gradient(135deg,#10b981,#059669);">🧪 Open Career Lab</a>
+      <button class="logout-btn" onclick="logout()">🚪 Sign Out</button>
     `;
-
-  } catch {
-    container.innerHTML = `
-      <div style="text-align:center;padding:20px 0">
-        <p style="color:var(--danger);font-size:13px">Session data corrupted.</p>
-        <button class="logout-btn" onclick="logout()">Clear & Start Fresh</button>
-      </div>
-    `;
-  }
+  } catch { logout(); }
 }
 
-/* ===== LOGOUT ===== */
 function logout() {
-  // CHANGED HERE
   localStorage.removeItem('zelvora_token');
-  sessionStorage.clear();
   renderSession();
   document.querySelectorAll('.tab')[0].click();
 }
 
-/* ===== HELPERS ===== */
 function showMsg(el, text, type) {
   el.textContent = text;
   el.className = 'msg show ' + type;
@@ -500,7 +293,6 @@ function showMsg(el, text, type) {
 
 /* ===== AUTO-DETECT ===== */
 (function init() {
-  // CHANGED HERE
   const token = localStorage.getItem('zelvora_token');
   if (token) {
     try {
@@ -510,16 +302,8 @@ function showMsg(el, text, type) {
       }
     } catch {}
   }
-
-  const pending = sessionStorage.getItem('pendingPlan');
-  if (pending) {
-    sessionStorage.removeItem('pendingPlan');
-    setTimeout(() => {
-      document.querySelectorAll('.tab')[1].click();
-      showMsg(document.getElementById('codeMsg'), '💳 Payment started! Once completed, paste your access code here.', 'ok');
-    }, 500);
-  }
-
+  
+  // URL Auto-Detect 
   const params = new URLSearchParams(window.location.search);
   const codeParam = params.get('code') || params.get('token');
   if (codeParam) {
