@@ -568,7 +568,7 @@ document.querySelectorAll(".role-chip").forEach(chip => {
 
 
 /* ================================================================
-   SPEECH RECOGNITION
+   SPEECH RECOGNITION (FIXED DUPLICATION BUG)
    ================================================================ */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null;
@@ -589,19 +589,29 @@ function setupRec() {
 
   rec.onstart = () => {
     setPhase("listening");
-    finalT = "";
+    finalT = ""; // Clear text when a new turn starts
     $("intLiveT").textContent = "Listening...";
   };
 
   rec.onresult = (e) => {
+    // --- THE BUG FIX: Rebuild the string from 0 every time ---
+    let currentFinal = "";
     let interim = "";
-    for (let i = e.resultIndex; i < e.results.length; i++) {
+
+    for (let i = 0; i < e.results.length; i++) {
       const t = e.results[i][0].transcript;
-      if (e.results[i].isFinal) finalT += t + " ";
-      else interim = t;
+      if (e.results[i].isFinal) {
+        currentFinal += t + " ";
+      } else {
+        interim += t;
+      }
     }
+    
+    // Overwrite finalT instead of adding to it (+=)
+    finalT = currentFinal; 
     $("intLiveT").textContent = finalT + interim;
 
+    // Silence timeout
     clearTimeout(sTimer);
     sTimer = setTimeout(() => {
       if (finalT.trim().length > 2) rec.stop();
@@ -626,16 +636,6 @@ function setupRec() {
 
   return true;
 }
-
-function startRec() {
-  if (!rec || iv.phase === "speaking" || iv.phase === "thinking") return;
-  try { rec.start(); } catch (e) {}
-}
-
-function stopRec() {
-  if (rec) try { rec.stop(); } catch (e) {}
-}
-
 
 /* ================================================================
    SPEECH SYNTHESIS (TTS)
