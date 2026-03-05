@@ -507,6 +507,40 @@ const $ = id => document.getElementById(id);
 
 
 /* ================================================================
+   SCREEN WAKE LOCK (PREVENT PHONE FROM SLEEPING)
+   ================================================================ */
+let wakeLock = null;
+
+async function requestWakeLock() {
+  if ('wakeLock' in navigator) {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+      console.log('Wake Lock active: Screen will stay on.');
+    } catch (err) {
+      console.warn('Wake Lock error:', err.message);
+    }
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock !== null) {
+    wakeLock.release()
+      .then(() => {
+        wakeLock = null;
+        console.log('Wake Lock released: Screen can sleep now.');
+      });
+  }
+}
+
+// Reactivate if the user switches tabs and comes back
+document.addEventListener('visibilitychange', async () => {
+  if (wakeLock !== null && document.visibilityState === 'visible' && iv.active) {
+    await requestWakeLock();
+  }
+});
+
+
+/* ================================================================
    TOKEN
    ================================================================ */
 function initToken() {
@@ -521,7 +555,7 @@ function initToken() {
       }
     } catch (e) {}
   }
-  // Remove this fallback in production if you want a strict paywall
+  // Default fallback if no token exists
   const d = { sub: "demo_" + Date.now(), exp: Date.now() + 30 * 24 * 3600000, uses: { spoken: 500 } };
   iv.token = btoa(JSON.stringify(d));
   localStorage.setItem("zelvora_token", iv.token);
@@ -570,7 +604,6 @@ function setupRec() {
   rec.continuous = true;
   
   // 🚨 THE MAGIC FIX: Turning this to FALSE kills the duplication bug.
-  // It stops the browser from constantly guessing and repeating words.
   rec.interimResults = false; 
   rec.lang = "en-US";
 
@@ -585,10 +618,10 @@ function setupRec() {
     const newestText = e.results[e.results.length - 1][0].transcript;
     finalT += newestText + " ";
 
-    // Hide the messy transcription, just show a professional status update
+    // Hide the messy transcription, show professional status
     $("intLiveT").textContent = "Capturing audio...";
 
-    // Reset the silence timer (wait 3 seconds after they stop talking to submit)
+    // Reset silence timer (wait 3s to auto-submit)
     clearTimeout(sTimer);
     sTimer = setTimeout(() => {
       if (finalT.trim().length > 2) {
@@ -600,11 +633,10 @@ function setupRec() {
 
   rec.onend = () => {
     clearTimeout(sTimer);
-    // Submit the perfectly clean, non-duplicated text to the AI
     if (iv.phase === "listening" && finalT.trim().length > 2) {
       processAnswer(finalT.trim());
     } else if (iv.active && iv.phase === "listening") {
-      startRec(); // Restart listening if they didn't speak enough
+      startRec(); 
     }
   };
 
@@ -634,7 +666,6 @@ async function populateVoices() {
   const voices = await getVoices();
   const sel = $("intVoiceSel");
 
-  // Prefer deeper/professional voices
   const keywords = ["Daniel","David","Mark","Google","Natural","Microsoft","Rishi","Alex","James","Thomas","Aaron"];
   const preferred = voices.filter(v =>
     v.lang.startsWith("en") && keywords.some(k => v.name.includes(k))
@@ -713,12 +744,9 @@ async function callIntAI(text, mode) {
       "Authorization": `Bearer ${iv.token}`,
     },
     body: JSON.stringify({
-      // Universal worker params
       module: "interview",
       mode: isStart ? "start" : mode,
       quality: "best",
-
-      // Interview params
       text: text,
       history: iv.history.slice(-20),
       job_role: iv.jobRole,
@@ -731,7 +759,6 @@ async function callIntAI(text, mode) {
 
   if (data.error) throw new Error(data.error);
 
-  // Update token
   if (data.token) {
     iv.token = data.token;
     localStorage.setItem("zelvora_token", data.token);
@@ -751,7 +778,6 @@ async function callIntAI(text, mode) {
    INTERVIEW FLOW
    ================================================================ */
 async function startInterview() {
-  // Read setup
   const selectedChip = document.querySelector(".role-chip.selected");
   iv.jobRole = $("customRole").value.trim() ||
     (selectedChip ? selectedChip.dataset.role : "Software Engineer");
@@ -762,7 +788,6 @@ async function startInterview() {
   iv.questionNum = 1;
   iv.userWordCounts = [];
 
-  // Type labels
   const typeLabels = {
     behavioral: "🧠 Behavioral",
     technical: "💻 Technical",
@@ -778,24 +803,22 @@ async function startInterview() {
     zara: "👗 Zara"
   };
 
-  // Update UI
   $("intDetail").textContent = `${iv.jobRole} — ${typeLabels[iv.interviewType] || iv.interviewType} — ${diffLabels[iv.difficulty] || iv.difficulty}`;
   $("qBadge").textContent = `Q 1/${iv.maxQuestions}`;
   $("typeBadge").textContent = typeLabels[iv.interviewType] || iv.interviewType;
 
-  // Switch screens
   $("setupScreen").classList.add("hidden");
   $("interviewScreen").classList.add("active");
 
-  // Setup
   if (!setupRec()) return;
   iv.active = true;
+  
+  // WAKE LOCK ACTIVATED
+  requestWakeLock();
 
-  // Timer
   iv.startTime = Date.now();
   iv.timerInterval = setInterval(updateTimer, 1000);
 
-  // Get first question
   try {
     const greeting = await callIntAI("__start_interview__", "start");
     addMsg("interviewer", greeting);
@@ -823,7 +846,6 @@ async function processAnswer(text) {
   iv.questionNum++;
   $("qBadge").textContent = `Q ${Math.min(iv.questionNum, iv.maxQuestions)}/${iv.maxQuestions}`;
 
-  // End check
   if (iv.questionNum > iv.maxQuestions) {
     await endInterview();
     return;
@@ -868,35 +890,31 @@ function skipQuestion() {
 
 async function endInterview() {
   iv.active = false;
+  releaseWakeLock(); // Let phone sleep again
   stopRec();
   speechSynthesis.cancel();
   clearInterval(iv.timerInterval);
   setPhase("idle");
 
-  // Calculate stats
   const duration = Math.floor((Date.now() - iv.startTime) / 1000);
   const totalWords = iv.userWordCounts.reduce((a, b) => a + b, 0);
   const avgWords = iv.userWordCounts.length > 0
     ? Math.round(totalWords / iv.userWordCounts.length) : 0;
   const questionsAnswered = iv.questionNum - 1;
 
-  // Score calculation
   let score = 40;
   score += Math.min(questionsAnswered, iv.maxQuestions) * (30 / iv.maxQuestions);
   score += Math.min(avgWords, 80) * 0.2;
   score += duration > 120 ? 5 : 0;
   score += duration > 300 ? 5 : 0;
   
-  // Difficulty bonus
   const diffBonus = { beginner: 0, intermediate: 3, advanced: 5, faang: 8, mercore: 8, zara: 8 };
   score += diffBonus[iv.difficulty] || 0;
   score = Math.min(Math.round(score), 100);
 
-  // Grade
   const grade = score >= 90 ? "A+" : score >= 80 ? "A" : score >= 70 ? "B+" :
                 score >= 60 ? "B" : score >= 50 ? "C" : "D";
 
-  // Get AI feedback
   let feedback = "Good effort! Keep practicing to improve your interview performance.";
   try {
     feedback = await callIntAI(
@@ -907,17 +925,10 @@ async function endInterview() {
     console.error("Feedback error:", e);
   }
 
-  // Show score
   showScore({
-    score,
-    grade,
-    questions: questionsAnswered,
-    duration: formatTime(duration),
-    avgWords: avgWords + " words",
-    difficulty: iv.difficulty,
-    role: iv.jobRole,
-    type: iv.interviewType,
-    feedback,
+    score, grade, questions: questionsAnswered, duration: formatTime(duration),
+    avgWords: avgWords + " words", difficulty: iv.difficulty, role: iv.jobRole,
+    type: iv.interviewType, feedback,
   });
 }
 
@@ -937,19 +948,15 @@ function showScore(data) {
   $("scoreVal").textContent = data.score;
   $("scoreGrade").textContent = data.grade;
 
-  // Color the score ring based on grade
   const colors = { "A+": "#10b981", "A": "#10b981", "B+": "#6366f1", "B": "#6366f1", "C": "#f59e0b", "D": "#ef4444" };
   $("scoreCircle").style.stroke = colors[data.grade] || "var(--accent)";
 
-  // Animate ring
   const circumference = 264;
   const offset = circumference - (data.score / 100) * circumference;
   $("scoreCircle").style.strokeDashoffset = circumference;
   $("scoreOverlay").classList.add("open");
 
-  setTimeout(() => {
-    $("scoreCircle").style.strokeDashoffset = offset;
-  }, 300);
+  setTimeout(() => { $("scoreCircle").style.strokeDashoffset = offset; }, 300);
 }
 
 function closeScore() {
@@ -959,7 +966,6 @@ function closeScore() {
 
 function retryInterview() {
   $("scoreOverlay").classList.remove("open");
-  // Keep same settings, just restart
   $("interviewScreen").classList.remove("active");
   $("setupScreen").classList.remove("hidden");
   $("intChat").innerHTML = "";
@@ -1059,22 +1065,9 @@ function toggleIntMute() {
    ================================================================ */
 document.addEventListener("keydown", (e) => {
   if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT") return;
-
-  // Space to toggle listen
-  if (e.code === "Space" && iv.active) {
-    e.preventDefault();
-    toggleListen();
-  }
-  // Escape to end
-  if (e.code === "Escape" && iv.active) {
-    e.preventDefault();
-    endInterview();
-  }
-  // S to skip
-  if (e.code === "KeyS" && iv.active && iv.phase === "listening") {
-    e.preventDefault();
-    skipQuestion();
-  }
+  if (e.code === "Space" && iv.active) { e.preventDefault(); toggleListen(); }
+  if (e.code === "Escape" && iv.active) { e.preventDefault(); endInterview(); }
+  if (e.code === "KeyS" && iv.active && iv.phase === "listening") { e.preventDefault(); skipQuestion(); }
 });
 
 
@@ -1092,7 +1085,6 @@ setInterval(() => {
 initToken();
 populateVoices();
 
-// Browser check
 if (!SR) {
   document.querySelector(".start-btn").textContent = "❌ Browser Not Supported — Use Chrome";
   document.querySelector(".start-btn").disabled = true;
