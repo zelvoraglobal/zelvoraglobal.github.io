@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zelvora — AI Voice English Tutor</title>
+<title>Zelvora — Elite Spoken English Tutor</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%2322d3ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='%230f172a'/%3E%3Cpath d='M32 38 C32 30 38 24 48 24 L72 24 C82 24 88 30 88 38 L88 42 L52 78 L88 78 L88 82 C88 90 82 96 72 96 L48 96 C38 96 32 90 32 82 L32 78 L68 42 L32 42 Z' fill='url(%23g)'/%3E%3Cpath d='M78 24 C84 24 90 20 94 14 C92 22 88 30 82 34 L78 24Z' fill='url(%23g)' opacity='0.8'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -255,12 +255,10 @@
 </head>
 <body>
 
-<!-- AMBIENT -->
 <div class="amb">
   <div class="orb"></div><div class="orb"></div><div class="orb"></div>
 </div>
 
-<!-- NAV -->
 <nav class="nav">
   <a href="index.html" class="nav-logo">
     <svg viewBox="0 0 200 200" fill="none">
@@ -277,10 +275,8 @@
   </div>
 </nav>
 
-<!-- APP -->
 <div class="app" id="app">
 
-  <!-- STATUS BAR -->
   <div class="status-bar">
     <div class="status-item">
       <div class="status-dot" id="statusDot"></div>
@@ -297,7 +293,6 @@
     </div>
   </div>
 
-  <!-- MODE SELECTOR -->
   <div class="mode-bar">
     <button class="mode-btn active" data-mode="conversation" onclick="switchMode(this)">💬 Conversation</button>
     <button class="mode-btn" data-mode="debate" onclick="switchMode(this)">⚔️ Debate</button>
@@ -306,12 +301,10 @@
     <button class="mode-btn" data-mode="pronunciation" onclick="switchMode(this)">🗣️ Pronunciation</button>
   </div>
 
-  <!-- VOICE SELECT -->
   <div class="voice-select-wrap" id="voiceSelector">
     <span class="label">Voice:</span>
   </div>
 
-  <!-- VOICE ORB -->
   <div class="voice-section">
     <div class="orb-container idle" id="orbContainer" onclick="toggleConversation()">
       <div class="orb-main">
@@ -323,20 +316,16 @@
     <div class="orb-sublabel" id="orbSublabel">Begin hands-free conversation</div>
   </div>
 
-  <!-- WAVEFORM -->
   <div class="waveform" id="waveform">
     <div class="bar"></div><div class="bar"></div><div class="bar"></div>
     <div class="bar"></div><div class="bar"></div><div class="bar"></div>
     <div class="bar"></div><div class="bar"></div><div class="bar"></div>
   </div>
 
-  <!-- LIVE TRANSCRIPT -->
   <div class="live-transcript" id="liveTranscript">...</div>
 
-  <!-- CHAT -->
   <div class="chat-area" id="chatArea"></div>
 
-  <!-- SESSION STATS (shown after reset or end) -->
   <div class="session-stats" id="sessionStats" style="display:none">
     <div class="stat-item"><div class="val" id="statTurns">0</div><div class="lbl">Turns</div></div>
     <div class="stat-item"><div class="val" id="statTime">0:00</div><div class="lbl">Duration</div></div>
@@ -344,7 +333,6 @@
     <div class="stat-item"><div class="val" id="statMode">—</div><div class="lbl">Mode</div></div>
   </div>
 
-  <!-- CONTROLS -->
   <div class="controls">
     <button class="ctrl-btn" id="settingsBtn" onclick="toggleSettings()">⚙️ Settings</button>
     <button class="ctrl-btn active" id="autoBtn" onclick="toggleAutoListen()">🔄 Auto: ON</button>
@@ -352,7 +340,6 @@
     <button class="ctrl-btn danger" onclick="resetConversation()">🗑️ Reset</button>
   </div>
 
-  <!-- SETTINGS -->
   <div class="settings-panel" id="settingsPanel">
     <div class="setting-row">
       <span class="setting-label">Speech Speed</span>
@@ -380,7 +367,7 @@
       <div class="toggle on" id="transcriptToggle" onclick="this.classList.toggle('on')"></div>
     </div>
     <div class="setting-row">
-      <span class="setting-label">Language</span>
+      <span class="setting-label">Language / Accent</span>
       <div class="setting-value">
         <select id="langSelect" style="background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:4px 8px;font-size:12px;font-family:inherit;outline:none">
           <option value="en-US">🇺🇸 English (US)</option>
@@ -394,9 +381,6 @@
 
 </div>
 
-<!-- ================================================================
-     JAVASCRIPT ENGINE
-     ================================================================ -->
 <script>
 /* =================================================================
    ZELVORA VOICE ENGINE — Hands-Free Spoken English Tutor (FINAL)
@@ -404,7 +388,7 @@
    Module: "tutor"
    ================================================================= */
 
-const API_URL = "https://late-mouse-4aa2.zelvora-global.workers.dev/"; // ← UPDATE THIS
+const API_URL = "https://late-mouse-4aa2.zelvora-global.workers.dev/"; 
 
 /* ===== STATE ===== */
 const state = {
@@ -438,6 +422,30 @@ const usesBadge      = $("usesBadge");
 const modelLabel     = $("modelLabel");
 const sessionTime    = $("sessionTime");
 
+/* ================================================================
+   SCREEN WAKE LOCK (PREVENT PHONE FROM SLEEPING)
+   ================================================================ */
+let wakeLock = null;
+
+async function requestWakeLock() {
+  if ('wakeLock' in navigator) {
+    try { wakeLock = await navigator.wakeLock.request('screen'); } 
+    catch (err) { console.warn('Wake Lock error:', err.message); }
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock !== null) {
+    wakeLock.release().then(() => { wakeLock = null; });
+  }
+}
+
+document.addEventListener('visibilitychange', async () => {
+  if (wakeLock !== null && document.visibilityState === 'visible' && state.active) {
+    await requestWakeLock();
+  }
+});
+
 
 /* ================================================================
    TOKEN MANAGEMENT
@@ -449,12 +457,12 @@ function initToken() {
       const p = JSON.parse(atob(stored));
       if (Date.now() < p.exp) {
         state.token = stored;
-        usesBadge.textContent = p.uses.spoken + " uses";
+        usesBadge.textContent = p.uses.spoken === 999999 ? "∞ uses" : p.uses.spoken + " uses";
         return;
       }
     } catch (e) {}
   }
-  // Demo token: 500 uses, 30 days
+  // Demo token: fallback if not logged in
   const demo = {
     sub: "demo_" + Date.now(),
     exp: Date.now() + 30 * 24 * 3600000,
@@ -467,7 +475,7 @@ function initToken() {
 
 
 /* ================================================================
-   SPEECH RECOGNITION (STT)
+   SPEECH RECOGNITION (BULLETPROOF NO-DUPLICATION FIX)
    ================================================================ */
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition = null;
@@ -481,7 +489,10 @@ function setupRecognition() {
 
   recognition = new SpeechRecognition();
   recognition.continuous = true;
-  recognition.interimResults = true;
+  
+  // 🚨 THE MAGIC FIX: Turning this to FALSE kills the duplication bug.
+  recognition.interimResults = false; 
+  
   recognition.lang = $("langSelect").value;
   recognition.maxAlternatives = 1;
 
@@ -490,29 +501,25 @@ function setupRecognition() {
 
   recognition.onstart = () => {
     setPhase("listening");
-    finalTranscript = "";
-    liveTranscript.textContent = "Listening...";
+    finalTranscript = ""; // Clear memory for the new turn
+    liveTranscript.textContent = "Listening... (Speak your mind)";
     liveTranscript.classList.add("active");
   };
 
   recognition.onresult = (e) => {
-    let interim = "";
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      const t = e.results[i][0].transcript;
-      if (e.results[i].isFinal) {
-        finalTranscript += t + " ";
-      } else {
-        interim = t;
-      }
-    }
+    // Because interimResults is false, this only triggers when a sentence is fully complete.
+    const newestText = e.results[e.results.length - 1][0].transcript;
+    finalTranscript += newestText + " ";
 
-    liveTranscript.textContent = finalTranscript + interim;
+    // Hide the messy typing, show a clean status
+    liveTranscript.textContent = "Capturing audio...";
 
-    // Reset silence timer
+    // Reset silence timer based on slider
     clearTimeout(silenceTimer);
     const timeout = parseInt($("silenceSlider").value) * 1000;
     silenceTimer = setTimeout(() => {
       if (finalTranscript.trim().length > 2) {
+        liveTranscript.textContent = "Processing your speech...";
         recognition.stop();
       }
     }, timeout);
@@ -520,11 +527,11 @@ function setupRecognition() {
 
   recognition.onend = () => {
     clearTimeout(silenceTimer);
+    // Send the perfectly clean, non-duplicated text to the AI
     if (state.phase === "listening" && finalTranscript.trim().length > 2) {
       processUserSpeech(finalTranscript.trim());
     } else if (state.active && state.phase === "listening") {
-      // No speech detected — restart
-      startListening();
+      startListening(); // Restart if they didn't say enough
     }
   };
 
@@ -532,8 +539,6 @@ function setupRecognition() {
     console.warn("STT error:", e.error);
     if (e.error === "no-speech" && state.active) {
       setTimeout(() => startListening(), 500);
-    } else if (e.error === "aborted") {
-      // Intentional — do nothing
     } else if (e.error === "network") {
       addMessage("ai", "Network issue with speech recognition. Check your connection.");
     }
@@ -544,7 +549,6 @@ function setupRecognition() {
 
 function startListening() {
   if (!recognition || state.phase === "speaking" || state.phase === "thinking") return;
-  // Update language in case user changed it
   recognition.lang = $("langSelect").value;
   try { recognition.start(); } catch (e) { /* already started */ }
 }
@@ -688,7 +692,7 @@ async function callAI(text) {
 
   // Update UI
   if (data.remaining !== undefined) {
-    usesBadge.textContent = data.remaining + " uses";
+    usesBadge.textContent = data.remaining === 999999 ? "∞ uses" : data.remaining + " uses";
   }
   if (data.model) {
     modelLabel.textContent = data.model.replace("llama-","L").replace("-instruct","").replace("-fast","⚡");
@@ -731,11 +735,8 @@ async function processUserSpeech(text) {
     console.error("AI error:", err);
 
     let fallbackMsg = "I had a small hiccup. Could you say that again?";
-    if (err.message === "Usage limit reached") {
-      fallbackMsg = "You've used all your turns. Please upgrade your plan to continue.";
-      state.active = false;
-    } else if (err.message === "Access expired") {
-      fallbackMsg = "Your access has expired. Please renew to continue.";
+    if (err.message === "Usage limit reached" || err.message.includes("expired")) {
+      fallbackMsg = "Your access limit has been reached. Please check your session status.";
       state.active = false;
     }
 
@@ -756,6 +757,7 @@ function toggleConversation() {
   if (state.active) {
     // === STOP ===
     state.active = false;
+    releaseWakeLock(); // Release lock when paused
     stopListening();
     speechSynthesis.cancel();
     clearInterval(state.sessionTimer);
@@ -768,6 +770,7 @@ function toggleConversation() {
 
     state.active = true;
     state.startTime = Date.now();
+    requestWakeLock(); // Keep phone awake
 
     // Session timer
     state.sessionTimer = setInterval(() => {
@@ -857,7 +860,7 @@ function setPhase(phase) {
 
   const config = {
     idle:      { icon: "🎙️", dot: "",         label: "Tap to Start",  sub: "Begin conversation",     status: "Ready",      wave: false },
-    listening: { icon: "👂", dot: "listening",  label: "Listening...",   sub: "Speak naturally",        status: "Listening",  wave: true  },
+    listening: { icon: "👂", dot: "listening",  label: "Listening...",   sub: "Speak naturally",         status: "Listening",  wave: true  },
     thinking:  { icon: "🧠", dot: "thinking",   label: "Thinking...",   sub: "Processing your speech", status: "Processing", wave: false },
     speaking:  { icon: "🗣️", dot: "speaking",  label: "Speaking",      sub: "Zelvora is responding",  status: "Speaking",   wave: true  },
   };
@@ -934,6 +937,7 @@ function resetConversation() {
 
   // Reset everything
   state.active = false;
+  releaseWakeLock(); // Release lock when resetting
   state.history = [];
   state.turns = 0;
   state.totalUserWords = 0;
@@ -976,6 +980,7 @@ document.addEventListener("keydown", (e) => {
   // Escape to stop
   if (e.code === "Escape" && state.active) {
     state.active = false;
+    releaseWakeLock();
     stopListening();
     speechSynthesis.cancel();
     clearInterval(state.sessionTimer);
