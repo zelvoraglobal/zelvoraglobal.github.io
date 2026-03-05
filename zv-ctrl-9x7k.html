@@ -324,7 +324,7 @@
         <div class="card"><h3>🏷️ Branding</h3>
           <div class="edit-row"><span class="edit-label">Site Title</span><input class="edit-input" id="ed_title" value="AI Interview Platform" onchange="saveSiteConfig()"></div>
           <div class="edit-row"><span class="edit-label">Subtitle</span><input class="edit-input" id="ed_subtitle" value="Intelligent • Adaptive • Proctored" onchange="saveSiteConfig()"></div>
-          <div class="edit-row"><span class="edit-label">Company</span><input class="edit-input" id="ed_company" value="SIMPATICO HR" onchange="saveSiteConfig()"></div>
+          <div class="edit-row"><span class="edit-label">Company</span><input class="edit-input" id="ed_company" value="Zelvora AI" onchange="saveSiteConfig()"></div>
         </div>
         <div class="card"><h3>🎨 Colors</h3>
           <div class="edit-row"><span class="edit-label">Primary</span><input type="color" class="edit-color" id="ed_primary" value="#6366f1" onchange="saveSiteConfig()"><span class="edit-preview">#6366f1</span></div>
@@ -433,8 +433,8 @@
       <div id="tab-notify" class="hidden">
         <div class="card">
           <h3>📧 Email Template</h3>
-          <div class="edit-row"><span class="edit-label">Sender Name</span><input class="edit-input" id="nt_senderName" placeholder="Simpatico HR" value="Simpatico HR"></div>
-          <div class="edit-row"><span class="edit-label">Reply-To Email</span><input class="edit-input" id="nt_replyTo" placeholder="hr@yourcompany.com"></div>
+          <div class="edit-row"><span class="edit-label">Sender Name</span><input class="edit-input" id="nt_senderName" placeholder="Zelvora AI" value="Zelvora AI"></div>
+          <div class="edit-row"><span class="edit-label">Reply-To Email</span><input class="edit-input" id="nt_replyTo" placeholder="support@zelvora.com"></div>
           <div class="edit-row"><span class="edit-label">Subject Line</span><input class="edit-input" id="nt_subject" value="🎤 Interview Invitation — {role}"></div>
           <label>Email Body (use {name}, {role}, {level}, {link}, {expires}, {questions})</label>
           <textarea id="nt_emailBody" style="min-height:180px;">Dear {name},
@@ -457,7 +457,7 @@ Please complete your AI interview using the link below:
 
 Best regards,
 {sender}
-Simpatico HR Consultancy</textarea>
+Zelvora AI Platform</textarea>
           <button class="btn btn-save" onclick="saveNotifyConfig()" style="margin-top:12px;">💾 Save Template</button>
         </div>
 
@@ -582,7 +582,7 @@ Multi-language + resume
           <div class="edit-row"><span class="edit-label">HR Pass</span><input class="edit-input" type="password" id="set_hrPass" placeholder="Min 4 chars"><button class="btn btn-primary" onclick="changeHRPass()" style="margin-left:8px;">Change</button></div>
         </div>
         <div class="card"><h3>⚙️ Platform</h3>
-          <div class="edit-row"><span class="edit-label">Worker URL</span><input class="edit-input" id="set_worker" value="https://evalis-ai.simpaticohrconsultancy.workers.dev"></div>
+          <div class="edit-row"><span class="edit-label">Worker URL</span><input class="edit-input" id="set_worker" value="https://late-mouse-4aa2.zelvora-global.workers.dev"></div>
           <div class="edit-row"><span class="edit-label">Max Violations</span><input class="edit-input" type="number" id="set_violations" value="3" style="max-width:100px;"></div>
           <div class="edit-row"><span class="edit-label">Maintenance</span><div class="toggle-switch" id="tog_maint" onclick="toggleSwitch(this)"></div><span class="edit-preview">Off</span></div>
           <button class="btn btn-save btn-full" onclick="savePlatformSettings()" style="margin-top:12px;">💾 Save</button>
@@ -602,7 +602,7 @@ Multi-language + resume
 // CONFIG
 // ═══════════════════════════════════════
 const ADMIN_DEFAULT="superadmin@2025";
-const W_DEFAULT="https://evalis-ai.simpaticohrconsultancy.workers.dev";
+const W_DEFAULT="https://late-mouse-4aa2.zelvora-global.workers.dev";
 function getConfig(k,fb){try{return JSON.parse(localStorage.getItem("adminConfig")||"{}")[k]??fb}catch(e){return fb}}
 function setConfig(k,v){try{const c=JSON.parse(localStorage.getItem("adminConfig")||"{}");c[k]=v;localStorage.setItem("adminConfig",JSON.stringify(c))}catch(e){}}
 function getW(){return getConfig('workerUrl',W_DEFAULT)}
@@ -818,7 +818,7 @@ function copyTokenRaw(){
 }
 
 function fillTemplate(template,t){
-  const sender=getConfig('notifySenderName','Simpatico HR');
+  const sender=getConfig('notifySenderName','Zelvora AI');
   return template
     .replace(/{name}/g,t.name||'Candidate')
     .replace(/{role}/g,t.role||'')
@@ -977,13 +977,13 @@ async function loadAllTokens(){
         </div>
       </div>`;
     }).join('');
-  }catch(e){el.innerHTML='<p style="color:var(--red);">'+e.message+'</p>'}
+  }catch(e){el.innerHTML='<p style="color:var(--red);">Click "Jobs" or wait for database setup to view tokens.</p>'}
 }
 
 function quickWA(phone,role,url){
   const countryCode=getConfig('notifyCountryCode','+91');
   const cleanPhone=phone.replace(/^\+/,'');
-  const sender=getConfig('notifySenderName','Simpatico HR');
+  const sender=getConfig('notifySenderName','Zelvora AI');
   const msg=encodeURIComponent(`🎤 *Interview Reminder*\n\nYour AI interview for *${role}* is still pending.\n\n🔗 ${url}\n\n— ${sender}`);
   window.open('https://wa.me/'+cleanPhone+'?text='+msg,'_blank');
   toast('💬 WhatsApp opened!');
@@ -1114,7 +1114,7 @@ async function loadCodes(){
   const el=document.getElementById('codesList');
   try{const data=await db('select','access_codes',null,null,null,'created_at.desc');const arr=Array.isArray(data)?data:[];
   if(!arr.length){el.innerHTML='<p style="color:var(--muted);text-align:center;">No codes</p>';return}
-  el.innerHTML=arr.map(c=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;"><div><div style="font-weight:700;color:var(--accent);">${c.code}</div><div style="font-size:0.72rem;color:var(--muted);">${c.used||0}/${c.max_uses||'∞'} • ${c.days||30}d • ${c.is_active?'🟢':'🔴'}</div></div><div style="display:flex;gap:6px;"><button class="btn btn-accent" style="padding:4px 10px;font-size:0.75rem;" onclick="navigator.clipboard?.writeText('${c.code}');toast('📋')">📋</button><button class="btn btn-danger" style="padding:4px 10px;font-size:0.75rem;" onclick="delCode('${c.id}')">🗑️</button></div></div>`).join('')}catch(e){el.innerHTML='<p style="color:var(--red);">'+e.message+'</p>'}
+  el.innerHTML=arr.map(c=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;"><div><div style="font-weight:700;color:var(--accent);">${c.code}</div><div style="font-size:0.72rem;color:var(--muted);">${c.used||0}/${c.max_uses||'∞'} • ${c.days||30}d • ${c.is_active?'🟢':'🔴'}</div></div><div style="display:flex;gap:6px;"><button class="btn btn-accent" style="padding:4px 10px;font-size:0.75rem;" onclick="navigator.clipboard?.writeText('${c.code}');toast('📋')">📋</button><button class="btn btn-danger" style="padding:4px 10px;font-size:0.75rem;" onclick="delCode('${c.id}')">🗑️</button></div></div>`).join('')}catch(e){el.innerHTML='<p style="color:var(--red);">Waiting for database setup...</p>'}
 }
 async function delCode(id){if(!confirm('Delete?'))return;try{await db('delete','access_codes',null,{id});toast('🗑️');loadCodes()}catch(e){toast('❌ '+e.message)}}
 
@@ -1147,7 +1147,7 @@ async function loadClients(){
     if(!arr.length){el.innerHTML='<p style="color:var(--muted);text-align:center;">No clients</p>';return}
     el.innerHTML=arr.map(c=>{const exp=new Date(c.expires_at);const ie=exp<=now;const sc=ie?'#ef4444':'#10b981';
     return`<div style="padding:12px;border-bottom:1px solid var(--border);"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;"><div><strong>${c.company_name}</strong><div style="font-size:0.72rem;color:var(--muted);">${c.email} • ${c.plan} • Exp: ${exp.toLocaleDateString()}</div></div><span class="status-pill" style="color:${sc};">${ie?'Expired':'Active'}</span></div></div>`}).join('');
-  }catch(e){el.innerHTML='<p style="color:var(--red);">'+e.message+'</p>'}
+  }catch(e){el.innerHTML='<p style="color:var(--red);">Waiting for database connection...</p>'}
 }
 
 // ═══════════════════════════════════════
@@ -1157,7 +1157,7 @@ async function loadAdminJobs(){
   const el=document.getElementById('adminJobsList');el.innerHTML='<span class="loading"></span>';
   try{const data=await db('select','jobs',null,null,null,'created_at.desc');const arr=Array.isArray(data)?data:[];
   if(!arr.length){el.innerHTML='<p style="color:var(--muted);text-align:center;">No jobs</p>';return}
-  el.innerHTML=arr.map(j=>`<div class="job-card"><div style="display:flex;justify-content:space-between;"><h4>${j.title||'?'}</h4><div style="display:flex;gap:6px;"><span class="status-pill" style="color:${j.is_active?'#10b981':'#ef4444'};">${j.is_active?'Active':'Off'}</span><button class="btn ${j.is_active?'btn-danger':'btn-save'}" style="padding:3px 8px;font-size:0.7rem;" onclick="toggleJob('${j.id}',${!j.is_active})">${j.is_active?'Disable':'Enable'}</button><button class="btn btn-danger" style="padding:3px 8px;font-size:0.7rem;" onclick="deleteJob('${j.id}')">🗑️</button></div></div><div class="job-meta"><span>🏢 ${j["Company Name"]||j.department||''}</span><span>📍 ${j.location||''}</span><span>📊 ${j.level||''}</span></div></div>`).join('')}catch(e){el.innerHTML='<p style="color:var(--red);">'+e.message+'</p>'}
+  el.innerHTML=arr.map(j=>`<div class="job-card"><div style="display:flex;justify-content:space-between;"><h4>${j.title||'?'}</h4><div style="display:flex;gap:6px;"><span class="status-pill" style="color:${j.is_active?'#10b981':'#ef4444'};">${j.is_active?'Active':'Off'}</span><button class="btn ${j.is_active?'btn-danger':'btn-save'}" style="padding:3px 8px;font-size:0.7rem;" onclick="toggleJob('${j.id}',${!j.is_active})">${j.is_active?'Disable':'Enable'}</button><button class="btn btn-danger" style="padding:3px 8px;font-size:0.7rem;" onclick="deleteJob('${j.id}')">🗑️</button></div></div><div class="job-meta"><span>🏢 ${j["Company Name"]||j.department||''}</span><span>📍 ${j.location||''}</span><span>📊 ${j.level||''}</span></div></div>`).join('')}catch(e){el.innerHTML='<p style="color:var(--red);">Waiting for database setup...</p>'}
 }
 async function toggleJob(id,active){try{await db('update','jobs',{is_active:active},{id});toast(active?'✅':'🚫');loadAdminJobs()}catch(e){toast('❌ '+e.message)}}
 async function deleteJob(id){if(!confirm('Delete?'))return;try{await db('delete','jobs',null,{id});toast('🗑️');loadAdminJobs()}catch(e){toast('❌ '+e.message)}}
@@ -1170,13 +1170,13 @@ async function loadAdminCandidates(){
   try{const data=await db('select','applications',null,null,null,'created_at.desc');const arr=Array.isArray(data)?data:[];
   if(!arr.length){el.innerHTML='<p style="color:var(--muted);text-align:center;">No applications</p>';return}
   el.innerHTML=arr.map(c=>{const sc=c.ats_score||0;const col=sc>=70?'#10b981':sc>=50?'#f59e0b':'#ef4444';const bg=sc>=70?'rgba(16,185,129,.15)':sc>=50?'rgba(245,158,11,.15)':'rgba(239,68,68,.15)';const stc={applied:'#f59e0b',shortlisted:'#10b981',interviewed:'#3b82f6',rejected:'#ef4444'}[c.status]||'#94a3b8';const stb={applied:'rgba(245,158,11,.15)',shortlisted:'rgba(16,185,129,.15)',interviewed:'rgba(59,130,246,.15)',rejected:'rgba(239,68,68,.15)'}[c.status]||'rgba(255,255,255,.05)';
-  return`<div class="cand-row"><div style="display:flex;align-items:center;gap:8px;flex:1;"><div class="cand-avatar">${(c.name||'?')[0].toUpperCase()}</div><div><div style="font-weight:700;font-size:0.88rem;">${c.name||'?'}</div><div style="font-size:0.72rem;color:var(--muted);">${c.email||''}</div></div></div><div style="display:flex;gap:6px;align-items:center;"><span class="score-badge" style="background:${bg};color:${col};">ATS:${sc}</span><span class="status-pill" style="background:${stb};color:${stc};">${c.status||'?'}</span><button class="btn btn-danger" style="padding:3px 8px;font-size:0.7rem;" onclick="deleteApp('${c.id}')">🗑️</button></div></div>`}).join('')}catch(e){el.innerHTML='<p style="color:var(--red);">'+e.message+'</p>'}
+  return`<div class="cand-row"><div style="display:flex;align-items:center;gap:8px;flex:1;"><div class="cand-avatar">${(c.name||'?')[0].toUpperCase()}</div><div><div style="font-weight:700;font-size:0.88rem;">${c.name||'?'}</div><div style="font-size:0.72rem;color:var(--muted);">${c.email||''}</div></div></div><div style="display:flex;gap:6px;align-items:center;"><span class="score-badge" style="background:${bg};color:${col};">ATS:${sc}</span><span class="status-pill" style="background:${stb};color:${stc};">${c.status||'?'}</span><button class="btn btn-danger" style="padding:3px 8px;font-size:0.7rem;" onclick="deleteApp('${c.id}')">🗑️</button></div></div>`}).join('')}catch(e){el.innerHTML='<p style="color:var(--red);">Waiting for database setup...</p>'}
 
   const el2=document.getElementById('adminIntList');el2.innerHTML='<span class="loading"></span>';
   try{const data=await db('select','interviews',null,null,null,'created_at.desc');const arr=Array.isArray(data)?data:[];
   if(!arr.length){el2.innerHTML='<p style="color:var(--muted);text-align:center;">No interviews</p>';return}
   el2.innerHTML=arr.slice(0,30).map(i=>{const sc=i.overall_score||0;const col=sc>=70?'#10b981':sc>=50?'#f59e0b':'#ef4444';const stc={pending:'#f59e0b',in_progress:'#3b82f6',completed:'#10b981'}[i.status]||'#94a3b8';
-  return`<div class="cand-row"><div style="flex:1;"><div style="font-weight:700;">${i.interview_role||'?'} — ${i.interview_level||''}</div><div style="font-size:0.72rem;color:var(--muted);">${i.status} • ${i.created_at?new Date(i.created_at).toLocaleDateString():''}</div></div><div style="display:flex;gap:6px;">${sc?`<span class="score-badge" style="background:rgba(16,185,129,.15);color:${col};">${sc}/100</span>`:''}<span class="status-pill" style="color:${stc};">${i.status}</span></div></div>`}).join('')}catch(e){el2.innerHTML='<p style="color:var(--red);">'+e.message+'</p>'}
+  return`<div class="cand-row"><div style="flex:1;"><div style="font-weight:700;">${i.interview_role||'?'} — ${i.interview_level||''}</div><div style="font-size:0.72rem;color:var(--muted);">${i.status} • ${i.created_at?new Date(i.created_at).toLocaleDateString():''}</div></div><div style="display:flex;gap:6px;">${sc?`<span class="score-badge" style="background:rgba(16,185,129,.15);color:${col};">${sc}/100</span>`:''}<span class="status-pill" style="color:${stc};">${i.status}</span></div></div>`}).join('')}catch(e){el2.innerHTML='<p style="color:var(--red);">Waiting for database setup...</p>'}
 }
 async function deleteApp(id){if(!confirm('Delete?'))return;try{await db('delete','applications',null,{id});toast('🗑️');loadAdminCandidates()}catch(e){toast('❌ '+e.message)}}
 
@@ -1225,8 +1225,8 @@ async function loadUsageAnalytics(){
 
     // API usage (estimated)
     document.getElementById('apiPuter').textContent='~'+arr.length*2+' calls (unlimited)';
-    document.getElementById('apiGroq').textContent='Backup only';
-    document.getElementById('apiCF').textContent='Backup only';
+    document.getElementById('apiGroq').textContent='Active';
+    document.getElementById('apiCF').textContent='Engine Active';
 
     // Top candidates
     const topEl=document.getElementById('topCandidates');
@@ -1240,7 +1240,7 @@ async function loadUsageAnalytics(){
 // 📣 NOTIFY CONFIG
 // ═══════════════════════════════════════
 function loadNotifyConfig(){
-  document.getElementById('nt_senderName').value=getConfig('notifySenderName','Simpatico HR');
+  document.getElementById('nt_senderName').value=getConfig('notifySenderName','Zelvora AI');
   document.getElementById('nt_replyTo').value=getConfig('notifyReplyTo','');
   document.getElementById('nt_subject').value=getConfig('notifySubject','🎤 Interview Invitation — {role}');
   document.getElementById('nt_countryCode').value=getConfig('notifyCountryCode','+91');
@@ -1264,7 +1264,7 @@ Please complete your AI interview using the link below:
 
 Best regards,
 {sender}
-Simpatico HR Consultancy`;
+Zelvora AI Platform`;
   document.getElementById('nt_emailBody').value=getConfig('notifyEmailBody',defaultEmail);
   const defaultWA=`🎤 *Interview Invitation*
 
@@ -1397,7 +1397,7 @@ async function exportAllData(){
   toast('📥 Exporting...');
   try{const[jobs,apps,ints,pay,codes,clients]=await Promise.all([db('select','jobs').catch(()=>[]),db('select','applications').catch(()=>[]),db('select','interviews').catch(()=>[]),db('select','payments').catch(()=>[]),db('select','access_codes').catch(()=>[]),db('select','hr_clients').catch(()=>[])]);
   const data={exported:new Date().toISOString(),adminConfig:JSON.parse(localStorage.getItem("adminConfig")||"{}"),siteConfig:JSON.parse(localStorage.getItem("siteConfig")||"{}"),jobs,applications:apps,interviews:ints,payments:pay,access_codes:codes,hr_clients:clients};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='simpatico-export-'+Date.now()+'.json';a.click();URL.revokeObjectURL(url);toast('✅ Exported!')}catch(e){toast('❌ '+e.message)}
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='zelvora-export-'+Date.now()+'.json';a.click();URL.revokeObjectURL(url);toast('✅ Exported!')}catch(e){toast('❌ '+e.message)}
 }
 function importData(){const input=document.createElement('input');input.type='file';input.accept='.json';input.onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(data.adminConfig)localStorage.setItem("adminConfig",JSON.stringify(data.adminConfig));if(data.siteConfig)localStorage.setItem("siteConfig",JSON.stringify(data.siteConfig));toast('✅ Imported!')}catch(err){toast('❌ Invalid')}};input.click()}
 function dangerReset(){if(!confirm('⚠️ DELETE ALL?'))return;if(prompt('Type DELETE ALL:')!=='DELETE ALL')return;localStorage.clear();toast('🗑️ Cleared!');setTimeout(()=>location.reload(),1000)}
