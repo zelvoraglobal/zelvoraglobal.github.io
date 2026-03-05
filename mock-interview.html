@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zelvora — AI Mock Interview</title>
+<title>Zelvora — Elite AI Mock Interview</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%2322d3ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='%230f172a'/%3E%3Cpath d='M32 38 C32 30 38 24 48 24 L72 24 C82 24 88 30 88 38 L88 42 L52 78 L88 78 L88 82 C88 90 82 96 72 96 L48 96 C38 96 32 90 32 82 L32 78 L68 42 L32 42 Z' fill='url(%23g)'/%3E%3Cpath d='M78 24 C84 24 90 20 94 14 C92 22 88 30 82 34 L78 24Z' fill='url(%23g)' opacity='0.8'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -287,13 +287,11 @@
 </head>
 <body>
 
-<!-- AMBIENT -->
 <div class="amb">
   <div class="grid"></div>
   <div class="o"></div><div class="o"></div><div class="o"></div>
 </div>
 
-<!-- NAV -->
 <nav class="nav">
   <a href="index.html" class="nav-logo">
     <svg viewBox="0 0 200 200" fill="none">
@@ -310,12 +308,8 @@
   </div>
 </nav>
 
-<!-- APP -->
 <div class="app">
 
-  <!-- ==========================================
-       SETUP SCREEN
-       ========================================== -->
   <div class="setup-screen" id="setupScreen">
     <div class="setup-card">
       <div class="setup-header">
@@ -324,7 +318,6 @@
         <p>Realistic voice-to-voice interview practice — completely hands-free</p>
       </div>
 
-      <!-- JOB ROLE -->
       <div class="field-group">
         <label>Position / Job Role</label>
         <div class="role-chips" id="roleChips">
@@ -339,13 +332,11 @@
         </div>
       </div>
 
-      <!-- CUSTOM ROLE -->
       <div class="field-group">
         <label>Custom Role (optional)</label>
         <input class="field-input" type="text" id="customRole" placeholder="e.g., DevOps Engineer at Google, Senior Frontend Developer...">
       </div>
 
-      <!-- INTERVIEW TYPE -->
       <div class="field-group">
         <label>Interview Type</label>
         <select class="field-input" id="interviewType">
@@ -356,18 +347,18 @@
         </select>
       </div>
 
-      <!-- DIFFICULTY -->
       <div class="field-group">
-        <label>Difficulty</label>
+        <label>Difficulty / Company Standard</label>
         <select class="field-input" id="difficultySelect">
           <option value="beginner">🟢 Beginner — Friendly & Encouraging</option>
-          <option value="intermediate" selected>🟡 Intermediate — Standard Interview</option>
+          <option value="intermediate" selected>🟡 Intermediate — Standard</option>
           <option value="advanced">🔴 Advanced — Tough, Senior-Level</option>
-          <option value="faang">⚫ FAANG — Elite, High Pressure</option>
+          <option value="faang">⚫ FAANG — Elite Tech, High Pressure</option>
+          <option value="mercore">🏢 Mercore — Elite Finance & Trade Ops</option>
+          <option value="zara">👗 Zara — Fast-Paced Retail & Supply Chain</option>
         </select>
       </div>
 
-      <!-- MAX QUESTIONS -->
       <div class="field-group">
         <label>Number of Questions</label>
         <select class="field-input" id="maxQSelect">
@@ -378,19 +369,14 @@
         </select>
       </div>
 
-      <!-- START -->
       <button class="start-btn" onclick="startInterview()">
         🎙️ Start Interview
       </button>
     </div>
   </div>
 
-  <!-- ==========================================
-       INTERVIEW SCREEN
-       ========================================== -->
   <div class="interview-screen" id="interviewScreen">
 
-    <!-- Interviewer Bar -->
     <div class="interviewer-bar">
       <div class="interviewer-avatar">👔</div>
       <div class="interviewer-info">
@@ -405,18 +391,15 @@
       </div>
     </div>
 
-    <!-- Voice Select -->
     <div class="voice-sel" id="intVoiceSel">
       <span class="lbl">Voice:</span>
     </div>
 
-    <!-- Status -->
     <div class="int-status">
       <div class="int-dot" id="intDot"></div>
       <span id="intStatusText">Ready</span>
     </div>
 
-    <!-- Orb -->
     <div class="int-orb-wrap">
       <div class="int-orb" id="intOrb" onclick="toggleListen()">
         <span id="intOrbIcon">🎙️</span>
@@ -425,19 +408,15 @@
       <div class="int-orb-label" id="intOrbLabel">Tap to respond</div>
     </div>
 
-    <!-- Wave -->
     <div class="wave-wrap" id="intWave">
       <div class="b"></div><div class="b"></div><div class="b"></div>
       <div class="b"></div><div class="b"></div><div class="b"></div><div class="b"></div>
     </div>
 
-    <!-- Live Transcript -->
     <div class="live-t" id="intLiveT">...</div>
 
-    <!-- Chat -->
     <div class="int-chat" id="intChat"></div>
 
-    <!-- Controls -->
     <div class="int-controls">
       <button class="int-btn active" id="intAutoBtn" onclick="toggleAuto()">🔄 Auto: ON</button>
       <button class="int-btn" id="intMuteBtn" onclick="toggleIntMute()">🔊 Voice: ON</button>
@@ -446,12 +425,7 @@
     </div>
   </div>
 
-</div><!-- /app -->
-
-<!-- ==========================================
-     SCORE OVERLAY
-     ========================================== -->
-<div class="score-overlay" id="scoreOverlay">
+</div><div class="score-overlay" id="scoreOverlay">
   <div class="score-card">
     <h2>📋 Interview Complete</h2>
     <p class="score-subtitle" id="scoreSubtitle">Software Engineer — Behavioral</p>
@@ -499,17 +473,15 @@
 </div>
 
 
-<!-- ================================================================
-     JAVASCRIPT ENGINE
-     ================================================================ -->
 <script>
 /* =================================================================
-   ZELVORA MOCK INTERVIEW ENGINE (FINAL)
+   ZELVORA MOCK INTERVIEW ENGINE (FINAL ELITE VERSION)
    Connects to: Universal Worker.js v4
    Module: "interview"
    ================================================================= */
 
-const API_URL = "https://late-mouse-4aa2.zelvora-global.workers.dev/"; // ← UPDATE THIS
+// UPDATE THIS TO YOUR CLOUDFLARE WORKER URL
+const API_URL = "https://late-mouse-4aa2.zelvora-global.workers.dev/"; 
 
 /* ===== STATE ===== */
 const iv = {
@@ -544,11 +516,12 @@ function initToken() {
       const p = JSON.parse(atob(s));
       if (Date.now() < p.exp) {
         iv.token = s;
-        $("usesDisplay").textContent = p.uses.spoken + " uses";
+        $("usesDisplay").textContent = p.uses.spoken === 999999 ? "∞ uses" : p.uses.spoken + " uses";
         return;
       }
     } catch (e) {}
   }
+  // Remove this fallback in production if you want a strict paywall
   const d = { sub: "demo_" + Date.now(), exp: Date.now() + 30 * 24 * 3600000, uses: { spoken: 500 } };
   iv.token = btoa(JSON.stringify(d));
   localStorage.setItem("zelvora_token", iv.token);
@@ -568,10 +541,24 @@ document.querySelectorAll(".role-chip").forEach(chip => {
 
 
 /* ================================================================
-   SPEECH RECOGNITION (FIXED DUPLICATION BUG)
+   SPEECH RECOGNITION (BULLETPROOF NO-DUPLICATION FIX)
    ================================================================ */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null;
+let sTimer = null;
+let finalT = "";
+
+function startRec() {
+  if (rec && iv.phase !== "listening") {
+    try { rec.start(); } catch (e) {}
+  }
+}
+
+function stopRec() {
+  if (rec) {
+    try { rec.stop(); } catch (e) {}
+  }
+}
 
 function setupRec() {
   if (!SR) {
@@ -581,54 +568,48 @@ function setupRec() {
 
   rec = new SR();
   rec.continuous = true;
-  rec.interimResults = true;
+  
+  // 🚨 THE MAGIC FIX: Turning this to FALSE kills the duplication bug.
+  // It stops the browser from constantly guessing and repeating words.
+  rec.interimResults = false; 
   rec.lang = "en-US";
-
-  let finalT = "";
-  let sTimer = null;
 
   rec.onstart = () => {
     setPhase("listening");
-    finalT = ""; // Clear text when a new turn starts
-    $("intLiveT").textContent = "Listening...";
+    finalT = ""; // Clear memory for this new answer
+    $("intLiveT").textContent = "Listening... (Speak your answer)";
   };
 
   rec.onresult = (e) => {
-    // --- THE BUG FIX: Rebuild the string from 0 every time ---
-    let currentFinal = "";
-    let interim = "";
+    // Because interimResults is false, we only get triggered when a sentence is fully complete.
+    const newestText = e.results[e.results.length - 1][0].transcript;
+    finalT += newestText + " ";
 
-    for (let i = 0; i < e.results.length; i++) {
-      const t = e.results[i][0].transcript;
-      if (e.results[i].isFinal) {
-        currentFinal += t + " ";
-      } else {
-        interim += t;
-      }
-    }
-    
-    // Overwrite finalT instead of adding to it (+=)
-    finalT = currentFinal; 
-    $("intLiveT").textContent = finalT + interim;
+    // Hide the messy transcription, just show a professional status update
+    $("intLiveT").textContent = "Capturing audio...";
 
-    // Silence timeout
+    // Reset the silence timer (wait 3 seconds after they stop talking to submit)
     clearTimeout(sTimer);
     sTimer = setTimeout(() => {
-      if (finalT.trim().length > 2) rec.stop();
-    }, 4000);
+      if (finalT.trim().length > 2) {
+        $("intLiveT").textContent = "Processing your answer...";
+        rec.stop();
+      }
+    }, 3000);
   };
 
   rec.onend = () => {
     clearTimeout(sTimer);
+    // Submit the perfectly clean, non-duplicated text to the AI
     if (iv.phase === "listening" && finalT.trim().length > 2) {
       processAnswer(finalT.trim());
     } else if (iv.active && iv.phase === "listening") {
-      startRec();
+      startRec(); // Restart listening if they didn't speak enough
     }
   };
 
   rec.onerror = (e) => {
-    console.warn("STT error:", e.error);
+    console.warn("Speech error:", e.error);
     if (e.error === "no-speech" && iv.active) {
       setTimeout(() => startRec(), 500);
     }
@@ -756,7 +737,7 @@ async function callIntAI(text, mode) {
     localStorage.setItem("zelvora_token", data.token);
   }
   if (data.remaining !== undefined) {
-    $("usesDisplay").textContent = data.remaining + " uses";
+    $("usesDisplay").textContent = data.remaining === 999999 ? "∞ uses" : data.remaining + " uses";
   }
   if (data.model) {
     $("modelBadge").textContent = data.model.replace("llama-", "L").replace("-instruct", "").replace("-fast", "⚡");
@@ -792,7 +773,9 @@ async function startInterview() {
     beginner: "🟢 Beginner",
     intermediate: "🟡 Intermediate",
     advanced: "🔴 Advanced",
-    faang: "⚫ FAANG"
+    faang: "⚫ FAANG",
+    mercore: "🏢 Mercore",
+    zara: "👗 Zara"
   };
 
   // Update UI
@@ -858,8 +841,8 @@ async function processAnswer(text) {
     console.error("AI error:", e);
 
     let fb = "That's interesting. Could you elaborate a bit more on that point?";
-    if (e.message === "Usage limit reached") {
-      fb = "Your usage limit has been reached. Please upgrade to continue.";
+    if (e.message === "Usage limit reached" || e.message === "Access expired. Please renew your plan.") {
+      fb = "Your usage limit has been reached. Please check your access status.";
       iv.active = false;
     }
 
@@ -903,8 +886,9 @@ async function endInterview() {
   score += Math.min(avgWords, 80) * 0.2;
   score += duration > 120 ? 5 : 0;
   score += duration > 300 ? 5 : 0;
+  
   // Difficulty bonus
-  const diffBonus = { beginner: 0, intermediate: 3, advanced: 5, faang: 8 };
+  const diffBonus = { beginner: 0, intermediate: 3, advanced: 5, faang: 8, mercore: 8, zara: 8 };
   score += diffBonus[iv.difficulty] || 0;
   score = Math.min(Math.round(score), 100);
 
@@ -944,7 +928,7 @@ async function endInterview() {
 function showScore(data) {
   const typeNames = { behavioral: "Behavioral", technical: "Technical", hr: "HR", case_study: "Case Study" };
 
-  $("scoreSubtitle").textContent = `${data.role} — ${typeNames[data.type] || data.type} — ${data.difficulty}`;
+  $("scoreSubtitle").textContent = `${data.role} — ${typeNames[data.type] || data.type} — ${data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1)}`;
   $("scoreQuestions").textContent = data.questions;
   $("scoreDuration").textContent = data.duration;
   $("scoreAvgWords").textContent = data.avgWords;
