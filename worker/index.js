@@ -9,18 +9,23 @@
 
 export default {
   async fetch(request, env, ctx) {
-    // CORS
-    if (request.method === 'OPTIONS') {
-      return new Response(null, {
-        headers: corsHeaders(request)
-      });
-    }
-
-    _currentRequest = request;
-    const url = new URL(request.url);
-    const path = url.pathname;
-
     try {
+      // CORS
+      if (request.method === 'OPTIONS') {
+        return new Response(null, {
+          headers: corsHeaders(request)
+        });
+      }
+
+      _currentRequest = request;
+      const url = new URL(request.url);
+      const path = url.pathname;
+
+      // Health check
+      if (request.method === 'GET' && (path === '/' || path === '')) {
+        return json({ status: 'ok', service: 'zelvora-api', version: '2.0' });
+      }
+
       // ═══════ ROUTING ═══════
       // Legacy compatibility
       if (path === '/' || path === '') return handleLegacy(request, env);
@@ -43,8 +48,11 @@ export default {
       return json({ error: 'Not found' }, 404);
 
     } catch (e) {
-      console.error('Worker error:', e);
-      return json({ error: e.message || 'Internal server error' }, 500);
+      console.error('Worker error:', e.stack || e.message || e);
+      return new Response(JSON.stringify({ error: e.message || 'Internal server error', stack: e.stack }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      });
     }
   }
 };
@@ -183,9 +191,11 @@ async function callAI(env, messages, provider = 'groq', model = null, apiKey = n
 }
 
 async function callGroq(apiKey, messages, model) {
+  const key = (apiKey || '').trim();
+  if (!key) throw new Error('GROQ_API_KEY not configured');
   const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
-    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ model, messages, max_tokens: 1024, temperature: 0.7 })
   });
   const data = await res.json();
