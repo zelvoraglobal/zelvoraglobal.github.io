@@ -735,8 +735,12 @@ async function initBYOK() {
    ================================================================ */
 document.querySelectorAll(".role-chip").forEach(chip => {
   chip.onclick = () => {
-    document.querySelectorAll(".role-chip").forEach(c => c.classList.remove("selected"));
-    chip.classList.add("selected");
+    if (chip.classList.contains("selected")) {
+      chip.classList.remove("selected");
+    } else {
+      document.querySelectorAll(".role-chip").forEach(c => c.classList.remove("selected"));
+      chip.classList.add("selected");
+    }
   };
 });
 
@@ -1233,6 +1237,10 @@ async function startInterview() {
   try {
     const greeting = await callIntAI("__start_interview__", "start");
     addMsg("interviewer", greeting);
+    // Inject CV context into history so all subsequent questions can reference it
+    if (iv.cvText) {
+      iv.history.push({ role: "system", content: "CANDIDATE CV/RESUME:\n" + iv.cvText });
+    }
     iv.history.push({ role: "assistant", content: greeting });
 
     await speak(greeting);
@@ -1307,11 +1315,11 @@ async function endInterview() {
   clearInterval(iv.timerInterval);
   setPhase("idle");
 
-  const duration = Math.floor((Date.now() - iv.startTime) / 1000);
+  const duration = Math.floor((Date.now() - (iv.startTime || Date.now())) / 1000);
   const totalWords = iv.userWordCounts.reduce((a, b) => a + b, 0);
   const avgWords = iv.userWordCounts.length > 0
     ? Math.round(totalWords / iv.userWordCounts.length) : 0;
-  const questionsAnswered = iv.questionNum - 1;
+  const questionsAnswered = Math.max(iv.questionNum - 1, 0);
 
   let score = 40;
   score += Math.min(questionsAnswered, iv.maxQuestions) * (30 / iv.maxQuestions);
@@ -1326,39 +1334,49 @@ async function endInterview() {
   const grade = score >= 90 ? "A+" : score >= 80 ? "A" : score >= 70 ? "B+" :
                 score >= 60 ? "B" : score >= 50 ? "C" : "D";
 
-  const stats = {
-    score, grade, questions: questionsAnswered, duration: formatTime(duration),
-    durationSeconds: duration, avgWords, difficulty: iv.difficulty, role: iv.jobRole,
-    type: iv.interviewType
-  };
-
+  // Show score immediately with default feedback, then update with AI feedback
   let feedback = "Good effort! Keep practicing to improve your interview performance.";
+
+  showScore({
+    score, grade, questions: questionsAnswered, duration: formatTime(duration),
+    avgWords: avgWords + " words", difficulty: iv.difficulty, role: iv.jobRole,
+    type: iv.interviewType, feedback,
+  });
+
+  // Get AI feedback in background (with 15s timeout)
   try {
-    // Use new endpoint for B2B
-    if (iv.institutionId && iv.sessionId) {
-      const res = await fetch(`${API_URL}/api/interview/end`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          institution_id: iv.institutionId,
-          session_id: iv.sessionId,
-          history: iv.history.slice(-30),
-          job_role: iv.jobRole,
-          interview_type: iv.interviewType,
-          difficulty: iv.difficulty,
-          stats
-        })
-      });
-      const data = await res.json();
-      feedback = data.reply || feedback;
-    } else {
-      feedback = await callIntAI(
-        `The interview is complete. Candidate answered ${questionsAnswered} questions in ${formatTime(duration)}. Average answer was ${avgWords} words. Interview type: ${iv.interviewType}. Difficulty: ${iv.difficulty}. Give your final assessment.`,
-        "feedback"
-      );
+    const feedbackPromise = (async () => {
+      if (iv.institutionId && iv.sessionId) {
+        const res = await fetch(`${API_URL}/api/interview/end`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            institution_id: iv.institutionId,
+            session_id: iv.sessionId,
+            history: iv.history.slice(-30),
+            job_role: iv.jobRole,
+            interview_type: iv.interviewType,
+            difficulty: iv.difficulty,
+            stats: { score, grade, questions: questionsAnswered, durationSeconds: duration, avgWords }
+          })
+        });
+        const data = await res.json();
+        return data.reply;
+      } else {
+        return await callIntAI(
+          `The interview is complete. Candidate answered ${questionsAnswered} questions in ${formatTime(duration)}. Average answer was ${avgWords} words. Interview type: ${iv.interviewType}. Difficulty: ${iv.difficulty}. Give your final assessment.`,
+          "feedback"
+        );
+      }
+    })();
+
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 15000));
+    const aiFeedback = await Promise.race([feedbackPromise, timeoutPromise]);
+    if (aiFeedback) {
+      $("scoreFeedback").textContent = aiFeedback;
     }
   } catch (e) {
-    console.error("Feedback error:", e);
+    console.warn("AI feedback timed out or failed, using default:", e.message);
   }
 
   // Mark access token as completed
@@ -1367,12 +1385,6 @@ async function endInterview() {
       await window.ZelvoraDB.markTokenCompleted(iv.accessToken.id);
     } catch (e) { console.warn('Token update failed:', e); }
   }
-
-  showScore({
-    score, grade, questions: questionsAnswered, duration: formatTime(duration),
-    avgWords: avgWords + " words", difficulty: iv.difficulty, role: iv.jobRole,
-    type: iv.interviewType, feedback,
-  });
 }
 
 
