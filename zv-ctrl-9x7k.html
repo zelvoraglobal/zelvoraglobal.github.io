@@ -779,7 +779,7 @@ async function loadDashboard(){
       return;
     }
     // Legacy: load from Worker DB
-    const[pay,apps,ints,jobs]=await Promise.all([db('select','payments').catch(()=>[]),db('select','applications').catch(()=>[]),db('select','interviews').catch(()=>[]),db('select','jobs').catch(()=>[])]);
+    const[pay,apps,ints,jobs]=await Promise.all([db('select','payments').catch(()=>[]),db('select','candidates').catch(()=>[]),db('select','access_tokens').catch(()=>[]),db('select','jobs').catch(()=>[])]);
     const pa=Array.isArray(pay)?pay:[];const aa=Array.isArray(apps)?apps:[];const ia=Array.isArray(ints)?ints:[];const ja=Array.isArray(jobs)?jobs:[];
     const rev=pa.filter(p=>p.status==='completed').reduce((s,p)=>s+(p.amount||0),0);
     document.getElementById('sRevenue').textContent='₹'+rev.toLocaleString();
@@ -787,7 +787,7 @@ async function loadDashboard(){
     document.getElementById('sInterviews').textContent=ia.length;
     document.getElementById('sJobs').textContent=ja.length;
     const log=document.getElementById('activityLog');
-    const items=[...aa.map(a=>({t:a.created_at,m:`📝 ${a.name||'?'} applied${a.ats_score?' (ATS:'+a.ats_score+')':''}`})),...ia.map(i=>({t:i.started_at||i.created_at,m:`🎤 ${i.interview_role||'?'}: ${i.status} ${i.overall_score?'('+i.overall_score+'/100)':''}`})),...pa.map(p=>({t:p.created_at,m:`💳 ₹${p.amount} ${p.type||''}: ${p.status}`}))].sort((a,b)=>new Date(b.t||0)-new Date(a.t||0)).slice(0,30);
+    const items=[...aa.map(a=>({t:a.created_at,m:`👤 ${a.name||'?'} registered${a.status?' ('+a.status+')':''}`})),...ia.map(i=>({t:i.created_at,m:`🎫 ${i.job_role||'?'}: ${i.status} (${i.candidate_name||'?'})`})),...pa.map(p=>({t:p.created_at,m:`💳 ₹${p.amount} ${p.type||''}: ${p.status}`}))].sort((a,b)=>new Date(b.t||0)-new Date(a.t||0)).slice(0,30);
     log.innerHTML=items.length?items.map(i=>`<div><span style="font-size:0.7rem;color:var(--muted);">${i.t?new Date(i.t).toLocaleString():'?'}</span> ${i.m}</div>`).join(''):'<div>No activity yet</div>';
   }catch(e){console.error(e)}
 }
@@ -895,34 +895,29 @@ async function generateToken(){
       const baseUrl=window.location.origin;
       fullUrl=baseUrl+'/mock-interview.html?token='+token;
 
-      let appId=null;
       try{
-        const appResult=await db('insert','applications',{
-          job_id:jobId,name,email,
-          resume_text:'',status:'shortlisted',
+        await db('insert','candidates',{
+          name,email,
+          status:'active',
           created_at:new Date().toISOString()
         });
-        const app=Array.isArray(appResult)?appResult[0]:appResult;
-        appId=app?.id||null;
-      }catch(e){console.log('[Token] App insert skipped:',e.message)}
+      }catch(e){console.log('[Token] Candidate insert skipped:',e.message)}
 
-      await db('insert','interviews',{
-        application_id:appId,
+      await db('insert','access_tokens',{
         job_id:jobId,
         token:token,
         candidate_name:name,
         candidate_email:email,
-        candidate_phone:phone||null,
+        job_role:role,
+        experience_level:level,
         interview_type:type,
-        token_type:tokenType,
-        status:'pending',
-        interview_role:role,
-        interview_level:level,
-        question_count:questions,
-        interview_language:lang,
+        difficulty:level==='beginner'?'beginner':level==='faang'?'faang':'intermediate',
+        max_questions:questions,
+        language:lang,
         max_attempts:maxAttempts,
         attempts_used:0,
-        trial_days:trialDays,
+        is_proctored:true,
+        status:'pending',
         expires_at:expires.toISOString(),
         created_at:new Date().toISOString()
       });
@@ -1077,7 +1072,7 @@ async function loadAllTokens(){
   const el=document.getElementById('allTokensList');
   el.innerHTML='<span class="loading"></span> Loading...';
   try{
-    const data=await db('select','interviews',null,null,null,'created_at.desc');
+    const data=await db('select','access_tokens',null,null,null,'created_at.desc');
     let arr=Array.isArray(data)?data:[];
     const now=new Date();
 
@@ -1102,8 +1097,8 @@ async function loadAllTokens(){
       return`<div style="padding:12px;border-bottom:1px solid var(--border);${isExpired?'opacity:0.5;':''}">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
           <div>
-            <div style="font-weight:700;font-size:0.9rem;">${i.interview_role||'?'} — ${i.interview_level||''}</div>
-            <div style="font-size:0.72rem;color:var(--muted);">${i.candidate_name||''} ${email?'• '+email:''} ${phone?'• 📱':''}</div>
+            <div style="font-weight:700;font-size:0.9rem;">${i.job_role||'?'} — ${i.experience_level||''}</div>
+            <div style="font-size:0.72rem;color:var(--muted);">${i.candidate_name||''} ${email?'• '+email:''}</div>
             <div style="font-size:0.72rem;color:var(--muted);">Token: ${(i.token||'?').substring(0,16)}... • ${i.created_at?new Date(i.created_at).toLocaleDateString():''}</div>
             ${maxAtt>1?`<div style="margin-top:4px;"><div style="font-size:0.7rem;color:var(--muted);">Attempts: ${usedAtt}/${maxAtt}</div><div class="usage-bar" style="width:120px;"><div class="usage-fill" style="width:${attPct}%;background:${attPct>=100?'#ef4444':'#6366f1'};"></div></div></div>`:''}
           </div>
@@ -1155,17 +1150,17 @@ async function bulkGenerateTokens(){
     const token=genUUID();
     const name=email.split('@')[0].replace(/[._]/g,' ');
     try{
-      let appId=null;
       try{
-        const r=await db('insert','applications',{name,email,status:'shortlisted',created_at:new Date().toISOString()});
-        const a=Array.isArray(r)?r[0]:r;appId=a?.id;
+        await db('insert','candidates',{name,email,status:'active',created_at:new Date().toISOString()});
       }catch(e){}
 
-      await db('insert','interviews',{
-        application_id:appId,token,
-        interview_type:'real',status:'pending',
-        interview_role:role,interview_level:level,
-        question_count:10,interview_language:'en',
+      await db('insert','access_tokens',{
+        token,candidate_name:name,candidate_email:email,
+        job_role:role,experience_level:level,
+        interview_type:'behavioral',difficulty:'intermediate',
+        max_questions:10,language:'en',
+        status:'pending',is_proctored:true,
+        max_attempts:1,attempts_used:0,
         expires_at:new Date(Date.now()+72*3600000).toISOString(),
         created_at:new Date().toISOString()
       });
@@ -1193,16 +1188,16 @@ async function bulkGenerateTokens(){
 
 async function viewResult(id){
   try{
-    const data=await db('select','interviews',null,{id});
+    const data=await db('select','interview_sessions',null,{id});
     const i=Array.isArray(data)?data[0]:data;
     if(!i){toast('❌ Not found');return}
-    alert(`📊 Interview Result\n\n🎯 Role: ${i.interview_role||'?'}\n📊 Score: ${i.overall_score||'?'}/100\n🏷️ Grade: ${i.grade||'?'}\n💡 Recommendation: ${i.recommendation||'?'}\n\n📝 Summary:\n${i.summary||'N/A'}\n\n💪 Strengths:\n${(i.strengths||[]).map(s=>'• '+s).join('\n')||'N/A'}\n\n📈 Improvements:\n${(i.improvements||[]).map(s=>'• '+s).join('\n')||'N/A'}\n\n⚠️ Violations: ${i.violation_count||0}\n⏱️ Duration: ${i.duration_seconds?Math.round(i.duration_seconds/60)+'m':'?'}`);
+    alert(`📊 Interview Result\n\n🎯 Role: ${i.job_role||'?'}\n📊 Score: ${i.overall_score||'?'}/100\n🏷️ Grade: ${i.grade||'?'}\n\n📝 Feedback:\n${i.feedback||'N/A'}\n\n⏱️ Duration: ${i.duration_seconds?Math.round(i.duration_seconds/60)+'m':'?'}\nQuestions: ${i.questions_answered||0}`);
   }catch(e){toast('❌ '+e.message)}
 }
 
 async function revokeToken(id){
   if(!confirm('Delete this token?'))return;
-  try{await db('delete','interviews',null,{id});toast('🗑️ Deleted');loadAllTokens()}catch(e){toast('❌ '+e.message)}
+  try{await db('delete','access_tokens',null,{id});toast('🗑️');loadAllTokens()}catch(e){toast('❌ '+e.message)}
 }
 
 function loadTokens(){loadTokenJobs();loadAllTokens()}
@@ -1274,11 +1269,21 @@ async function addClient(){
   if(!name||!email){toast('❌ Company & email required');return}
   const days=parseInt(document.getElementById('cl_duration').value)||365;
   const expires=new Date();expires.setDate(expires.getDate()+days);
-  const password='HR-'+Math.random().toString(36).substring(2,10).toUpperCase();
+  const plan=document.getElementById('cl_plan').value;
+  const slug=name.toLowerCase().replace(/[^a-z0-9]/g,'-');
   try{
-    await db('insert','hr_clients',{company_name:name,email,plan:document.getElementById('cl_plan').value,amount_paid:parseInt(document.getElementById('cl_amount').value)||0,payment_method:document.getElementById('cl_payMethod').value,hr_password:password,status:'active',created_at:new Date().toISOString(),expires_at:expires.toISOString()});
+    // Create institution via Worker register endpoint for proper password handling
+    const password='HR-'+Math.random().toString(36).substring(2,10).toUpperCase();
+    if(window.ZelvoraDB){
+      await window.ZelvoraDB.workerFetch('/api/auth/register',{institution_name:name,email,password,name:email.split('@')[0]});
+    } else {
+      await db('insert','institutions',{name,slug,email,plan,is_active:true,plan_expires_at:expires.toISOString(),max_interviews_per_month:plan==='enterprise'?999999:plan==='professional'?200:50,max_seats:plan==='enterprise'?999:plan==='professional'?25:5});
+    }
+    // Record payment
+    const amount=parseInt(document.getElementById('cl_amount').value)||0;
+    if(amount>0){try{await db('insert','payments',{amount,currency:'INR',plan,payment_method:document.getElementById('cl_payMethod').value,status:'completed',notes:'Client onboarding: '+name,created_at:new Date().toISOString()})}catch(e){}}
     alert('✅ Client Created!\n\nCompany: '+name+'\nEmail: '+email+'\nPassword: '+password+'\nExpires: '+expires.toLocaleDateString());
-    try{navigator.clipboard?.writeText('Company: '+name+'\nPassword: '+password)}catch(e){}
+    try{navigator.clipboard?.writeText('Company: '+name+'\nEmail: '+email+'\nPassword: '+password)}catch(e){}
     document.getElementById('cl_name').value='';document.getElementById('cl_email').value='';
     loadClients();toast('✅ Added!');
   }catch(e){toast('❌ '+e.message)}
@@ -1287,14 +1292,14 @@ async function addClient(){
 async function loadClients(){
   const el=document.getElementById('clientsList');el.innerHTML='<span class="loading"></span>';
   try{
-    const data=await db('select','hr_clients',null,null,null,'created_at.desc');const arr=Array.isArray(data)?data:[];const now=new Date();
+    const data=await db('select','institutions',null,null,null,'created_at.desc');const arr=Array.isArray(data)?data:[];const now=new Date();
     document.getElementById('clTotal').textContent=arr.length;
-    document.getElementById('clActive').textContent=arr.filter(c=>c.status==='active'&&new Date(c.expires_at)>now).length;
-    document.getElementById('clExpiring').textContent=arr.filter(c=>{const d=(new Date(c.expires_at)-now)/86400000;return c.status==='active'&&d>0&&d<=7}).length;
-    document.getElementById('clExpired').textContent=arr.filter(c=>new Date(c.expires_at)<=now).length;
+    document.getElementById('clActive').textContent=arr.filter(c=>c.is_active&&(!c.plan_expires_at||new Date(c.plan_expires_at)>now)).length;
+    document.getElementById('clExpiring').textContent=arr.filter(c=>{if(!c.plan_expires_at)return false;const d=(new Date(c.plan_expires_at)-now)/86400000;return c.is_active&&d>0&&d<=7}).length;
+    document.getElementById('clExpired').textContent=arr.filter(c=>c.plan_expires_at&&new Date(c.plan_expires_at)<=now).length;
     if(!arr.length){el.innerHTML='<p style="color:var(--muted);text-align:center;">No clients</p>';return}
-    el.innerHTML=arr.map(c=>{const exp=new Date(c.expires_at);const ie=exp<=now;const sc=ie?'#ef4444':'#10b981';
-    return`<div style="padding:12px;border-bottom:1px solid var(--border);"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;"><div><strong>${c.company_name}</strong><div style="font-size:0.72rem;color:var(--muted);">${c.email} • ${c.plan} • Exp: ${exp.toLocaleDateString()}</div></div><span class="status-pill" style="color:${sc};">${ie?'Expired':'Active'}</span></div></div>`}).join('');
+    el.innerHTML=arr.map(c=>{const exp=c.plan_expires_at?new Date(c.plan_expires_at):null;const ie=exp&&exp<=now;const sc=ie?'#ef4444':c.is_active?'#10b981':'#94a3b8';
+    return`<div style="padding:12px;border-bottom:1px solid var(--border);"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;"><div><strong>${c.name}</strong><div style="font-size:0.72rem;color:var(--muted);">${c.email} • ${c.plan||'trial'} • ${exp?'Exp: '+exp.toLocaleDateString():'No expiry'}</div></div><span class="status-pill" style="color:${sc};">${ie?'Expired':c.is_active?'Active':'Inactive'}</span></div></div>`}).join('');
   }catch(e){el.innerHTML='<p style="color:var(--red);">Waiting for database connection...</p>'}
 }
 
@@ -1315,25 +1320,25 @@ async function deleteJob(id){if(!confirm('Delete?'))return;try{await db('delete'
 // ═══════════════════════════════════════
 async function loadAdminCandidates(){
   const el=document.getElementById('adminCandList');el.innerHTML='<span class="loading"></span>';
-  try{const data=await db('select','applications',null,null,null,'created_at.desc');const arr=Array.isArray(data)?data:[];
+  try{const data=await db('select','candidates',null,null,null,'created_at.desc');const arr=Array.isArray(data)?data:[];
   if(!arr.length){el.innerHTML='<p style="color:var(--muted);text-align:center;">No applications</p>';return}
   el.innerHTML=arr.map(c=>{const sc=c.ats_score||0;const col=sc>=70?'#10b981':sc>=50?'#f59e0b':'#ef4444';const bg=sc>=70?'rgba(16,185,129,.15)':sc>=50?'rgba(245,158,11,.15)':'rgba(239,68,68,.15)';const stc={applied:'#f59e0b',shortlisted:'#10b981',interviewed:'#3b82f6',rejected:'#ef4444'}[c.status]||'#94a3b8';const stb={applied:'rgba(245,158,11,.15)',shortlisted:'rgba(16,185,129,.15)',interviewed:'rgba(59,130,246,.15)',rejected:'rgba(239,68,68,.15)'}[c.status]||'rgba(255,255,255,.05)';
   return`<div class="cand-row"><div style="display:flex;align-items:center;gap:8px;flex:1;"><div class="cand-avatar">${(c.name||'?')[0].toUpperCase()}</div><div><div style="font-weight:700;font-size:0.88rem;">${c.name||'?'}</div><div style="font-size:0.72rem;color:var(--muted);">${c.email||''}</div></div></div><div style="display:flex;gap:6px;align-items:center;"><span class="score-badge" style="background:${bg};color:${col};">ATS:${sc}</span><span class="status-pill" style="background:${stb};color:${stc};">${c.status||'?'}</span><button class="btn btn-danger" style="padding:3px 8px;font-size:0.7rem;" onclick="deleteApp('${c.id}')">🗑️</button></div></div>`}).join('')}catch(e){el.innerHTML='<p style="color:var(--red);">Waiting for database setup...</p>'}
 
   const el2=document.getElementById('adminIntList');el2.innerHTML='<span class="loading"></span>';
-  try{const data=await db('select','interviews',null,null,null,'created_at.desc');const arr=Array.isArray(data)?data:[];
+  try{const data=await db('select','interview_sessions',null,null,null,'created_at.desc');const arr=Array.isArray(data)?data:[];
   if(!arr.length){el2.innerHTML='<p style="color:var(--muted);text-align:center;">No interviews</p>';return}
   el2.innerHTML=arr.slice(0,30).map(i=>{const sc=i.overall_score||0;const col=sc>=70?'#10b981':sc>=50?'#f59e0b':'#ef4444';const stc={pending:'#f59e0b',in_progress:'#3b82f6',completed:'#10b981'}[i.status]||'#94a3b8';
-  return`<div class="cand-row"><div style="flex:1;"><div style="font-weight:700;">${i.interview_role||'?'} — ${i.interview_level||''}</div><div style="font-size:0.72rem;color:var(--muted);">${i.status} • ${i.created_at?new Date(i.created_at).toLocaleDateString():''}</div></div><div style="display:flex;gap:6px;">${sc?`<span class="score-badge" style="background:rgba(16,185,129,.15);color:${col};">${sc}/100</span>`:''}<span class="status-pill" style="color:${stc};">${i.status}</span></div></div>`}).join('')}catch(e){el2.innerHTML='<p style="color:var(--red);">Waiting for database setup...</p>'}
+  return`<div class="cand-row"><div style="flex:1;"><div style="font-weight:700;">${i.job_role||'?'} — ${i.difficulty||''}</div><div style="font-size:0.72rem;color:var(--muted);">${i.status} • ${i.created_at?new Date(i.created_at).toLocaleDateString():''}</div></div><div style="display:flex;gap:6px;">${sc?`<span class="score-badge" style="background:rgba(16,185,129,.15);color:${col};">${sc}/100</span>`:''}<span class="status-pill" style="color:${stc};">${i.status}</span></div></div>`}).join('')}catch(e){el2.innerHTML='<p style="color:var(--red);">Waiting for database setup...</p>'}
 }
-async function deleteApp(id){if(!confirm('Delete?'))return;try{await db('delete','applications',null,{id});toast('🗑️');loadAdminCandidates()}catch(e){toast('❌ '+e.message)}}
+async function deleteApp(id){if(!confirm('Delete?'))return;try{await db('delete','candidates',null,{id});toast('🗑️');loadAdminCandidates()}catch(e){toast('❌ '+e.message)}}
 
 // ═══════════════════════════════════════
 // 📈 USAGE ANALYTICS (NEW)
 // ═══════════════════════════════════════
 async function loadUsageAnalytics(){
   try{
-    const ints=await db('select','interviews').catch(()=>[]);
+    const ints=await db('select','interview_sessions').catch(()=>[]);
     const arr=Array.isArray(ints)?ints:[];
     const now=new Date();
     const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
