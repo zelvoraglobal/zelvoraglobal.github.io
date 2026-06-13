@@ -1,0 +1,12 @@
+name = "zelvora-api"
+main = "index.js"
+compatibility_date = "2024-09-23"
+
+[vars]
+SUPABASE_URL = "https://nlsfakiwozkkqvbobnjq.supabase.co"
+
+# Set these as secrets via: wrangler secret put SUPABASE_SERVICE_KEY
+# wrangler secret put GROQ_API_KEY
+# wrangler secret put OPENAI_API_KEY (optional, for platform fallback)
+# wrangler secret put ANTHROPIC_API_KEY (optional)
+# wrangler secret put GEMINI_API_KEY (optional)

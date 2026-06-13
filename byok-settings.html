@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zelvora AI — BYOK Settings</title>
+<meta name="description" content="Configure your AI API keys for enhanced interview experiences. Bring Your Own Key for OpenAI, Anthropic, Gemini, and more.">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#020617;--bg2:#0f172a;--card:rgba(15,23,42,.65);--border:rgba(255,255,255,.08);--accent:#6366f1;--accent2:#22d3ee;--accent3:#a855f7;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;--text:#f8fafc;--muted:#94a3b8;--dim:#475569}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* BG */
+.amb{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.amb .o{position:absolute;border-radius:50%;filter:blur(120px);opacity:.1;animation:of 25s ease-in-out infinite alternate}
+.amb .o:nth-child(1){width:500px;height:500px;background:var(--accent);top:-10%;right:-5%}
+.amb .o:nth-child(2){width:400px;height:400px;background:var(--accent3);bottom:-10%;left:-5%;animation-delay:8s}
+@keyframes of{0%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.1)}100%{transform:translate(-20px,20px) scale(.95)}}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:rgba(2,6,23,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text);font-weight:800;font-size:17px}
+.nav-logo .icon{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent3));display:flex;align-items:center;justify-content:center;font-size:16px}
+.nav-logo em{font-style:normal;font-size:10px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-back{padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid var(--border);text-decoration:none;transition:.2s}
+.nav-back:hover{color:var(--text);border-color:var(--accent)}
+
+/* APP */
+.app{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:24px 16px}
+
+/* HEADER */
+.page-header{text-align:center;padding:32px 0 28px}
+.page-header .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);border-radius:50px;font-size:11px;font-weight:700;color:#a5b4fc;margin-bottom:16px}
+.page-header .badge .dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.page-header h1{font-size:clamp(1.5rem,3vw,2rem);font-weight:800;margin-bottom:8px}
+.page-header h1 .gr{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.page-header p{color:var(--muted);font-size:14px;max-width:500px;margin:0 auto;line-height:1.6}
+
+/* PROVIDER CARDS */
+.providers-grid{display:grid;gap:16px;margin-bottom:24px}
+.provider-card{background:var(--card);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:20px;padding:24px;transition:.3s;position:relative;overflow:hidden}
+.provider-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;opacity:0;transition:opacity .3s}
+.provider-card:hover{border-color:rgba(99,102,241,.2);transform:translateY(-2px)}
+.provider-card:hover::before{opacity:1}
+.provider-card.connected{border-color:rgba(16,185,129,.25)}
+.provider-card.connected::before{background:linear-gradient(90deg,var(--success),var(--accent2));opacity:1}
+
+.provider-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.provider-info{display:flex;align-items:center;gap:12px}
+.provider-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.provider-name{font-weight:700;font-size:16px}
+.provider-desc{font-size:12px;color:var(--muted);margin-top:2px}
+.provider-status{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700}
+.status-connected{background:rgba(16,185,129,.12);color:var(--success)}
+.status-disconnected{background:rgba(255,255,255,.05);color:var(--dim)}
+
+.key-input-wrap{display:flex;gap:8px;margin-bottom:12px}
+.key-input{flex:1;padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:border-color .2s}
+.key-input:focus{border-color:var(--accent)}
+.key-input::placeholder{color:var(--dim)}
+
+.model-select{width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:13px;outline:none;margin-bottom:12px;cursor:pointer}
+.model-select option{background:var(--bg2);color:var(--text)}
+
+.provider-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:10px 20px;border:none;border-radius:10px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{transform:translateY(-1px)}
+.btn-save{background:linear-gradient(135deg,var(--accent),var(--accent3));color:#fff;box-shadow:0 4px 15px rgba(99,102,241,.25)}
+.btn-validate{background:rgba(16,185,129,.12);color:var(--success);border:1px solid rgba(16,185,129,.2)}
+.btn-delete{background:rgba(239,68,68,.1);color:var(--danger);border:1px solid rgba(239,68,68,.15)}
+.btn-secondary{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+.key-hint{font-size:11px;color:var(--dim);margin-bottom:8px;font-family:monospace;background:rgba(0,0,0,.3);padding:4px 10px;border-radius:6px;display:inline-block}
+.usage-bar{height:4px;background:rgba(255,255,255,.05);border-radius:2px;margin-top:8px;overflow:hidden}
+.usage-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s}
+
+/* STATUS MESSAGES */
+.msg{padding:10px 16px;border-radius:10px;font-size:13px;margin-top:8px;display:none;animation:fadeIn .3s}
+.msg.show{display:block}
+.msg.ok{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);color:#6ee7b7}
+.msg.err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* FALLBACK CHAIN */
+.fallback-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:24px}
+.fallback-card h3{font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.chain-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.chain-item:last-child{border-bottom:none}
+.chain-num{width:28px;height:28px;border-radius:8px;background:rgba(99,102,241,.12);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0}
+.chain-provider{flex:1;font-size:13px;font-weight:600}
+.chain-status{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.chain-active{background:rgba(16,185,129,.1);color:var(--success)}
+.chain-fallback{background:rgba(245,158,11,.1);color:var(--warning)}
+.chain-default{background:rgba(255,255,255,.05);color:var(--dim)}
+
+/* NOT LOGGED IN */
+.login-prompt{text-align:center;padding:60px 24px;max-width:400px;margin:0 auto}
+.login-prompt .icon{font-size:48px;margin-bottom:16px}
+.login-prompt h2{font-size:20px;font-weight:800;margin-bottom:8px}
+.login-prompt p{color:var(--muted);font-size:14px;margin-bottom:24px;line-height:1.6}
+.login-prompt .btn{width:100%;justify-content:center;padding:14px}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  .app{padding:16px 12px}
+  .provider-header{flex-direction:column;align-items:flex-start;gap:8px}
+  .key-input-wrap{flex-direction:column}
+  .provider-actions{flex-direction:column}
+  .provider-actions .btn{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<div class="amb"><div class="o"></div><div class="o"></div></div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <div class="icon">✦</div>
+    ZELVORA <em>AI</em>
+  </a>
+  <div class="nav-right">
+    <a href="zv-ctrl-9x7k.html" class="nav-back">← Dashboard</a>
+  </div>
+</nav>
+
+<div class="app" id="app">
+  <!-- Login Prompt (shown when not logged in) -->
+  <div class="login-prompt" id="loginPrompt" style="display:none">
+    <div class="icon">🔑</div>
+    <h2>BYOK Settings</h2>
+    <p>Log in to your institution dashboard to manage your AI API keys.</p>
+    <a href="zv-ctrl-9x7k.html" class="btn btn-save">Go to Dashboard →</a>
+  </div>
+
+  <!-- Main Content -->
+  <div id="mainContent">
+    <div class="page-header">
+      <div class="badge"><div class="dot"></div> BYOK — Bring Your Own Key</div>
+      <h1>🔑 AI Provider <span class="gr">Settings</span></h1>
+      <p>Connect your own AI API keys for premium model access, higher rate limits, and full control over your interview AI.</p>
+    </div>
+
+    <!-- Fallback Chain -->
+    <div class="fallback-card">
+      <h3>⚡ AI Resolution Chain</h3>
+      <div id="fallbackChain">
+        <div class="chain-item">
+          <div class="chain-num">1</div>
+          <div class="chain-provider">Your BYOK Key (if configured)</div>
+          <div class="chain-status chain-active">Primary</div>
+        </div>
+        <div class="chain-item">
+          <div class="chain-num">2</div>
+          <div class="chain-provider">Platform Default (Groq Llama)</div>
+          <div class="chain-status chain-fallback">Fallback</div>
+        </div>
+        <div class="chain-item">
+          <div class="chain-num">3</div>
+          <div class="chain-provider">Cloudflare AI (Free Tier)</div>
+          <div class="chain-status chain-default">Emergency</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Provider Cards (generated by JS) -->
+    <div class="providers-grid" id="providersGrid"></div>
+  </div>
+</div>
+
+<script src="js/supabase-client.js"></script>
+<script src="js/byok-engine.js"></script>
+<script>
+/* ═══════════════════════════════════════
+   BYOK SETTINGS PAGE
+   ═══════════════════════════════════════ */
+
+const providers = window.BYOKEngine.getAllProviders();
+let savedKeys = {};
+
+// Check login
+function checkAuth() {
+  if (!window.ZelvoraDB.isLoggedIn()) {
+    document.getElementById('loginPrompt').style.display = 'block';
+    document.getElementById('mainContent').style.display = 'none';
+    return false;
+  }
+  return true;
+}
+
+// Render provider cards
+function renderProviders() {
+  const grid = document.getElementById('providersGrid');
+  grid.innerHTML = '';
+
+  providers.forEach(provider => {
+    if (provider.id === 'custom') return; // Skip custom for now
+    
+    const saved = savedKeys[provider.id];
+    const isConnected = !!saved;
+    
+    const card = document.createElement('div');
+    card.className = `provider-card ${isConnected ? 'connected' : ''}`;
+    card.style.setProperty('--provider-color', provider.color);
+    card.innerHTML = `
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,${provider.color}80,${provider.color}20)"></div>
+      <div class="provider-header">
+        <div class="provider-info">
+          <div class="provider-icon" style="background:${provider.color}18;border:1px solid ${provider.color}25">${provider.icon}</div>
+          <div>
+            <div class="provider-name">${provider.name}</div>
+            <div class="provider-desc">${provider.isTTS ? 'Text-to-Speech' : 'LLM Provider'} · ${provider.models.length} models</div>
+          </div>
+        </div>
+        <div class="provider-status ${isConnected ? 'status-connected' : 'status-disconnected'}">
+          ${isConnected ? '✅ Connected' : '⭕ Not Connected'}
+        </div>
+      </div>
+
+      ${isConnected ? `<div class="key-hint">🔒 ${saved.key_hint}</div>` : ''}
+
+      <div class="key-input-wrap">
+        <input type="password" class="key-input" id="key-${provider.id}" 
+               placeholder="${provider.keyPrefix}..." 
+               value="">
+      </div>
+
+      <select class="model-select" id="model-${provider.id}">
+        ${provider.models.map((m, i) => `<option value="${m}" ${saved?.preferred_model === m || (!saved && i === 0) ? 'selected' : ''}>${m}</option>`).join('')}
+      </select>
+
+      <div class="provider-actions">
+        <button class="btn btn-save" onclick="saveProvider('${provider.id}')">💾 Save Key</button>
+        <button class="btn btn-validate" onclick="validateProvider('${provider.id}')">🧪 Validate</button>
+        ${isConnected ? `<button class="btn btn-delete" onclick="deleteProvider('${provider.id}', '${saved?.id}')">🗑️ Remove</button>` : ''}
+      </div>
+
+      <div class="msg" id="msg-${provider.id}"></div>
+
+      ${isConnected ? `
+        <div style="margin-top:12px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)">
+            <span>Usage: ${saved?.usage_count || 0} calls</span>
+            <span>${saved?.is_validated ? '✅ Validated' : '⚠️ Not validated'}</span>
+          </div>
+          <div class="usage-bar"><div class="usage-fill" style="width:${Math.min((saved?.usage_count || 0) / 100 * 100, 100)}%"></div></div>
+        </div>
+      ` : ''}
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// Save provider key
+async function saveProvider(providerId) {
+  const input = document.getElementById(`key-${providerId}`);
+  const model = document.getElementById(`model-${providerId}`);
+  const msgEl = document.getElementById(`msg-${providerId}`);
+  
+  const apiKey = input.value.trim();
+  if (!apiKey) {
+    showMsg(msgEl, 'Please enter an API key', 'err');
+    return;
+  }
+
+  try {
+    showMsg(msgEl, '⏳ Encrypting and saving...', 'ok');
+    await window.BYOKEngine.saveKey(providerId, apiKey, model.value);
+    showMsg(msgEl, '✅ Key saved and encrypted!', 'ok');
+    input.value = '';
+    await loadKeys();
+    renderProviders();
+    updateFallbackChain();
+  } catch (e) {
+    showMsg(msgEl, '❌ ' + e.message, 'err');
+  }
+}
+
+// Validate provider key
+async function validateProvider(providerId) {
+  const input = document.getElementById(`key-${providerId}`);
+  const msgEl = document.getElementById(`msg-${providerId}`);
+  
+  let apiKey = input.value.trim();
+  if (!apiKey && savedKeys[providerId]) {
+    // Try to decrypt saved key
+    try {
+      apiKey = await window.BYOKEngine.decryptKey(savedKeys[providerId].encrypted_key);
+    } catch (e) {
+      showMsg(msgEl, 'Enter key to validate or save first', 'err');
+      return;
+    }
+  }
+  if (!apiKey) {
+    showMsg(msgEl, 'Enter an API key to validate', 'err');
+    return;
+  }
+
+  showMsg(msgEl, '⏳ Validating...', 'ok');
+  const result = await window.BYOKEngine.validateKey(providerId, apiKey);
+  
+  if (result.valid) {
+    showMsg(msgEl, '✅ Key is valid!', 'ok');
+    if (savedKeys[providerId]) {
+      await window.ZelvoraDB.markKeyValidated(savedKeys[providerId].id);
+      await loadKeys();
+      renderProviders();
+    }
+  } else {
+    showMsg(msgEl, `❌ Invalid: ${result.error}`, 'err');
+  }
+}
+
+// Delete provider key
+async function deleteProvider(providerId, keyId) {
+  if (!confirm('Remove this API key? Interviews will fall back to platform default.')) return;
+  try {
+    await window.ZelvoraDB.deleteApiKey(keyId);
+    await loadKeys();
+    renderProviders();
+    updateFallbackChain();
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
+}
+
+// Load saved keys
+async function loadKeys() {
+  try {
+    const keys = await window.BYOKEngine.loadKeys();
+    savedKeys = {};
+    (keys || []).forEach(k => { savedKeys[k.provider] = k; });
+  } catch (e) {
+    console.error('Failed to load keys:', e);
+  }
+}
+
+// Update fallback chain display
+function updateFallbackChain() {
+  const chain = document.getElementById('fallbackChain');
+  const activeProviders = Object.keys(savedKeys).filter(p => savedKeys[p]?.is_active);
+  
+  let html = '';
+  let num = 1;
+  
+  activeProviders.forEach(p => {
+    const info = window.BYOKEngine.getProviderInfo(p);
+    html += `<div class="chain-item">
+      <div class="chain-num">${num}</div>
+      <div class="chain-provider">${info.icon} ${info.name} — ${savedKeys[p].preferred_model || info.defaultModel}</div>
+      <div class="chain-status chain-active">${num === 1 ? 'Primary' : 'BYOK'}</div>
+    </div>`;
+    num++;
+  });
+
+  html += `<div class="chain-item">
+    <div class="chain-num">${num}</div>
+    <div class="chain-provider">⚡ Platform Default (Groq Llama 3.3 70B)</div>
+    <div class="chain-status chain-fallback">Fallback</div>
+  </div>`;
+  num++;
+
+  html += `<div class="chain-item">
+    <div class="chain-num">${num}</div>
+    <div class="chain-provider">☁️ Cloudflare AI (Free Tier)</div>
+    <div class="chain-status chain-default">Emergency</div>
+  </div>`;
+
+  chain.innerHTML = html;
+}
+
+function showMsg(el, text, type) {
+  el.textContent = text;
+  el.className = `msg show ${type}`;
+  if (type === 'ok' && !text.startsWith('⏳')) {
+    setTimeout(() => el.classList.remove('show'), 4000);
+  }
+}
+
+// Init
+(async function init() {
+  if (!checkAuth()) return;
+  await loadKeys();
+  renderProviders();
+  updateFallbackChain();
+})();
+</script>
+</body>
+</html>

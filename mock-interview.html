@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Mock Interview — Practice with Full-Duplex Voice AI | Zelvora</title>
+<meta name="description" content="Practice mock interviews with AI-powered full-duplex voice. Upload your resume for personalized questions. Supports behavioral, technical, situational interviews. BYOK with OpenAI, Claude, Gemini.">
+<meta name="keywords" content="AI mock interview, practice interview AI, mock interview online, AI interview simulator, behavioral interview practice, technical interview AI, job interview practice, resume-based interview, BYOK interview platform">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://zelvoraglobal.github.io/mock-interview.html">
+<meta property="og:title" content="AI Mock Interview — Practice with Full-Duplex Voice AI">
+<meta property="og:description" content="Full-duplex voice AI interviews with resume parsing, BYOK support, and real-time feedback.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://zelvoraglobal.github.io/mock-interview.html">
+<meta property="og:site_name" content="Zelvora AI">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AI Mock Interview — Practice with Full-Duplex Voice AI | Zelvora">
+<meta name="twitter:description" content="Upload your CV and practice real interviews with AI. Behavioral, technical, and situational questions.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Zelvora AI Mock Interview",
+  "url": "https://zelvoraglobal.github.io/mock-interview.html",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "description": "AI-powered mock interview platform with full-duplex voice, CV parsing, and multi-language support.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "ratingCount": "892", "bestRating": "5" }
+}
+</script>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%2322d3ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='%230f172a'/%3E%3Cpath d='M32 38 C32 30 38 24 48 24 L72 24 C82 24 88 30 88 38 L88 42 L52 78 L88 78 L88 82 C88 90 82 96 72 96 L48 96 C38 96 32 90 32 82 L32 78 L68 42 L32 42 Z' fill='url(%23g)'/%3E%3Cpath d='M78 24 C84 24 90 20 94 14 C92 22 88 30 82 34 L78 24Z' fill='url(%23g)' opacity='0.8'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+
+  :root{
+    --bg:#020617;--bg2:#0f172a;--card:#1e293b;
+    --accent:#6366f1;--accent2:#22d3ee;--accent3:#a855f7;
+    --success:#10b981;--warning:#f59e0b;--danger:#ef4444;
+    --text:#e5e7eb;--muted:#94a3b8;--dim:#475569;
+    --glass:rgba(255,255,255,.05);--border:rgba(255,255,255,.08);
+  }
+
+  body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+  /* ===== AMBIENT ===== */
+  .amb{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .amb .o{position:absolute;border-radius:50%;filter:blur(110px);opacity:.12;animation:of 25s ease-in-out infinite alternate}
+  .amb .o:nth-child(1){width:480px;height:480px;background:var(--accent3);top:-12%;right:-6%}
+  .amb .o:nth-child(2){width:380px;height:380px;background:var(--accent2);bottom:-10%;left:-6%;animation-delay:9s}
+  .amb .o:nth-child(3){width:260px;height:260px;background:var(--accent);top:40%;left:28%;animation-delay:16s}
+  .amb .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(99,102,241,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.02) 1px,transparent 1px);background-size:56px 56px}
+  @keyframes of{0%{transform:translate(0,0) scale(1)}33%{transform:translate(45px,-30px) scale(1.1)}66%{transform:translate(-25px,40px) scale(.92)}100%{transform:translate(15px,-18px) scale(1.03)}}
+
+  /* ===== NAV ===== */
+  .nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(2,6,23,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+  .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text);font-weight:800;font-size:17px}
+  .nav-logo svg{width:30px;height:30px}
+  .nav-logo em{font-style:normal;font-size:10px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;margin-left:2px}
+  .nav-right{display:flex;align-items:center;gap:10px}
+  .nav-back{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;color:var(--muted);background:var(--glass);border:1px solid var(--border);text-decoration:none;transition:.2s}
+  .nav-back:hover{color:var(--text);border-color:var(--accent)}
+  .uses-badge{font-size:11px;color:var(--accent);background:rgba(99,102,241,.12);padding:5px 12px;border-radius:16px;font-weight:700}
+
+  /* ===== APP ===== */
+  .app{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:16px;min-height:calc(100vh - 58px);display:flex;flex-direction:column}
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+  @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  @keyframes ringPulse{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.5);opacity:0}}
+  @keyframes waveB{0%,100%{height:6px}50%{height:24px}}
+
+  /* ============================================
+     SETUP SCREEN
+     ============================================ */
+  .setup-screen{flex:1;display:flex;align-items:center;justify-content:center;padding:20px 0}
+  .setup-screen.hidden{display:none}
+
+  .setup-card{
+    background:var(--glass);border:1px solid var(--border);
+    border-radius:24px;padding:36px;max-width:560px;width:100%;
+    backdrop-filter:blur(16px);animation:fadeIn .5s ease;
+  }
+  .setup-header{text-align:center;margin-bottom:28px}
+  .setup-header .icon-wrap{
+    width:64px;height:64px;border-radius:18px;margin:0 auto 16px;
+    background:linear-gradient(135deg,var(--accent),var(--accent3));
+    display:flex;align-items:center;justify-content:center;font-size:30px;
+  }
+  .setup-header h2{font-size:22px;font-weight:800}
+  .setup-header p{color:var(--muted);font-size:13px;margin-top:6px}
+
+  .field-group{margin-bottom:20px}
+  .field-group label{display:block;font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:600;letter-spacing:.3px}
+
+  .field-input{
+    width:100%;padding:11px 16px;background:var(--bg);
+    border:1px solid var(--border);border-radius:12px;
+    color:var(--text);font-size:13px;font-family:inherit;
+    outline:none;transition:border-color .2s;
+  }
+  .field-input:focus{border-color:var(--accent)}
+  .field-input::placeholder{color:var(--dim)}
+  select.field-input{cursor:pointer}
+  select.field-input option{background:var(--bg2);color:var(--text)}
+
+  .role-chips{display:flex;flex-wrap:wrap;gap:7px}
+  .role-chip{
+    padding:8px 15px;border:1px solid var(--border);border-radius:20px;
+    background:transparent;color:var(--muted);font-size:12px;font-weight:600;
+    cursor:pointer;transition:.25s;font-family:inherit;
+  }
+  .role-chip:hover,.role-chip.selected{border-color:var(--accent);color:var(--accent);background:rgba(99,102,241,.08)}
+
+  /* CV UPLOAD */
+  .cv-section{margin-bottom:20px}
+  .cv-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;color:var(--muted);font-weight:600;padding:8px 0;user-select:none;transition:.2s}
+  .cv-toggle:hover{color:var(--accent)}
+  .cv-toggle .arrow{transition:transform .2s;font-size:10px}
+  .cv-toggle .arrow.open{transform:rotate(90deg)}
+  .cv-content{display:none;animation:fadeIn .3s ease}
+  .cv-content.show{display:block}
+  .cv-drop{border:2px dashed var(--border);border-radius:16px;padding:28px 20px;text-align:center;cursor:pointer;transition:.3s;position:relative;overflow:hidden}
+  .cv-drop:hover,.cv-drop.drag{border-color:var(--accent);background:rgba(99,102,241,.04)}
+  .cv-drop.drag{transform:scale(1.01)}
+  .cv-drop .cv-icon{font-size:32px;margin-bottom:8px;display:block}
+  .cv-drop .cv-main{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+  .cv-drop .cv-sub{font-size:11px;color:var(--dim)}
+  .cv-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .cv-info{display:none;background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.15);border-radius:12px;padding:12px 16px;margin-top:10px;font-size:12px;color:var(--accent)}
+  .cv-info.show{display:flex;align-items:center;gap:10px}
+  .cv-info .cv-name{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cv-info .cv-remove{background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;padding:4px 8px;border-radius:6px;transition:.2s}
+  .cv-info .cv-remove:hover{background:rgba(239,68,68,.1)}
+  .cv-paste-btn{display:block;margin-top:8px;padding:6px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s}
+  .cv-paste-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .cv-paste{display:none;margin-top:8px}
+  .cv-paste.show{display:block}
+  .cv-paste textarea{width:100%;height:100px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:12px;font-family:inherit;resize:vertical;outline:none;transition:border-color .2s}
+  .cv-paste textarea:focus{border-color:var(--accent)}
+  .cv-paste textarea::placeholder{color:var(--dim)}
+  .cv-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);border-radius:6px;font-size:10px;font-weight:700;color:var(--success);margin-left:6px}
+
+  .start-btn{
+    width:100%;padding:14px;margin-top:8px;
+    background:linear-gradient(135deg,var(--accent),#7c3aed);
+    border:none;border-radius:14px;color:#fff;
+    font-size:15px;font-weight:700;cursor:pointer;
+    font-family:inherit;transition:all .25s;
+    box-shadow:0 6px 25px rgba(99,102,241,.3);
+  }
+  .start-btn:hover{transform:translateY(-2px);box-shadow:0 10px 35px rgba(99,102,241,.4)}
+
+  /* ============================================
+     INTERVIEW SCREEN
+     ============================================ */
+  .interview-screen{flex:1;display:none;flex-direction:column;animation:fadeIn .4s ease}
+  .interview-screen.active{display:flex}
+
+  /* INTERVIEWER BAR */
+  .interviewer-bar{
+    display:flex;align-items:center;gap:14px;
+    padding:14px 18px;background:var(--glass);backdrop-filter:blur(16px);
+    border:1px solid var(--border);border-radius:16px;margin-bottom:12px;
+  }
+  .interviewer-avatar{
+    width:46px;height:46px;border-radius:14px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;flex-shrink:0;
+  }
+  .interviewer-info{flex:1}
+  .interviewer-name{font-weight:700;font-size:14px}
+  .interviewer-detail{font-size:11px;color:var(--muted);margin-top:2px}
+  .int-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .meta-pill{
+    font-size:10px;padding:4px 10px;border-radius:8px;font-weight:700;
+    white-space:nowrap;
+  }
+  .meta-pill.q{background:rgba(99,102,241,.15);color:var(--accent)}
+  .meta-pill.time{background:rgba(34,211,238,.12);color:var(--accent2)}
+  .meta-pill.type{background:rgba(168,85,247,.12);color:var(--accent3)}
+  .meta-pill.model{background:rgba(16,185,129,.12);color:var(--success);font-size:9px}
+
+  /* STATUS */
+  .int-status{display:flex;align-items:center;justify-content:center;gap:7px;padding:8px;font-size:12px;color:var(--muted)}
+  .int-dot{width:7px;height:7px;border-radius:50%;background:var(--dim);transition:.3s}
+  .int-dot.listening{background:var(--danger);box-shadow:0 0 8px var(--danger);animation:pulse 1s infinite}
+  .int-dot.speaking{background:var(--success);box-shadow:0 0 8px var(--success);animation:pulse .8s infinite}
+  .int-dot.thinking{background:var(--warning);box-shadow:0 0 8px var(--warning);animation:pulse .5s infinite}
+
+  /* VOICE SELECT */
+  .voice-sel{display:flex;align-items:center;gap:6px;justify-content:center;margin-bottom:8px;flex-wrap:wrap}
+  .voice-sel .lbl{font-size:10px;color:var(--dim)}
+  .v-chip{
+    padding:4px 11px;border:1px solid var(--border);border-radius:14px;
+    font-size:10px;color:var(--muted);cursor:pointer;transition:.2s;
+    background:none;font-family:inherit;
+  }
+  .v-chip:hover,.v-chip.sel{border-color:var(--accent);color:var(--accent);background:rgba(99,102,241,.08)}
+
+  /* ORB */
+  .int-orb-wrap{display:flex;flex-direction:column;align-items:center;padding:10px 0}
+  .int-orb{
+    width:120px;height:120px;border-radius:50%;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:38px;transition:.4s;position:relative;
+    background:radial-gradient(circle at 35% 35%,#3a3565,#1a1540);
+  }
+  .int-orb:hover{transform:scale(1.05)}
+  .int-orb.listening{background:radial-gradient(circle at 35% 35%,var(--danger),#991b1b);animation:breathe 1.5s ease-in-out infinite}
+  .int-orb.speaking{background:radial-gradient(circle at 35% 35%,var(--success),#065f46);animation:breathe .8s ease-in-out infinite}
+  .int-orb.thinking{background:radial-gradient(circle at 35% 35%,var(--warning),#92400e);animation:spin 2s linear infinite}
+  .int-orb-ring{
+    position:absolute;inset:-8px;border-radius:50%;
+    border:2px solid transparent;opacity:0;transition:.3s;
+  }
+  .int-orb.listening .int-orb-ring{opacity:1;border-color:var(--danger);animation:ringPulse 1.5s ease-out infinite}
+  .int-orb.speaking .int-orb-ring{opacity:1;border-color:var(--success);animation:ringPulse .8s ease-out infinite}
+  .int-orb-label{font-size:12px;color:var(--muted);margin-top:8px}
+
+  /* WAVEFORM */
+  .wave-wrap{display:flex;align-items:center;justify-content:center;gap:2.5px;height:28px;margin:8px 0}
+  .wave-wrap .b{width:3px;height:6px;background:var(--accent);border-radius:3px;transition:height .1s}
+  .wave-wrap.active .b{animation:waveB .5s ease-in-out infinite}
+  .wave-wrap .b:nth-child(1){animation-delay:0s}
+  .wave-wrap .b:nth-child(2){animation-delay:.07s}
+  .wave-wrap .b:nth-child(3){animation-delay:.14s}
+  .wave-wrap .b:nth-child(4){animation-delay:.21s}
+  .wave-wrap .b:nth-child(5){animation-delay:.28s}
+  .wave-wrap .b:nth-child(6){animation-delay:.21s}
+  .wave-wrap .b:nth-child(7){animation-delay:.14s}
+
+  /* LIVE TRANSCRIPT */
+  .live-t{text-align:center;min-height:20px;font-size:12px;color:var(--dim);font-style:italic;padding:4px 12px;max-width:500px;margin:0 auto;word-break:break-word}
+
+  /* CHAT */
+  .int-chat{
+    flex:1;overflow-y:auto;padding:6px 0;
+    display:flex;flex-direction:column;gap:10px;
+    max-height:38vh;scroll-behavior:smooth;
+  }
+  .int-chat::-webkit-scrollbar{width:3px}
+  .int-chat::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  .int-msg{
+    max-width:86%;padding:12px 16px;border-radius:16px;
+    font-size:13px;line-height:1.65;animation:slideUp .3s ease-out;
+  }
+  .int-msg.interviewer{
+    align-self:flex-start;background:var(--card);
+    border:1px solid var(--border);border-bottom-left-radius:5px;
+  }
+  .int-msg.candidate{
+    align-self:flex-end;
+    background:linear-gradient(135deg,var(--accent),#7c3aed);
+    color:#fff;border-bottom-right-radius:5px;
+  }
+  .int-msg .ts{font-size:10px;color:rgba(255,255,255,.3);margin-top:4px;display:block}
+  .int-msg.interviewer .ts{color:var(--dim)}
+
+  /* CONTROLS */
+  .int-controls{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 0;flex-wrap:wrap}
+  .int-btn{
+    padding:8px 16px;border:1px solid var(--border);border-radius:10px;
+    background:var(--glass);backdrop-filter:blur(8px);color:var(--muted);
+    font-size:12px;font-weight:600;cursor:pointer;transition:.25s;
+    font-family:inherit;display:flex;align-items:center;gap:5px;
+  }
+  .int-btn:hover{border-color:var(--accent);color:var(--text)}
+  .int-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(99,102,241,.1)}
+  .int-btn.end{border-color:var(--danger);color:var(--danger)}
+  .int-btn.end:hover{background:rgba(239,68,68,.08)}
+
+  /* ============================================
+     SCORE OVERLAY
+     ============================================ */
+  .score-overlay{
+    position:fixed;inset:0;z-index:200;
+    background:rgba(0,0,0,.85);backdrop-filter:blur(12px);
+    display:none;align-items:center;justify-content:center;padding:20px;
+  }
+  .score-overlay.open{display:flex}
+
+  .score-card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:24px;padding:32px;max-width:520px;width:100%;
+    text-align:center;animation:slideUp .5s ease-out;
+    max-height:90vh;overflow-y:auto;
+  }
+  .score-card h2{font-size:22px;font-weight:800;margin-bottom:4px}
+  .score-subtitle{font-size:13px;color:var(--muted);margin-bottom:4px}
+
+  .score-ring{width:110px;height:110px;margin:16px auto;position:relative}
+  .score-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .score-ring .bg{fill:none;stroke:var(--border);stroke-width:8}
+  .score-ring .fg{fill:none;stroke:var(--accent);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1)}
+  .score-ring .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800}
+  .score-ring .val .grade{font-size:13px;color:var(--muted);display:block;font-weight:600;margin-top:2px}
+
+  .score-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:16px 0;text-align:left}
+  .score-metric{padding:12px;background:var(--bg2);border-radius:12px;border:1px solid var(--border)}
+  .score-metric .label{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.8px}
+  .score-metric .value{font-size:17px;font-weight:700;margin-top:3px}
+
+  .score-feedback{
+    text-align:left;font-size:13px;color:var(--muted);line-height:1.75;
+    margin:14px 0;padding:16px;background:var(--bg2);border-radius:12px;
+    border:1px solid var(--border);max-height:200px;overflow-y:auto;
+  }
+
+  .score-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .score-btn{
+    padding:12px 28px;border-radius:12px;font-size:14px;font-weight:700;
+    cursor:pointer;font-family:inherit;transition:.25s;border:none;
+  }
+  .score-btn:hover{transform:translateY(-1px)}
+  .score-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent3));color:#fff;box-shadow:0 4px 20px rgba(99,102,241,.3)}
+  .score-btn.secondary{background:var(--glass);color:var(--text);border:1px solid var(--border)}
+
+  /* ===== RESPONSIVE ===== */
+  @media(max-width:640px){
+    .app{padding:10px}
+    .setup-card{padding:24px}
+    .int-orb{width:100px;height:100px;font-size:30px}
+    .int-chat{max-height:30vh}
+    .int-msg{max-width:92%;font-size:12px}
+    .interviewer-bar{flex-direction:column;text-align:center;gap:10px}
+    .int-meta{justify-content:center}
+    .score-metrics{grid-template-columns:1fr}
+    .score-card{padding:24px}
+    .role-chips{gap:5px}
+    .role-chip{padding:6px 12px;font-size:11px}
+  }
+</style>
+</head>
+<body>
+
+<div class="amb">
+  <div class="grid"></div>
+  <div class="o"></div><div class="o"></div><div class="o"></div>
+</div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <svg viewBox="0 0 200 200" fill="none">
+      <path d="M60 20 C35 20 20 35 20 60 L20 140 C20 165 35 180 60 180 L140 180 C165 180 180 165 180 140 L180 60 C180 35 165 20 140 20Z" fill="url(#ng)" opacity=".1"/>
+      <path d="M56 58 C56 48 63 42 74 42 L126 42 C137 42 144 48 144 58 L144 64 L82 126 L144 126 L144 142 C144 152 137 158 126 158 L74 158 C63 158 56 152 56 142 L56 136 L118 74 L56 74Z" fill="url(#ng)"/>
+      <path d="M134 42 C142 36 152 26 158 16 C156 28 150 42 142 50 L134 42Z" fill="url(#ng)" opacity=".75"/>
+      <defs><linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient></defs>
+    </svg>
+    ZELVORA <em>AI</em>
+  </a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-back">← Home</a>
+    <div class="uses-badge" id="usesDisplay">∞ uses</div>
+  </div>
+</nav>
+
+<div class="app">
+
+  <div class="setup-screen" id="setupScreen">
+    <div class="setup-card">
+      <div class="setup-header">
+        <div class="icon-wrap">🎤</div>
+        <h2>AI Mock Interview</h2>
+        <p>Realistic voice-to-voice interview practice — completely hands-free</p>
+      </div>
+
+      <div class="field-group">
+        <label>Position / Job Role</label>
+        <div class="role-chips" id="roleChips">
+          <button class="role-chip selected" data-role="Software Engineer">💻 Software Engineer</button>
+          <button class="role-chip" data-role="Product Manager">📊 Product Manager</button>
+          <button class="role-chip" data-role="Data Scientist">🧪 Data Scientist</button>
+          <button class="role-chip" data-role="UX Designer">🎨 UX Designer</button>
+          <button class="role-chip" data-role="Marketing Manager">📈 Marketing</button>
+          <button class="role-chip" data-role="Business Analyst">📋 Business Analyst</button>
+          <button class="role-chip" data-role="Sales Executive">🤝 Sales</button>
+          <button class="role-chip" data-role="HR Manager">👥 HR Manager</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Custom Role (optional)</label>
+        <input class="field-input" type="text" id="customRole" placeholder="e.g., DevOps Engineer at Google, Senior Frontend Developer...">
+      </div>
+
+      <div class="field-group">
+        <label>Interview Type</label>
+        <select class="field-input" id="interviewType">
+          <option value="behavioral" selected>🧠 Behavioral (STAR Method)</option>
+          <option value="technical">💻 Technical</option>
+          <option value="hr">🤝 HR / Culture Fit</option>
+          <option value="case_study">📊 Case Study</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label>Difficulty / Company Standard</label>
+        <select class="field-input" id="difficultySelect">
+          <option value="beginner">🟢 Beginner — Friendly & Encouraging</option>
+          <option value="intermediate" selected>🟡 Intermediate — Standard</option>
+          <option value="advanced">🔴 Advanced — Tough, Senior-Level</option>
+          <option value="faang">⚫ FAANG — Elite Tech, High Pressure</option>
+          <option value="mercore">🏢 Mercore — Elite Finance & Trade Ops</option>
+          <option value="zara">👗 Zara — Fast-Paced Retail & Supply Chain</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label>Number of Questions</label>
+        <select class="field-input" id="maxQSelect">
+          <option value="5">5 Questions (Quick)</option>
+          <option value="8">8 Questions (Standard)</option>
+          <option value="10" selected>10 Questions (Full)</option>
+          <option value="15">15 Questions (Thorough)</option>
+        </select>
+      </div>
+
+      <!-- CV/RESUME UPLOAD -->
+      <div class="cv-section">
+        <div class="cv-toggle" onclick="toggleCV()">
+          <span class="arrow" id="cvArrow">▶</span>
+          📄 Upload CV / Resume <span style="color:var(--dim);font-weight:400">(personalizes questions)</span>
+          <span class="cv-badge" id="cvBadge" style="display:none">✓ Loaded</span>
+        </div>
+        <div class="cv-content" id="cvContent">
+          <div class="cv-drop" id="cvDrop">
+            <span class="cv-icon">📎</span>
+            <div class="cv-main">Drop your CV here or click to browse</div>
+            <div class="cv-sub">Supports PDF, DOC, DOCX, TXT — Max 5MB</div>
+            <input type="file" id="cvFile" accept=".pdf,.doc,.docx,.txt,.rtf" onchange="handleCVFile(this.files[0])">
+          </div>
+          <div class="cv-info" id="cvInfo">
+            <span>📄</span>
+            <span class="cv-name" id="cvFileName">resume.pdf</span>
+            <span id="cvCharCount" style="color:var(--dim);font-size:11px"></span>
+            <button class="cv-remove" onclick="removeCV()" title="Remove CV">✕</button>
+          </div>
+          <button class="cv-paste-btn" onclick="togglePaste()">📋 Or paste resume text manually</button>
+          <div class="cv-paste" id="cvPaste">
+            <textarea id="cvText" placeholder="Paste your resume/CV text here...
+Example:
+John Doe — Senior Software Engineer
+5 years experience in React, Node.js, AWS
+Previous: Google (SDE II), Amazon (SDE I)
+Skills: JavaScript, Python, System Design..."></textarea>
+            <button class="cv-paste-btn" onclick="loadPastedCV()" style="margin-top:6px;color:var(--success);border-color:rgba(16,185,129,.2)">✓ Use this CV text</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="start-btn" onclick="startInterview()">
+        🎙️ Start Interview
+      </button>
+    </div>
+  </div>
+
+  <div class="interview-screen" id="interviewScreen">
+
+    <div class="interviewer-bar">
+      <div class="interviewer-avatar">👔</div>
+      <div class="interviewer-info">
+        <div class="interviewer-name">Zelvora Interviewer</div>
+        <div class="interviewer-detail" id="intDetail">Software Engineer — Behavioral</div>
+      </div>
+      <div class="int-meta">
+        <div class="meta-pill q" id="qBadge">Q 1/10</div>
+        <div class="meta-pill time" id="timeBadge">0:00</div>
+        <div class="meta-pill type" id="typeBadge">Behavioral</div>
+        <div class="meta-pill model" id="modelBadge">—</div>
+      </div>
+    </div>
+
+    <div class="voice-sel" id="intVoiceSel">
+      <span class="lbl">Voice:</span>
+    </div>
+
+    <div class="int-status">
+      <div class="int-dot" id="intDot"></div>
+      <span id="intStatusText">Ready</span>
+    </div>
+
+    <div class="int-orb-wrap">
+      <div class="int-orb" id="intOrb" onclick="toggleListen()">
+        <span id="intOrbIcon">🎙️</span>
+        <div class="int-orb-ring"></div>
+      </div>
+      <div class="int-orb-label" id="intOrbLabel">Tap to respond</div>
+    </div>
+
+    <div class="wave-wrap" id="intWave">
+      <div class="b"></div><div class="b"></div><div class="b"></div>
+      <div class="b"></div><div class="b"></div><div class="b"></div><div class="b"></div>
+    </div>
+    <canvas id="waveCanvas" width="400" height="60" style="display:block;margin:0 auto 8px;border-radius:12px;max-width:100%"></canvas>
+
+    <div class="live-t" id="intLiveT">...</div>
+
+    <div class="int-chat" id="intChat"></div>
+
+    <div class="int-controls">
+      <button class="int-btn active" id="intAutoBtn" onclick="toggleAuto()">🔄 Auto: ON</button>
+      <button class="int-btn" id="intMuteBtn" onclick="toggleIntMute()">🔊 Voice: ON</button>
+      <button class="int-btn" onclick="skipQuestion()">⏭️ Skip</button>
+      <button class="int-btn end" onclick="endInterview()">🏁 End Interview</button>
+    </div>
+  </div>
+
+  <!-- BYOK Status -->
+  <div id="byokStatus" style="text-align:center;font-size:11px;color:var(--dim);padding:4px 0;display:none">
+    <span id="byokLabel">🔑 BYOK Active</span>
+  </div>
+
+</div><div class="score-overlay" id="scoreOverlay">
+  <div class="score-card">
+    <h2>📋 Interview Complete</h2>
+    <p class="score-subtitle" id="scoreSubtitle">Software Engineer — Behavioral</p>
+
+    <div class="score-ring">
+      <svg viewBox="0 0 100 100">
+        <circle class="bg" cx="50" cy="50" r="42"></circle>
+        <circle class="fg" id="scoreCircle" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264"></circle>
+      </svg>
+      <div class="val">
+        <div>
+          <span id="scoreVal">0</span>
+          <span class="grade" id="scoreGrade">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="score-metrics">
+      <div class="score-metric">
+        <div class="label">Questions Answered</div>
+        <div class="value" id="scoreQuestions">0</div>
+      </div>
+      <div class="score-metric">
+        <div class="label">Duration</div>
+        <div class="value" id="scoreDuration">0:00</div>
+      </div>
+      <div class="score-metric">
+        <div class="label">Avg Response</div>
+        <div class="value" id="scoreAvgWords">0 words</div>
+      </div>
+      <div class="score-metric">
+        <div class="label">Difficulty</div>
+        <div class="value" id="scoreDifficulty">—</div>
+      </div>
+    </div>
+
+    <div class="score-feedback" id="scoreFeedback">Loading feedback...</div>
+
+    <div class="score-actions">
+      <button class="score-btn primary" onclick="closeScore()">✅ Done</button>
+      <button class="score-btn secondary" onclick="retryInterview()">🔄 Try Again</button>
+      <button class="score-btn secondary" onclick="copyFeedback()">📋 Copy Feedback</button>
+    </div>
+  </div>
+</div>
+
+
+<script src="js/supabase-client.js"></script>
+<script src="js/byok-engine.js"></script>
+<script src="js/audio-engine.js"></script>
+<script>
+/* =================================================================
+   ZELVORA MOCK INTERVIEW ENGINE (B2B ELITE + BYOK + SUPABASE)
+   Full-duplex interview with BYOK AI routing and session persistence
+   ================================================================= */
+
+const API_URL = "https://late-mouse-4aa2.zelvora-global.workers.dev";
+
+/* ===== STATE ===== */
+const iv = {
+  active: false,
+  phase: "idle",
+  history: [],
+  jobRole: "Software Engineer",
+  interviewType: "behavioral",
+  difficulty: "intermediate",
+  maxQuestions: 10,
+  questionNum: 0,
+  autoListen: true,
+  muted: false,
+  token: null,
+  selectedVoice: null,
+  startTime: null,
+  timerInterval: null,
+  userWordCounts: [],
+  // B2B additions
+  sessionId: null,
+  institutionId: null,
+  accessToken: null,
+  isBYOK: false,
+  byokProvider: null,
+  isProctored: false,
+  violations: [],
+  cvText: null,
+  cvFileName: null,
+};
+
+/* ===== DOM ===== */
+const $ = id => document.getElementById(id);
+
+
+/* ================================================================
+   SCREEN WAKE LOCK (PREVENT PHONE FROM SLEEPING)
+   ================================================================ */
+let wakeLock = null;
+
+async function requestWakeLock() {
+  if ('wakeLock' in navigator) {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+      console.log('Wake Lock active: Screen will stay on.');
+    } catch (err) {
+      console.warn('Wake Lock error:', err.message);
+    }
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock !== null) {
+    wakeLock.release()
+      .then(() => {
+        wakeLock = null;
+        console.log('Wake Lock released: Screen can sleep now.');
+      });
+  }
+}
+
+// Reactivate if the user switches tabs and comes back
+document.addEventListener('visibilitychange', async () => {
+  if (wakeLock !== null && document.visibilityState === 'visible' && iv.active) {
+    await requestWakeLock();
+  }
+});
+
+
+/* ================================================================
+   TOKEN
+   ================================================================ */
+function initToken() {
+  // Check for proctored interview token in URL
+  const params = new URLSearchParams(window.location.search);
+  const urlToken = params.get('token');
+  if (urlToken) {
+    verifyAccessToken(urlToken);
+    return;
+  }
+
+  // Check Supabase session
+  if (window.ZelvoraDB && window.ZelvoraDB.isLoggedIn()) {
+    iv.institutionId = window.ZelvoraDB.getInstitutionId();
+    $("usesDisplay").textContent = "∞ uses";
+    initBYOK();
+    return;
+  }
+
+  // Legacy token fallback
+  const s = localStorage.getItem("zelvora_token");
+  if (s) {
+    try {
+      const p = JSON.parse(atob(s));
+      if (Date.now() < p.exp) {
+        iv.token = s;
+        $("usesDisplay").textContent = p.uses.spoken === 999999 ? "∞ uses" : p.uses.spoken + " uses";
+        return;
+      }
+    } catch (e) {}
+  }
+  const d = { sub: "demo_" + Date.now(), exp: Date.now() + 30 * 24 * 3600000, uses: { spoken: 500 } };
+  iv.token = btoa(JSON.stringify(d));
+  localStorage.setItem("zelvora_token", iv.token);
+  $("usesDisplay").textContent = "500 uses";
+}
+
+async function verifyAccessToken(token) {
+  try {
+    const res = await fetch(`${API_URL}/api/tokens/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token })
+    });
+    const data = await res.json();
+    if (data.valid) {
+      iv.accessToken = data.token;
+      iv.institutionId = data.token.institution_id;
+      iv.isProctored = data.token.is_proctored;
+      // Auto-fill setup from token
+      iv.jobRole = data.token.job_role;
+      iv.interviewType = data.token.interview_type || 'behavioral';
+      iv.difficulty = data.token.difficulty || 'intermediate';
+      iv.maxQuestions = data.token.max_questions || 10;
+      $("usesDisplay").textContent = "Proctored";
+      // Show institution branding if available
+      if (data.institution?.name) {
+        document.querySelector('.interviewer-name').textContent = data.institution.name + ' Interviewer';
+      }
+      initBYOK();
+    } else {
+      alert('Invalid or expired interview link. Please contact your recruiter.');
+    }
+  } catch (e) {
+    console.error('Token verification error:', e);
+  }
+}
+
+async function initBYOK() {
+  if (!window.BYOKEngine || !iv.institutionId) return;
+  try {
+    const config = await window.BYOKEngine.getPreferredConfig();
+    if (config) {
+      iv.isBYOK = true;
+      iv.byokProvider = config.provider;
+      $("byokStatus").style.display = 'block';
+      $("byokLabel").textContent = `🔑 BYOK: ${config.provider} / ${config.model}`;
+      $("modelBadge").textContent = config.model.split('-').slice(0,2).join('-');
+    }
+  } catch (e) {
+    console.warn('BYOK init failed:', e);
+  }
+}
+
+
+/* ================================================================
+   ROLE CHIPS
+   ================================================================ */
+document.querySelectorAll(".role-chip").forEach(chip => {
+  chip.onclick = () => {
+    document.querySelectorAll(".role-chip").forEach(c => c.classList.remove("selected"));
+    chip.classList.add("selected");
+  };
+});
+
+
+/* ================================================================
+   CV / RESUME UPLOAD
+   ================================================================ */
+function toggleCV() {
+  const content = $("cvContent");
+  const arrow = $("cvArrow");
+  content.classList.toggle("show");
+  arrow.classList.toggle("open");
+}
+
+function togglePaste() {
+  $("cvPaste").classList.toggle("show");
+}
+
+function setCVLoaded(fileName, text) {
+  iv.cvText = text;
+  iv.cvFileName = fileName;
+  $("cvFileName").textContent = fileName;
+  $("cvCharCount").textContent = `${text.length.toLocaleString()} chars`;
+  $("cvInfo").classList.add("show");
+  $("cvDrop").style.display = "none";
+  $("cvBadge").style.display = "inline-flex";
+}
+
+function removeCV() {
+  iv.cvText = null;
+  iv.cvFileName = null;
+  $("cvInfo").classList.remove("show");
+  $("cvDrop").style.display = "block";
+  $("cvBadge").style.display = "none";
+  $("cvFile").value = "";
+  $("cvText").value = "";
+}
+
+function loadPastedCV() {
+  const text = $("cvText").value.trim();
+  if (!text) return;
+  setCVLoaded("Pasted Resume", text);
+  $("cvPaste").classList.remove("show");
+}
+
+async function handleCVFile(file) {
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    alert("File too large. Max 5MB."); return;
+  }
+
+  const ext = file.name.split('.').pop().toLowerCase();
+
+  try {
+    let text = '';
+
+    if (ext === 'txt' || ext === 'rtf') {
+      text = await file.text();
+    } else if (ext === 'pdf') {
+      text = await extractPDFText(file);
+    } else if (ext === 'doc' || ext === 'docx') {
+      // For DOC/DOCX, read as text (basic extraction)
+      const arrayBuf = await file.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuf);
+      // Extract readable text from binary
+      let raw = '';
+      for (let i = 0; i < bytes.length; i++) {
+        const c = bytes[i];
+        if ((c >= 32 && c <= 126) || c === 10 || c === 13) raw += String.fromCharCode(c);
+        else if (raw.length > 0 && raw[raw.length-1] !== ' ') raw += ' ';
+      }
+      // Clean up
+      text = raw.replace(/\s{3,}/g, '\n').replace(/[^\x20-\x7E\n]/g, '').trim();
+    }
+
+    if (text.length < 20) {
+      alert("Could not extract text. Try pasting manually."); return;
+    }
+
+    // Truncate if too long (keep first 4000 chars for API context)
+    if (text.length > 4000) text = text.substring(0, 4000) + '\n[... truncated]';
+
+    setCVLoaded(file.name, text);
+  } catch (e) {
+    console.error('CV parse error:', e);
+    alert("Failed to read file. Try pasting the text manually.");
+  }
+}
+
+async function extractPDFText(file) {
+  // Load pdf.js if not already loaded
+  if (!window.pdfjsLib) {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+
+  const arrayBuf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuf }).promise;
+  let fullText = '';
+
+  for (let i = 1; i <= Math.min(pdf.numPages, 10); i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const pageText = content.items.map(item => item.str).join(' ');
+    fullText += pageText + '\n';
+  }
+
+  return fullText.trim();
+}
+
+// Drag and drop
+const cvDrop = $("cvDrop");
+if (cvDrop) {
+  ['dragenter','dragover'].forEach(e => cvDrop.addEventListener(e, ev => {
+    ev.preventDefault(); cvDrop.classList.add('drag');
+  }));
+  ['dragleave','drop'].forEach(e => cvDrop.addEventListener(e, ev => {
+    ev.preventDefault(); cvDrop.classList.remove('drag');
+  }));
+  cvDrop.addEventListener('drop', ev => {
+    const file = ev.dataTransfer?.files?.[0];
+    if (file) handleCVFile(file);
+  });
+}
+
+/* ================================================================
+   SPEECH RECOGNITION (BULLETPROOF NO-DUPLICATION FIX)
+   ================================================================ */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null;
+let sTimer = null;
+let finalT = "";
+
+function startRec() {
+  if (rec && iv.phase !== "listening") {
+    try { rec.start(); } catch (e) {}
+  }
+}
+
+function stopRec() {
+  if (rec) {
+    try { rec.stop(); } catch (e) {}
+  }
+}
+
+function setupRec() {
+  if (!SR) {
+    alert("Speech recognition not supported. Please use Chrome or Edge.");
+    return false;
+  }
+
+  rec = new SR();
+  rec.continuous = true;
+  
+  // 🚨 THE MAGIC FIX: Turning this to FALSE kills the duplication bug.
+  rec.interimResults = false; 
+  rec.lang = "en-US";
+
+  rec.onstart = () => {
+    setPhase("listening");
+    finalT = ""; // Clear memory for this new answer
+    $("intLiveT").textContent = "Listening... (Speak your answer)";
+  };
+
+  rec.onresult = (e) => {
+    // Because interimResults is false, we only get triggered when a sentence is fully complete.
+    const newestText = e.results[e.results.length - 1][0].transcript;
+    finalT += newestText + " ";
+
+    // Hide the messy transcription, show professional status
+    $("intLiveT").textContent = "Capturing audio...";
+
+    // Reset silence timer (wait 3s to auto-submit)
+    clearTimeout(sTimer);
+    sTimer = setTimeout(() => {
+      if (finalT.trim().length > 2) {
+        $("intLiveT").textContent = "Processing your answer...";
+        rec.stop();
+      }
+    }, 3000);
+  };
+
+  rec.onend = () => {
+    clearTimeout(sTimer);
+    if (iv.phase === "listening" && finalT.trim().length > 2) {
+      processAnswer(finalT.trim());
+    } else if (iv.active && iv.phase === "listening") {
+      startRec(); 
+    }
+  };
+
+  rec.onerror = (e) => {
+    console.warn("Speech error:", e.error);
+    if (e.error === "no-speech" && iv.active) {
+      setTimeout(() => startRec(), 500);
+    }
+  };
+
+  return true;
+}
+
+/* ================================================================
+   SPEECH SYNTHESIS (TTS)
+   ================================================================ */
+async function getVoices() {
+  return new Promise(r => {
+    const v = speechSynthesis.getVoices();
+    if (v.length) return r(v);
+    speechSynthesis.onvoiceschanged = () => r(speechSynthesis.getVoices());
+    setTimeout(() => r(speechSynthesis.getVoices()), 1500);
+  });
+}
+
+async function populateVoices() {
+  const voices = await getVoices();
+  const sel = $("intVoiceSel");
+
+  // Score voices by human-likeness (higher = more natural sounding)
+  function scoreVoice(v) {
+    if (!v.lang.startsWith("en")) return -1;
+    const n = v.name.toLowerCase();
+    let score = 0;
+    // Tier 1: Neural / Online voices (most human-like)
+    if (n.includes("natural") || n.includes("neural") || n.includes("online")) score += 100;
+    // Tier 2: Google HD voices (very good on Chrome)
+    if (n.includes("google uk english female")) score += 95;
+    if (n.includes("google uk english male")) score += 90;
+    if (n.includes("google us english")) score += 88;
+    if (n.includes("google")) score += 60;
+    // Tier 3: Premium system voices
+    if (n.includes("samantha")) score += 85; // macOS
+    if (n.includes("daniel")) score += 82;
+    if (n.includes("karen")) score += 80;
+    if (n.includes("moira")) score += 78;
+    if (n.includes("alex")) score += 75;
+    if (n.includes("fiona")) score += 73;
+    if (n.includes("tessa")) score += 72;
+    if (n.includes("rishi")) score += 70;
+    // Tier 4: Microsoft voices (decent quality)
+    if (n.includes("zira")) score += 55;
+    if (n.includes("david")) score += 53;
+    if (n.includes("mark")) score += 52;
+    if (n.includes("microsoft") && !n.includes("mobile")) score += 40;
+    // Prefer female voices for interviewer warmth
+    if (n.includes("female") || n.includes("woman")) score += 5;
+    // Avoid mobile/compact voices
+    if (n.includes("mobile") || n.includes("compact")) score -= 20;
+    // English voice baseline
+    if (score === 0) score = 10;
+    return score;
+  }
+
+  const scored = voices
+    .map(v => ({ voice: v, score: scoreVoice(v) }))
+    .filter(v => v.score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  const list = scored.slice(0, 6);
+
+  list.forEach((item, i) => {
+    const v = item.voice;
+    const chip = document.createElement("button");
+    chip.className = "v-chip" + (i === 0 ? " sel" : "");
+    const displayName = v.name
+      .replace(/Microsoft |Google |Apple |com\.apple\.voice\.compact\.|com\.apple\.speech\.synthesis\.voice\./g, "")
+      .replace(/Online \(Natural\)/g, "✨")
+      .split(" ")[0];
+    chip.textContent = displayName + (item.score >= 80 ? " ★" : "");
+    chip.title = v.name + " (quality: " + item.score + ")";
+    chip.onclick = () => {
+      document.querySelectorAll(".v-chip").forEach(c => c.classList.remove("sel"));
+      chip.classList.add("sel");
+      iv.selectedVoice = v;
+    };
+    sel.appendChild(chip);
+    if (i === 0) iv.selectedVoice = v;
+  });
+
+  if (list.length === 0) {
+    iv.selectedVoice = voices.find(v => v.lang.startsWith("en")) || voices[0];
+  }
+}
+
+function speak(text) {
+  return new Promise(resolve => {
+    if (iv.muted) { resolve(); return; }
+
+    speechSynthesis.cancel();
+    setPhase("speaking");
+
+    // Human-like speech parameters
+    const baseRate = 0.92;   // Slightly slower than default for warmth
+    const basePitch = 1.0;   // Natural pitch
+
+    if (text.length > 200) {
+      // Split into sentences — add natural micro-pauses between them
+      const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+      let i = 0;
+      function next() {
+        if (i >= sentences.length) { setPhase("idle"); resolve(); return; }
+        const u = new SpeechSynthesisUtterance(sentences[i].trim());
+        u.voice = iv.selectedVoice;
+        // Slight variation per sentence for natural cadence
+        u.rate = baseRate + (Math.random() * 0.06 - 0.03);
+        u.pitch = basePitch + (Math.random() * 0.04 - 0.02);
+        u.volume = 1;
+        u.onend = () => {
+          i++;
+          // Natural pause between sentences (150-350ms)
+          setTimeout(next, 150 + Math.random() * 200);
+        };
+        u.onerror = () => { i++; next(); };
+        speechSynthesis.speak(u);
+      }
+      next();
+    } else {
+      const u = new SpeechSynthesisUtterance(text);
+      u.voice = iv.selectedVoice;
+      u.rate = baseRate;
+      u.pitch = basePitch;
+      u.volume = 1;
+      u.onend = () => { setPhase("idle"); resolve(); };
+      u.onerror = () => { setPhase("idle"); resolve(); };
+      speechSynthesis.speak(u);
+    }
+  });
+}
+
+
+/* ================================================================
+   AI API — Connects to Universal Worker v4
+   ================================================================ */
+async function callIntAI(text, mode) {
+  setPhase("thinking");
+
+  const isStart = text === "__start_interview__";
+
+  // Use new B2B endpoints if institution is set
+  if (iv.institutionId) {
+    const endpoint = isStart ? '/api/interview/start' : '/api/interview/respond';
+    const body = isStart ? {
+      institution_id: iv.institutionId,
+      token_id: iv.accessToken?.id || null,
+      job_role: iv.jobRole,
+      interview_type: iv.interviewType,
+      difficulty: iv.difficulty,
+      max_questions: iv.maxQuestions,
+      cv_text: iv.cvText || null,
+      start_text: iv.cvText
+        ? `Start the interview for a ${iv.jobRole} position. I have uploaded my resume/CV. Please review it and ask your first question based on my actual experience, projects, and skills from the CV.`
+        : null
+    } : {
+      institution_id: iv.institutionId,
+      session_id: iv.sessionId,
+      text: text,
+      history: iv.history.slice(-20),
+      job_role: iv.jobRole,
+      interview_type: iv.interviewType,
+      difficulty: iv.difficulty,
+      question_num: iv.questionNum,
+      max_questions: iv.maxQuestions,
+      cv_text: iv.cvText || null
+    };
+
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    if (data.session_id) iv.sessionId = data.session_id;
+    if (data.model) {
+      $("modelBadge").textContent = data.model.replace("llama-","L").replace("-instruct","").split('-').slice(0,2).join('-');
+    }
+    if (data.is_byok) {
+      $("byokStatus").style.display = 'block';
+    }
+    return data.reply;
+  }
+
+  // Legacy fallback
+  // Build start text that references CV if uploaded
+  let sendText = text;
+  if (isStart && iv.cvText) {
+    sendText = `Start the interview for a ${iv.jobRole} position (${iv.interviewType}, ${iv.difficulty} difficulty). I have uploaded my resume/CV. Please review it and ask your first question based on my actual experience and skills from the CV.`;
+  } else if (isStart) {
+    sendText = `Start the interview. Greet the candidate and ask your first ${iv.interviewType} question for the ${iv.jobRole} role.`;
+  }
+
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${iv.token}`,
+    },
+    body: JSON.stringify({
+      module: "interview",
+      mode: isStart ? "start" : mode,
+      quality: "best",
+      text: sendText,
+      history: iv.history.slice(-20),
+      job_role: iv.jobRole,
+      interview_type: iv.interviewType,
+      difficulty: iv.difficulty,
+      cv_text: iv.cvText || null
+    })
+  });
+
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+
+  if (data.token) {
+    iv.token = data.token;
+    localStorage.setItem("zelvora_token", data.token);
+  }
+  if (data.remaining !== undefined) {
+    $("usesDisplay").textContent = data.remaining === 999999 ? "∞ uses" : data.remaining + " uses";
+  }
+  if (data.model) {
+    $("modelBadge").textContent = data.model.replace("llama-", "L").replace("-instruct", "").replace("-fast", "⚡");
+  }
+
+  return data.reply;
+}
+
+
+/* ================================================================
+   INTERVIEW FLOW
+   ================================================================ */
+async function startInterview() {
+  const selectedChip = document.querySelector(".role-chip.selected");
+  iv.jobRole = $("customRole").value.trim() ||
+    (selectedChip ? selectedChip.dataset.role : "Software Engineer");
+  iv.interviewType = $("interviewType").value;
+  iv.difficulty = $("difficultySelect").value;
+  iv.maxQuestions = parseInt($("maxQSelect").value);
+  iv.history = [];
+  iv.questionNum = 1;
+  iv.userWordCounts = [];
+
+  const typeLabels = {
+    behavioral: "🧠 Behavioral",
+    technical: "💻 Technical",
+    hr: "🤝 HR",
+    case_study: "📊 Case Study"
+  };
+  const diffLabels = {
+    beginner: "🟢 Beginner",
+    intermediate: "🟡 Intermediate",
+    advanced: "🔴 Advanced",
+    faang: "⚫ FAANG",
+    mercore: "🏢 Mercore",
+    zara: "👗 Zara"
+  };
+
+  $("intDetail").textContent = `${iv.jobRole} — ${typeLabels[iv.interviewType] || iv.interviewType} — ${diffLabels[iv.difficulty] || iv.difficulty}`;
+  $("qBadge").textContent = `Q 1/${iv.maxQuestions}`;
+  $("typeBadge").textContent = typeLabels[iv.interviewType] || iv.interviewType;
+
+  $("setupScreen").classList.add("hidden");
+  $("interviewScreen").classList.add("active");
+
+  if (!setupRec()) return;
+  iv.active = true;
+  
+  // WAKE LOCK ACTIVATED
+  requestWakeLock();
+
+  iv.startTime = Date.now();
+  iv.timerInterval = setInterval(updateTimer, 1000);
+
+  try {
+    const greeting = await callIntAI("__start_interview__", "start");
+    addMsg("interviewer", greeting);
+    iv.history.push({ role: "assistant", content: greeting });
+
+    await speak(greeting);
+    if (iv.active && iv.autoListen) setTimeout(() => startRec(), 500);
+
+  } catch (e) {
+    console.error("Start error:", e);
+    const fb = `Hello! Welcome to your ${iv.interviewType} interview for the ${iv.jobRole} position. I'll be asking you about ${iv.maxQuestions} questions today. Let's start — could you tell me a little about yourself?`;
+    addMsg("interviewer", fb);
+    iv.history.push({ role: "assistant", content: fb });
+    await speak(fb);
+    if (iv.active && iv.autoListen) setTimeout(() => startRec(), 500);
+  }
+}
+
+async function processAnswer(text) {
+  addMsg("candidate", text);
+  iv.history.push({ role: "user", content: text });
+  iv.userWordCounts.push(text.split(/\s+/).length);
+  $("intLiveT").textContent = "";
+
+  iv.questionNum++;
+  $("qBadge").textContent = `Q ${Math.min(iv.questionNum, iv.maxQuestions)}/${iv.maxQuestions}`;
+
+  if (iv.questionNum > iv.maxQuestions) {
+    await endInterview();
+    return;
+  }
+
+  try {
+    const reply = await callIntAI(text, iv.interviewType);
+    addMsg("interviewer", reply);
+    iv.history.push({ role: "assistant", content: reply });
+
+    await speak(reply);
+    if (iv.active && iv.autoListen) setTimeout(() => startRec(), 400);
+
+  } catch (e) {
+    console.error("AI error:", e);
+
+    let fb = "That's interesting. Could you elaborate a bit more on that point?";
+    if (e.message === "Usage limit reached" || e.message === "Access expired. Please renew your plan.") {
+      fb = "Your usage limit has been reached. Please check your access status.";
+      iv.active = false;
+    }
+
+    addMsg("interviewer", fb);
+    iv.history.push({ role: "assistant", content: fb });
+    await speak(fb);
+    if (iv.active && iv.autoListen) setTimeout(() => startRec(), 400);
+  }
+}
+
+function toggleListen() {
+  if (iv.phase === "listening") {
+    stopRec();
+  } else if (iv.phase === "idle" && iv.active) {
+    startRec();
+  }
+}
+
+function skipQuestion() {
+  stopRec();
+  processAnswer("I'd like to skip this question and move to the next one, please.");
+}
+
+async function endInterview() {
+  iv.active = false;
+  releaseWakeLock();
+  stopRec();
+  speechSynthesis.cancel();
+  clearInterval(iv.timerInterval);
+  setPhase("idle");
+
+  const duration = Math.floor((Date.now() - iv.startTime) / 1000);
+  const totalWords = iv.userWordCounts.reduce((a, b) => a + b, 0);
+  const avgWords = iv.userWordCounts.length > 0
+    ? Math.round(totalWords / iv.userWordCounts.length) : 0;
+  const questionsAnswered = iv.questionNum - 1;
+
+  let score = 40;
+  score += Math.min(questionsAnswered, iv.maxQuestions) * (30 / iv.maxQuestions);
+  score += Math.min(avgWords, 80) * 0.2;
+  score += duration > 120 ? 5 : 0;
+  score += duration > 300 ? 5 : 0;
+  
+  const diffBonus = { beginner: 0, intermediate: 3, advanced: 5, faang: 8, mercore: 8, zara: 8 };
+  score += diffBonus[iv.difficulty] || 0;
+  score = Math.min(Math.round(score), 100);
+
+  const grade = score >= 90 ? "A+" : score >= 80 ? "A" : score >= 70 ? "B+" :
+                score >= 60 ? "B" : score >= 50 ? "C" : "D";
+
+  const stats = {
+    score, grade, questions: questionsAnswered, duration: formatTime(duration),
+    durationSeconds: duration, avgWords, difficulty: iv.difficulty, role: iv.jobRole,
+    type: iv.interviewType
+  };
+
+  let feedback = "Good effort! Keep practicing to improve your interview performance.";
+  try {
+    // Use new endpoint for B2B
+    if (iv.institutionId && iv.sessionId) {
+      const res = await fetch(`${API_URL}/api/interview/end`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          institution_id: iv.institutionId,
+          session_id: iv.sessionId,
+          history: iv.history.slice(-30),
+          job_role: iv.jobRole,
+          interview_type: iv.interviewType,
+          difficulty: iv.difficulty,
+          stats
+        })
+      });
+      const data = await res.json();
+      feedback = data.reply || feedback;
+    } else {
+      feedback = await callIntAI(
+        `The interview is complete. Candidate answered ${questionsAnswered} questions in ${formatTime(duration)}. Average answer was ${avgWords} words. Interview type: ${iv.interviewType}. Difficulty: ${iv.difficulty}. Give your final assessment.`,
+        "feedback"
+      );
+    }
+  } catch (e) {
+    console.error("Feedback error:", e);
+  }
+
+  // Mark access token as completed
+  if (iv.accessToken) {
+    try {
+      await window.ZelvoraDB.markTokenCompleted(iv.accessToken.id);
+    } catch (e) { console.warn('Token update failed:', e); }
+  }
+
+  showScore({
+    score, grade, questions: questionsAnswered, duration: formatTime(duration),
+    avgWords: avgWords + " words", difficulty: iv.difficulty, role: iv.jobRole,
+    type: iv.interviewType, feedback,
+  });
+}
+
+
+/* ================================================================
+   SCORE DISPLAY
+   ================================================================ */
+function showScore(data) {
+  const typeNames = { behavioral: "Behavioral", technical: "Technical", hr: "HR", case_study: "Case Study" };
+
+  $("scoreSubtitle").textContent = `${data.role} — ${typeNames[data.type] || data.type} — ${data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1)}`;
+  $("scoreQuestions").textContent = data.questions;
+  $("scoreDuration").textContent = data.duration;
+  $("scoreAvgWords").textContent = data.avgWords;
+  $("scoreDifficulty").textContent = data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1);
+  $("scoreFeedback").textContent = data.feedback;
+  $("scoreVal").textContent = data.score;
+  $("scoreGrade").textContent = data.grade;
+
+  const colors = { "A+": "#10b981", "A": "#10b981", "B+": "#6366f1", "B": "#6366f1", "C": "#f59e0b", "D": "#ef4444" };
+  $("scoreCircle").style.stroke = colors[data.grade] || "var(--accent)";
+
+  const circumference = 264;
+  const offset = circumference - (data.score / 100) * circumference;
+  $("scoreCircle").style.strokeDashoffset = circumference;
+  $("scoreOverlay").classList.add("open");
+
+  setTimeout(() => { $("scoreCircle").style.strokeDashoffset = offset; }, 300);
+}
+
+function closeScore() {
+  $("scoreOverlay").classList.remove("open");
+  backToSetup();
+}
+
+function retryInterview() {
+  $("scoreOverlay").classList.remove("open");
+  $("interviewScreen").classList.remove("active");
+  $("setupScreen").classList.remove("hidden");
+  $("intChat").innerHTML = "";
+  iv.history = [];
+  iv.questionNum = 0;
+}
+
+function backToSetup() {
+  $("interviewScreen").classList.remove("active");
+  $("setupScreen").classList.remove("hidden");
+  $("intChat").innerHTML = "";
+  iv.history = [];
+  iv.questionNum = 0;
+}
+
+function copyFeedback() {
+  const text = $("scoreFeedback").textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btns = document.querySelectorAll(".score-btn.secondary");
+    btns[1].textContent = "✅ Copied!";
+    setTimeout(() => { btns[1].textContent = "📋 Copy Feedback"; }, 2000);
+  });
+}
+
+
+/* ================================================================
+   UI HELPERS
+   ================================================================ */
+function setPhase(phase) {
+  iv.phase = phase;
+
+  const orb = $("intOrb");
+  orb.className = "int-orb " + phase;
+
+  const wave = $("intWave");
+  wave.classList.toggle("active", phase === "listening" || phase === "speaking");
+
+  const icons = { idle: "🎙️", listening: "👂", thinking: "🧠", speaking: "🗣️" };
+  const labels = { idle: "Tap to respond", listening: "Listening...", thinking: "Processing...", speaking: "Interviewer speaking" };
+  const statuses = { idle: "Ready", listening: "Your turn — speak", thinking: "Processing", speaking: "Interviewer talking" };
+  const dots = { idle: "", listening: "listening", thinking: "thinking", speaking: "speaking" };
+
+  $("intOrbIcon").textContent = icons[phase] || "🎙️";
+  $("intOrbLabel").textContent = labels[phase] || "";
+  $("intStatusText").textContent = statuses[phase] || "";
+  $("intDot").className = "int-dot " + (dots[phase] || "");
+}
+
+function addMsg(type, text) {
+  const div = document.createElement("div");
+  div.className = `int-msg ${type}`;
+  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const icon = type === "interviewer" ? "👔 Interviewer" : "🎤 You";
+  div.innerHTML = `${escapeHtml(text)}<span class="ts">${icon} · ${time}</span>`;
+  $("intChat").appendChild(div);
+  $("intChat").scrollTop = $("intChat").scrollHeight;
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function updateTimer() {
+  const elapsed = Math.floor((Date.now() - iv.startTime) / 1000);
+  $("timeBadge").textContent = formatTime(elapsed);
+}
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, '0')}`;
+}
+
+
+/* ================================================================
+   CONTROLS
+   ================================================================ */
+function toggleAuto() {
+  iv.autoListen = !iv.autoListen;
+  const btn = $("intAutoBtn");
+  btn.textContent = `🔄 Auto: ${iv.autoListen ? "ON" : "OFF"}`;
+  btn.classList.toggle("active", iv.autoListen);
+}
+
+function toggleIntMute() {
+  iv.muted = !iv.muted;
+  const btn = $("intMuteBtn");
+  btn.textContent = iv.muted ? "🔇 Voice: OFF" : "🔊 Voice: ON";
+  if (iv.muted) speechSynthesis.cancel();
+}
+
+
+/* ================================================================
+   KEYBOARD SHORTCUTS
+   ================================================================ */
+document.addEventListener("keydown", (e) => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT") return;
+  if (e.code === "Space" && iv.active) { e.preventDefault(); toggleListen(); }
+  if (e.code === "Escape" && iv.active) { e.preventDefault(); endInterview(); }
+  if (e.code === "KeyS" && iv.active && iv.phase === "listening") { e.preventDefault(); skipQuestion(); }
+});
+
+
+/* ================================================================
+   CHROME TTS KEEP-ALIVE
+   ================================================================ */
+setInterval(() => {
+  if (iv.phase === "speaking") speechSynthesis.resume();
+}, 5000);
+
+
+/* ================================================================
+   INIT
+   ================================================================ */
+initToken();
+populateVoices();
+
+if (!SR) {
+  document.querySelector(".start-btn").textContent = "❌ Browser Not Supported — Use Chrome";
+  document.querySelector(".start-btn").disabled = true;
+  document.querySelector(".start-btn").style.opacity = "0.5";
+}
+</script>
+</body>
+</html>

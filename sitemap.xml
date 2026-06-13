@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Homepage -->
+  <url>
+    <loc>https://zelvoraglobal.github.io/</loc>
+    <lastmod>2026-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zelvoraglobal.github.io/"/>
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://zelvoraglobal.github.io/"/>
+    <xhtml:link rel="alternate" hreflang="en-GB" href="https://zelvoraglobal.github.io/"/>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://zelvoraglobal.github.io/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://zelvoraglobal.github.io/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://zelvoraglobal.github.io/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://zelvoraglobal.github.io/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://zelvoraglobal.github.io/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://zelvoraglobal.github.io/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zelvoraglobal.github.io/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://zelvoraglobal.github.io/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://zelvoraglobal.github.io/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://zelvoraglobal.github.io/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zelvoraglobal.github.io/"/>
+    <image:image>
+      <image:loc>https://zelvoraglobal.github.io/logo-zelvora.png</image:loc>
+      <image:title>Zelvora AI Logo</image:title>
+    </image:image>
+  </url>
+
+  <!-- AI Mock Interview -->
+  <url>
+    <loc>https://zelvoraglobal.github.io/mock-interview.html</loc>
+    <lastmod>2026-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <!-- Career Lab (Resume Builder, Cover Letter, LinkedIn Optimizer) -->
+  <url>
+    <loc>https://zelvoraglobal.github.io/career-lab.html</loc>
+    <lastmod>2026-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <!-- Interview Preparation Hub -->
+  <url>
+    <loc>https://zelvoraglobal.github.io/interview-prep.html</loc>
+    <lastmod>2026-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- BYOK Settings -->
+  <url>
+    <loc>https://zelvoraglobal.github.io/byok-settings.html</loc>
+    <lastmod>2026-06-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+  </url>
+
+  <!-- Spoken English Gate -->
+  <url>
+    <loc>https://zelvoraglobal.github.io/spoken-english-gate.html</loc>
+    <lastmod>2026-06-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <!-- Spoken English Tutor -->
+  <url>
+    <loc>https://zelvoraglobal.github.io/spoken-english.html</loc>
+    <lastmod>2026-06-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+
+  <!-- Cover Letter Generator (direct link) -->
+  <url>
+    <loc>https://zelvoraglobal.github.io/cover-letter.html</loc>
+    <lastmod>2026-06-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+
+</urlset>

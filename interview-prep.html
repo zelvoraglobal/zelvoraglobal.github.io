@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zelvora AI | Interview Preparation Hub</title>
+<meta name="description" content="AI-powered interview preparation with role-specific questions, STAR method coaching, and personalized strategies based on your resume.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%2322d3ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='%230f172a'/%3E%3Cpath d='M32 38 C32 30 38 24 48 24 L72 24 C82 24 88 30 88 38 L88 42 L52 78 L88 78 L88 82 C88 90 82 96 72 96 L48 96 C38 96 32 90 32 82 L32 78 L68 42 L32 42 Z' fill='url(%23g)'/%3E%3Cpath d='M78 24 C84 24 90 20 94 14 C92 22 88 30 82 34 L78 24Z' fill='url(%23g)' opacity='0.8'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#020617;--bg2:#0f172a;--card:#1e293b;
+  --accent:#6366f1;--accent2:#22d3ee;--accent3:#a855f7;
+  --success:#10b981;--warning:#f59e0b;--danger:#ef4444;
+  --text:#e5e7eb;--muted:#94a3b8;--dim:#475569;
+  --glass:rgba(255,255,255,.05);--border:rgba(255,255,255,.08);
+}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+.amb{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.amb .o{position:absolute;border-radius:50%;filter:blur(110px);opacity:.12;animation:of 25s ease-in-out infinite alternate}
+.amb .o:nth-child(1){width:480px;height:480px;background:var(--accent3);top:-12%;right:-6%}
+.amb .o:nth-child(2){width:380px;height:380px;background:var(--accent2);bottom:-10%;left:-6%;animation-delay:9s}
+.amb .o:nth-child(3){width:260px;height:260px;background:var(--accent);top:40%;left:28%;animation-delay:16s}
+@keyframes of{0%{transform:translate(0,0) scale(1)}33%{transform:translate(45px,-30px) scale(1.1)}66%{transform:translate(-25px,40px) scale(.92)}100%{transform:translate(15px,-18px) scale(1.03)}}
+
+.nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(2,6,23,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text);font-weight:800;font-size:17px}
+.nav-logo em{font-style:normal;font-size:10px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;margin-left:2px}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-back{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;color:var(--muted);background:var(--glass);border:1px solid var(--border);text-decoration:none;transition:.2s}
+.nav-back:hover{color:var(--text);border-color:var(--accent)}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.app{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 16px}
+
+/* HERO */
+.hero{text-align:center;padding:48px 0 32px;animation:fadeIn .6s ease}
+.hero-icon{width:72px;height:72px;border-radius:22px;background:linear-gradient(135deg,var(--accent),var(--accent3));display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px;box-shadow:0 0 40px rgba(99,102,241,.25)}
+.hero h1{font-size:28px;font-weight:800;margin-bottom:8px;letter-spacing:-.5px}
+.hero h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);font-size:14px;max-width:520px;margin:0 auto;line-height:1.6}
+
+/* TABS */
+.tabs{display:flex;gap:6px;margin-bottom:28px;background:var(--glass);border-radius:14px;padding:5px;border:1px solid var(--border);flex-wrap:wrap}
+.tab{flex:1;min-width:120px;padding:10px 16px;border:none;background:transparent;color:var(--muted);font-size:12px;font-weight:700;font-family:inherit;border-radius:10px;cursor:pointer;transition:.25s}
+.tab.active{background:rgba(99,102,241,.15);color:var(--accent);box-shadow:0 0 20px rgba(99,102,241,.1)}
+.tab:hover:not(.active){color:var(--text);background:rgba(255,255,255,.03)}
+
+/* PANELS */
+.panel{display:none;animation:slideUp .3s ease}
+.panel.active{display:block}
+
+/* CARD */
+.card{background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:28px;backdrop-filter:blur(16px);margin-bottom:16px;transition:.3s}
+.card:hover{border-color:rgba(99,102,241,.2)}
+.card-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.card-header .icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.card-header .icon.purple{background:rgba(168,85,247,.12)}
+.card-header .icon.cyan{background:rgba(34,211,238,.12)}
+.card-header .icon.green{background:rgba(16,185,129,.12)}
+.card-header .icon.amber{background:rgba(245,158,11,.12)}
+.card-header h3{font-size:16px;font-weight:700}
+.card-header p{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* FORM */
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+.fg select,.fg input,.fg textarea{width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .2s}
+.fg select:focus,.fg input:focus,.fg textarea:focus{border-color:var(--accent)}
+.fg textarea{resize:vertical;min-height:80px}
+select option{background:var(--bg2);color:var(--text)}
+
+.btn{width:100%;padding:12px;border:none;border-radius:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:.3s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#7c3aed);color:#fff}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 30px rgba(99,102,241,.3)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.5;pointer-events:none}
+
+/* QUESTION CARDS */
+.q-list{display:flex;flex-direction:column;gap:10px}
+.q-item{display:flex;align-items:start;gap:12px;padding:14px 16px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:.25s}
+.q-item:hover{border-color:var(--accent);background:rgba(99,102,241,.04)}
+.q-num{width:28px;height:28px;border-radius:8px;background:rgba(99,102,241,.12);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--accent);flex-shrink:0}
+.q-text{font-size:13px;line-height:1.5;flex:1}
+.q-diff{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;flex-shrink:0}
+.q-diff.easy{color:var(--success);background:rgba(16,185,129,.1)}
+.q-diff.med{color:var(--warning);background:rgba(245,158,11,.1)}
+.q-diff.hard{color:var(--danger);background:rgba(239,68,68,.1)}
+
+/* ANSWER BOX */
+.answer-box{display:none;margin-top:12px;padding:16px;background:rgba(99,102,241,.04);border:1px solid rgba(99,102,241,.15);border-radius:12px;font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap}
+.answer-box.show{display:block;animation:fadeIn .3s ease}
+.answer-loading{display:flex;align-items:center;gap:8px;padding:16px;color:var(--muted);font-size:12px}
+.answer-loading .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1s ease-in-out infinite}
+.answer-loading .dot:nth-child(2){animation-delay:.15s}
+.answer-loading .dot:nth-child(3){animation-delay:.3s}
+
+/* TIP CARDS */
+.tip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.tip-card{padding:18px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:14px;transition:.2s}
+.tip-card:hover{border-color:var(--accent2)}
+.tip-card .tip-emoji{font-size:24px;margin-bottom:10px}
+.tip-card h4{font-size:13px;font-weight:700;margin-bottom:6px}
+.tip-card p{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* STAR */
+.star-box{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.star-step{padding:18px;border-radius:14px;border:1px solid var(--border);background:var(--glass)}
+.star-step .letter{font-size:28px;font-weight:900;margin-bottom:6px}
+.star-step h4{font-size:13px;font-weight:700;margin-bottom:4px}
+.star-step p{font-size:11px;color:var(--muted);line-height:1.5}
+.star-step:nth-child(1) .letter{color:var(--accent)}
+.star-step:nth-child(2) .letter{color:var(--accent2)}
+.star-step:nth-child(3) .letter{color:var(--accent3)}
+.star-step:nth-child(4) .letter{color:var(--success)}
+
+@media(max-width:600px){
+  .hero h1{font-size:22px}
+  .star-box{grid-template-columns:1fr}
+  .tip-grid{grid-template-columns:1fr}
+  .tabs{flex-wrap:wrap}
+  .tab{min-width:80px;font-size:11px;padding:8px 10px}
+}
+</style>
+</head>
+<body>
+<div class="amb"><div class="o"></div><div class="o"></div><div class="o"></div></div>
+
+<nav class="nav">
+  <a class="nav-logo" href="index.html">
+    ZELVORA<em>AI</em>
+  </a>
+  <div class="nav-right">
+    <a class="nav-back" href="mock-interview.html">🎤 Mock Interview</a>
+    <a class="nav-back" href="cover-letter.html">📝 Cover Letter</a>
+    <a class="nav-back" href="index.html">← Home</a>
+  </div>
+</nav>
+
+<div class="app">
+
+  <div class="hero">
+    <div class="hero-icon">📚</div>
+    <h1>Interview <span>Preparation Hub</span></h1>
+    <p>AI-powered preparation with role-specific questions, STAR method coaching, expert tips, and personalized answer suggestions based on your experience.</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showPanel('questions')">🎯 Practice Questions</button>
+    <button class="tab" onclick="showPanel('star')">⭐ STAR Method</button>
+    <button class="tab" onclick="showPanel('tips')">💡 Expert Tips</button>
+    <button class="tab" onclick="showPanel('prep')">🤖 AI Prep Coach</button>
+  </div>
+
+  <!-- PANEL: PRACTICE QUESTIONS -->
+  <div class="panel active" id="panel-questions">
+    <div class="card">
+      <div class="card-header">
+        <div class="icon purple">🎯</div>
+        <div>
+          <h3>Role-Specific Questions</h3>
+          <p>Select your role and type to get tailored practice questions</p>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="fg" style="margin:0">
+          <label>Job Role</label>
+          <select id="qRole">
+            <option>Software Engineer</option>
+            <option>Data Scientist</option>
+            <option>Product Manager</option>
+            <option>Business Analyst</option>
+            <option>Marketing Manager</option>
+            <option>Sales Executive</option>
+            <option>HR Manager</option>
+            <option>DevOps Engineer</option>
+            <option>UX Designer</option>
+            <option>Finance Analyst</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0">
+          <label>Question Type</label>
+          <select id="qType">
+            <option value="behavioral">🧠 Behavioral</option>
+            <option value="technical">💻 Technical</option>
+            <option value="situational">🎭 Situational</option>
+            <option value="hr">🤝 HR / Culture</option>
+            <option value="competency">📊 Competency-Based</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="generateQuestions()" id="genQBtn">🎯 Generate 10 Questions</button>
+    </div>
+
+    <div id="questionsList"></div>
+  </div>
+
+  <!-- PANEL: STAR METHOD -->
+  <div class="panel" id="panel-star">
+    <div class="card">
+      <div class="card-header">
+        <div class="icon amber">⭐</div>
+        <div>
+          <h3>STAR Method Framework</h3>
+          <p>Master the gold standard for behavioral interview answers</p>
+        </div>
+      </div>
+      <div class="star-box">
+        <div class="star-step">
+          <div class="letter">S</div>
+          <h4>Situation</h4>
+          <p>Set the scene. Describe the context — when, where, and what was happening. Keep it concise and relevant.</p>
+        </div>
+        <div class="star-step">
+          <div class="letter">T</div>
+          <h4>Task</h4>
+          <p>What was your specific responsibility or challenge? What were you expected to do?</p>
+        </div>
+        <div class="star-step">
+          <div class="letter">A</div>
+          <h4>Action</h4>
+          <p>What did YOU specifically do? Use "I" statements. Detail steps, decisions, and rationale.</p>
+        </div>
+        <div class="star-step">
+          <div class="letter">R</div>
+          <h4>Result</h4>
+          <p>What was the outcome? Use metrics if possible. What did you learn? How did it impact the team/company?</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="icon cyan">🎓</div>
+        <div>
+          <h3>STAR Practice Scenarios</h3>
+          <p>Try answering these prompts using the STAR method</p>
+        </div>
+      </div>
+      <div class="q-list" id="starScenarios">
+        <div class="q-item" onclick="toggleAnswer(this)">
+          <div class="q-num">1</div>
+          <div class="q-text">Tell me about a time you had to manage a difficult team member.</div>
+          <div class="q-diff med">Medium</div>
+        </div>
+        <div class="q-item" onclick="toggleAnswer(this)">
+          <div class="q-num">2</div>
+          <div class="q-text">Describe a situation where you had to meet a tight deadline.</div>
+          <div class="q-diff easy">Easy</div>
+        </div>
+        <div class="q-item" onclick="toggleAnswer(this)">
+          <div class="q-num">3</div>
+          <div class="q-text">Tell me about a time you failed and what you learned from it.</div>
+          <div class="q-diff hard">Hard</div>
+        </div>
+        <div class="q-item" onclick="toggleAnswer(this)">
+          <div class="q-num">4</div>
+          <div class="q-text">Give an example of when you went above and beyond expectations.</div>
+          <div class="q-diff med">Medium</div>
+        </div>
+        <div class="q-item" onclick="toggleAnswer(this)">
+          <div class="q-num">5</div>
+          <div class="q-text">Describe how you handled a disagreement with your manager.</div>
+          <div class="q-diff hard">Hard</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL: TIPS -->
+  <div class="panel" id="panel-tips">
+    <div class="card">
+      <div class="card-header">
+        <div class="icon green">💡</div>
+        <div>
+          <h3>Expert Interview Tips</h3>
+          <p>Proven strategies from hiring managers and career coaches</p>
+        </div>
+      </div>
+      <div class="tip-grid">
+        <div class="tip-card">
+          <div class="tip-emoji">🔍</div>
+          <h4>Research the Company</h4>
+          <p>Study their mission, recent news, competitors, and culture. Reference specific details to show genuine interest.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-emoji">🎯</div>
+          <h4>Quantify Your Impact</h4>
+          <p>Use numbers: "Increased revenue by 23%", "Led a team of 8", "Reduced latency by 40ms". Numbers are memorable.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-emoji">🪞</div>
+          <h4>Mirror the JD Language</h4>
+          <p>Use the same keywords from the job description in your answers. It shows alignment and beats ATS filters.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-emoji">⏱️</div>
+          <h4>Time Your Answers</h4>
+          <p>Keep answers to 1-2 minutes for behavioral, 3-5 minutes for technical. Rambling kills interviews.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-emoji">❓</div>
+          <h4>Ask Great Questions</h4>
+          <p>"What does success look like in 90 days?" "How do you measure performance?" "What's the team's biggest challenge?"</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-emoji">🧘</div>
+          <h4>Control Your Nerves</h4>
+          <p>Box breathing (4-4-4-4), power posing before the call, and arrive 10 minutes early. Confidence is preparation.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-emoji">📝</div>
+          <h4>Prepare Your Story Bank</h4>
+          <p>Have 5-8 STAR stories ready covering leadership, conflict, failure, teamwork, and innovation. Adapt on the fly.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-emoji">🤝</div>
+          <h4>Follow Up Powerfully</h4>
+          <p>Send a thank-you email within 24 hours. Reference something specific from the conversation. Stand out from 95% of candidates.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL: AI PREP COACH -->
+  <div class="panel" id="panel-prep">
+    <div class="card">
+      <div class="card-header">
+        <div class="icon purple">🤖</div>
+        <div>
+          <h3>AI Preparation Coach</h3>
+          <p>Get personalized interview strategies based on your role and experience</p>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Target Role</label>
+        <input id="prepRole" placeholder="e.g., Senior Software Engineer at Google">
+      </div>
+      <div class="fg">
+        <label>Your Experience / Background</label>
+        <textarea id="prepExp" placeholder="Paste your resume summary or describe your experience...&#10;e.g., 5 years in full-stack development, led team of 4, built microservices at scale..."></textarea>
+      </div>
+      <div class="fg">
+        <label>What do you want to prepare?</label>
+        <select id="prepType">
+          <option value="full_strategy">📋 Full Interview Strategy</option>
+          <option value="weakness_answers">🛡️ How to Answer Weaknesses</option>
+          <option value="salary_negotiation">💰 Salary Negotiation Script</option>
+          <option value="culture_fit">🏢 Culture Fit Answers</option>
+          <option value="tell_me_about">🗣️ "Tell Me About Yourself" Script</option>
+          <option value="why_company">❤️ "Why This Company?" Answer</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="generatePrep()" id="prepBtn">🤖 Generate Preparation Plan</button>
+    </div>
+
+    <div id="prepResult"></div>
+  </div>
+
+</div>
+
+<script>
+const API_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:8787'
+  : 'https://late-mouse-4aa2.zelvora-global.workers.dev';
+
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ===== GENERATE QUESTIONS =====
+async function generateQuestions() {
+  const role = document.getElementById('qRole').value;
+  const type = document.getElementById('qType').value;
+  const btn = document.getElementById('genQBtn');
+  const list = document.getElementById('questionsList');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="dot" style="width:6px;height:6px;border-radius:50%;background:white;animation:pulse 1s infinite"></span> Generating...';
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        module: 'career',
+        mode: 'interview_prep',
+        text: `Generate exactly 10 ${type} interview questions for a ${role} position. For each question, also specify the difficulty (Easy, Medium, or Hard). Format as a numbered list. Each line should be: NUMBER. [DIFFICULTY] Question text`,
+        history: []
+      })
+    });
+    const data = await res.json();
+
+    // Parse questions
+    const lines = data.reply.split('\n').filter(l => l.trim().match(/^\d+/));
+    let html = '<div class="q-list">';
+    lines.forEach((line, i) => {
+      const diffMatch = line.match(/\[(Easy|Medium|Hard)\]/i);
+      const diff = diffMatch ? diffMatch[1].toLowerCase() : 'med';
+      const qText = line.replace(/^\d+[\.\)]\s*/, '').replace(/\[(Easy|Medium|Hard)\]\s*/i, '').trim();
+      const diffClass = diff === 'easy' ? 'easy' : diff === 'hard' ? 'hard' : 'med';
+      const diffLabel = diff === 'easy' ? 'Easy' : diff === 'hard' ? 'Hard' : 'Medium';
+      html += `
+        <div class="q-item" onclick="getAIAnswer(this, '${qText.replace(/'/g, "\\'")}', '${role}')">
+          <div class="q-num">${i + 1}</div>
+          <div class="q-text">${qText}</div>
+          <div class="q-diff ${diffClass}">${diffLabel}</div>
+        </div>`;
+    });
+    html += '</div><p style="text-align:center;font-size:11px;color:var(--dim);margin-top:12px">Click any question to get an AI-suggested answer</p>';
+    list.innerHTML = html;
+  } catch (e) {
+    list.innerHTML = `<div class="card" style="border-color:var(--danger);color:var(--danger)">❌ ${e.message}</div>`;
+  }
+  btn.disabled = false;
+  btn.innerHTML = '🎯 Generate 10 Questions';
+}
+
+// ===== GET AI ANSWER =====
+async function getAIAnswer(el, question, role) {
+  // Toggle existing answer
+  const existing = el.nextElementSibling;
+  if (existing && existing.classList.contains('answer-box')) {
+    existing.classList.toggle('show');
+    return;
+  }
+
+  // Create loading state
+  const loading = document.createElement('div');
+  loading.className = 'answer-loading';
+  loading.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div> Generating ideal answer...';
+  el.after(loading);
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        module: 'career',
+        mode: 'interview_prep',
+        text: `For a ${role} interview, provide an excellent sample answer to this question: "${question}". Use the STAR method if it's behavioral. Keep it concise (150-200 words). Include a brief explanation of WHY this answer works.`,
+        history: []
+      })
+    });
+    const data = await res.json();
+    loading.remove();
+
+    const box = document.createElement('div');
+    box.className = 'answer-box show';
+    box.textContent = data.reply;
+    el.after(box);
+  } catch (e) {
+    loading.innerHTML = `<span style="color:var(--danger)">❌ ${e.message}</span>`;
+  }
+}
+
+// ===== TOGGLE STAR ANSWER =====
+function toggleAnswer(el) {
+  const existing = el.nextElementSibling;
+  if (existing && existing.classList.contains('answer-box')) {
+    existing.classList.toggle('show');
+    return;
+  }
+  getAIAnswer(el, el.querySelector('.q-text').textContent, 'any professional');
+}
+
+// ===== AI PREP COACH =====
+async function generatePrep() {
+  const role = document.getElementById('prepRole').value.trim();
+  const exp = document.getElementById('prepExp').value.trim();
+  const type = document.getElementById('prepType').value;
+  const btn = document.getElementById('prepBtn');
+  const result = document.getElementById('prepResult');
+
+  if (!role) { alert('Enter a target role'); return; }
+
+  const prompts = {
+    full_strategy: `Create a comprehensive interview preparation strategy for someone applying to: ${role}. Their background: ${exp || 'Not specified'}. Include: 1) Key topics to study, 2) Common questions to expect, 3) How to structure answers, 4) Red flags to avoid, 5) Final day checklist.`,
+    weakness_answers: `Generate 5 excellent ways to answer "What's your greatest weakness?" for a ${role} position. Background: ${exp || 'Not specified'}. Each answer should be honest, show self-awareness, and demonstrate growth.`,
+    salary_negotiation: `Create a salary negotiation script for a ${role} position. Include: opening statement, counter-offer strategy, non-monetary asks, and how to handle pressure. Background: ${exp || 'Not specified'}.`,
+    culture_fit: `Generate 5 excellent culture fit answers for a ${role} position. Include answers for: work style, team dynamics, handling conflict, company values alignment, and ideal work environment.`,
+    tell_me_about: `Write 3 different versions of "Tell me about yourself" for someone applying to ${role}. Background: ${exp || 'Not specified'}. Version 1: 30-second elevator pitch. Version 2: 60-second professional story. Version 3: 2-minute detailed narrative.`,
+    why_company: `Generate 3 compelling "Why do you want to work here?" answer templates for a ${role} position. Each should reference company research, personal alignment, and career goals.`
+  };
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="dot" style="width:6px;height:6px;border-radius:50%;background:white;animation:pulse 1s infinite"></span> Generating...';
+  result.innerHTML = '';
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        module: 'career',
+        mode: 'interview_prep',
+        text: prompts[type],
+        history: []
+      })
+    });
+    const data = await res.json();
+    result.innerHTML = `<div class="card"><div class="answer-box show" style="display:block">${data.reply.replace(/\n/g, '<br>')}</div></div>`;
+  } catch (e) {
+    result.innerHTML = `<div class="card" style="border-color:var(--danger)">❌ ${e.message}</div>`;
+  }
+  btn.disabled = false;
+  btn.innerHTML = '🤖 Generate Preparation Plan';
+}
+</script>
+</body>
+</html>

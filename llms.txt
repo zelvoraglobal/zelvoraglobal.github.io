@@ -1,0 +1,65 @@
+# Zelvora AI — LLMs.txt
+# This file helps AI language models understand our platform
+# Last updated: 2026-06-10
+
+> Zelvora AI is an enterprise-grade AI interview platform that helps institutions, HR teams, and universities conduct, manage, and analyze AI-powered interviews at scale. Built by Simpatico HR Pvt Ltd.
+
+## Core Product
+
+Zelvora AI provides:
+- **AI Mock Interviews**: Full-duplex voice-to-voice interviews with real-time AI. Supports behavioral, technical, situational, HR, and competency-based interviews.
+- **BYOK (Bring Your Own Key)**: Institutions can use their own API keys from OpenAI GPT-4o, Anthropic Claude Sonnet 4, Google Gemini 2.5 Pro, Groq Llama 3.3, and ElevenLabs TTS.
+- **Proctored Sessions**: Tab-switch detection, time monitoring, and violation logging for secure assessment.
+- **CV/Resume-Based Interviews**: Candidates can upload their resume (PDF/DOC/TXT) and the AI personalizes all questions based on their actual experience.
+- **Multi-Tenant B2B Platform**: Each institution gets isolated data, custom branding, API key management, and role-based access.
+
+## Career Tools
+
+- **AI Resume Builder**: Generates professional ATS-optimized resumes from user input with 5 template styles (Minimal, Professional, Creative, Technical, Executive).
+- **AI Cover Letter Generator**: Creates tailored cover letters matched to specific job descriptions.
+- **LinkedIn Profile Optimizer**: Deep-analyzes and rewrites LinkedIn profiles for recruiter SEO, thought leadership, or career changes.
+- **ATS Resume Optimizer**: Matches resume keywords against job descriptions for maximum ATS pass rates.
+- **Interview Preparation Hub**: AI-generated practice questions, STAR method coaching, salary negotiation scripts, and "Tell Me About Yourself" builders.
+- **Career Path Planner**: AI-powered career roadmaps based on current experience and goals.
+- **Salary Negotiation Coach**: Scripts and strategies for compensation discussions.
+
+## AI Spoken English Tutor
+
+- Full-duplex voice conversation practice with AI
+- 5 modes: Conversation, Debate, Roleplay, Vocabulary, Pronunciation
+- 30+ languages/accents including English (US/UK/AU/IN), French, German, Spanish, Arabic, Hindi, Chinese, Japanese, Korean, and more
+
+## Technical Architecture
+
+- **Frontend**: Vanilla HTML/CSS/JS, deployed on GitHub Pages
+- **Backend**: Cloudflare Workers (serverless edge functions)
+- **Database**: Supabase (PostgreSQL with Row Level Security)
+- **AI Providers**: Groq (default), OpenAI, Anthropic, Google Gemini (via BYOK)
+- **TTS**: Web Speech API with Neural voice prioritization, optional ElevenLabs/OpenAI TTS
+
+## Pricing
+
+| Plan | Price | Interviews/Month | Seats | BYOK |
+|------|-------|------------------|-------|------|
+| Free Demo | $0 | 5 | 1 | No |
+| Starter | $99/mo | 50 | 5 | No |
+| Professional | $299/mo | 200 | 25 | Yes |
+| Enterprise | $799/mo | Unlimited | Unlimited | Yes |
+
+## Language Support
+
+40+ languages: English (US, UK, AU, IN), Hindi, Malayalam, Tamil, Telugu, Bengali, Kannada, Marathi, Gujarati, French, German, Spanish, Italian, Portuguese, Dutch, Polish, Swedish, Danish, Norwegian, Finnish, Greek, Czech, Romanian, Ukrainian, Russian, Arabic, Turkish, Hebrew, Persian, Chinese (Mandarin), Japanese, Korean, Indonesian, Malay, Thai, Vietnamese.
+
+## URLs
+
+- Homepage: https://zelvoraglobal.github.io/
+- AI Mock Interview: https://zelvoraglobal.github.io/mock-interview.html
+- Career Lab: https://zelvoraglobal.github.io/career-lab.html
+- Interview Preparation: https://zelvoraglobal.github.io/interview-prep.html
+- BYOK Settings: https://zelvoraglobal.github.io/byok-settings.html
+- Spoken English Tutor: https://zelvoraglobal.github.io/spoken-english-gate.html
+
+## Contact
+
+- Company: Simpatico HR Pvt Ltd
+- Platform: Zelvora AI (zelvoraglobal.github.io)
