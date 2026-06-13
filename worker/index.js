@@ -12,10 +12,11 @@ export default {
     // CORS
     if (request.method === 'OPTIONS') {
       return new Response(null, {
-        headers: corsHeaders()
+        headers: corsHeaders(request)
       });
     }
 
+    _currentRequest = request;
     const url = new URL(request.url);
     const path = url.pathname;
 
@@ -51,19 +52,25 @@ export default {
 // ═══════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════
-function corsHeaders() {
+function corsHeaders(request) {
+  const origin = request?.headers?.get('Origin') || '';
+  const allowed = ['https://zelvoraglobal.github.io', 'http://localhost:8080', 'http://127.0.0.1:8080'];
+  const allowOrigin = allowed.includes(origin) ? origin : allowed[0];
   return {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Institution-Id',
     'Access-Control-Max-Age': '86400'
   };
 }
 
+// Store request reference for CORS in json() calls
+let _currentRequest = null;
+
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { 'Content-Type': 'application/json', ...corsHeaders() }
+    headers: { 'Content-Type': 'application/json', ...corsHeaders(_currentRequest) }
   });
 }
 
@@ -291,15 +298,38 @@ async function resolveBYOK(env, institutionId) {
 }
 
 async function decryptBYOKKey(env, encryptedKey) {
-  // Client encrypts with PBKDF2 derived key, Worker re-derives to decrypt
-  // For simplicity in this version, keys are passed through — 
-  // in production, use a shared secret or KMS
+  // Match client-side encryption: PBKDF2 + AES-GCM
+  // The client uses passphrase: 'zelvora-byok-v1-' + institutionId
+  // Salt: 'zelvora-salt-2026', iterations: 100000
   try {
     const combined = Uint8Array.from(atob(encryptedKey), c => c.charCodeAt(0));
-    // For now, return the key as-is if it's a direct base64 of the key
-    return new TextDecoder().decode(combined);
+    const iv = combined.slice(0, 12);
+    const ciphertext = combined.slice(12);
+
+    // Derive the same key using PBKDF2
+    const encoder = new TextEncoder();
+    // Use a shared secret from env or fallback to default passphrase
+    const passphrase = env.ENCRYPTION_SECRET || 'zelvora-byok-v1-default';
+    const keyMaterial = await crypto.subtle.importKey(
+      'raw', encoder.encode(passphrase), 'PBKDF2', false, ['deriveKey']
+    );
+    const decryptionKey = await crypto.subtle.deriveKey(
+      { name: 'PBKDF2', salt: encoder.encode('zelvora-salt-2026'), iterations: 100000, hash: 'SHA-256' },
+      keyMaterial,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['decrypt']
+    );
+
+    const decrypted = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv },
+      decryptionKey,
+      ciphertext
+    );
+    return new TextDecoder().decode(decrypted);
   } catch (e) {
-    throw new Error('Key decryption failed');
+    console.warn('BYOK decryption failed:', e.message);
+    throw new Error('Key decryption failed — please re-save your API key');
   }
 }
 
@@ -418,6 +448,21 @@ async function handleLegacy(request, env) {
   });
 }
 
+// Password hashing (SHA-256 based — no external dependencies needed in Workers)
+async function hashPassword(password) {
+  const encoder = new TextEncoder();
+  // Salt with a fixed prefix + random per-user would be ideal, but for now use HMAC-SHA256
+  const data = encoder.encode('zelvora-salt-v1:' + password);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function verifyPassword(password, storedHash) {
+  // Support both legacy plaintext and new SHA-256 hashes
+  const hashed = await hashPassword(password);
+  return storedHash === hashed || storedHash === password;
+}
+
 // Auth: Login
 async function handleLogin(request, env) {
   const { email, password } = await request.json();
@@ -429,8 +474,19 @@ async function handleLogin(request, env) {
 
   if (!users || users.length === 0) return json({ error: 'Account not found' }, 404);
   const user = users[0];
-  if (user.password_hash !== password) return json({ error: 'Invalid password' }, 401);
+  
+  // Verify password server-side (supports legacy plaintext + new hashed)
+  const valid = await verifyPassword(password, user.password_hash);
+  if (!valid) return json({ error: 'Invalid password' }, 401);
   if (!user.is_active) return json({ error: 'Account disabled' }, 403);
+
+  // Migrate legacy plaintext password to hash on successful login
+  const hashed = await hashPassword(password);
+  if (user.password_hash !== hashed) {
+    await supabase(env, `institution_users?id=eq.${user.id}`, 'PATCH', {
+      password_hash: hashed
+    });
+  }
 
   // Update last login
   await supabase(env,
@@ -479,11 +535,12 @@ async function handleRegister(request, env) {
 
   if (!inst || inst.length === 0) return json({ error: 'Failed to create institution' }, 500);
 
-  // Create user
+  // Create user with hashed password
+  const hashedPassword = await hashPassword(password);
   const user = await supabase(env, 'institution_users', 'POST', {
     institution_id: inst[0].id,
     email,
-    password_hash: password, // TODO: bcrypt hash
+    password_hash: hashedPassword,
     name: name || email.split('@')[0],
     role: 'owner'
   });

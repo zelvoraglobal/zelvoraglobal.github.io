@@ -4,7 +4,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 const SUPABASE_URL = 'https://nlsfakiwozkkqvbobnjq.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE'; // Replace with your anon key
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5sc2Zha2l3b3pra3F2Ym9ibmpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwNDY1MTUsImV4cCI6MjA5NjYyMjUxNX0.JB68GrLJ9wWH3SkXbpylKXMQevnsdlu9B11j5GUl108';
 
 class ZelvoraDB {
   constructor() {
@@ -127,66 +127,38 @@ class ZelvoraDB {
   }
 
   // ═══════════════════════════════════════
-  // AUTH — Institution Login
+  // AUTH — Institution Login (via Worker — passwords never reach browser)
   // ═══════════════════════════════════════
   async login(email, password) {
-    // Find user by email
-    const users = await this.select(
-      'institution_users',
-      `email=eq.${encodeURIComponent(email)}&select=*,institutions(*)`
-    );
-    if (!users || users.length === 0) throw new Error('Account not found');
-    const user = users[0];
-    
-    // Simple password check (in production, use bcrypt via Worker)
-    if (user.password_hash !== password) throw new Error('Invalid password');
-    if (!user.is_active) throw new Error('Account disabled');
+    // Route through Worker API — password is verified server-side
+    const data = await this.workerFetch('/api/auth/login', { email, password });
+    if (!data.success) throw new Error(data.error || 'Login failed');
 
+    const user = data.user;
     const session = {
       user_id: user.id,
       institution_id: user.institution_id,
       email: user.email,
       name: user.name,
       role: user.role,
-      institution: user.institutions
+      institution: user.institution
     };
     this._saveSession(session);
-
-    // Update last login
-    await this.update('institution_users', 
-      { last_login: new Date().toISOString() },
-      `id=eq.${user.id}`
-    );
-
     return session;
   }
 
   async register(institutionData, userData) {
-    // Create institution
-    const inst = await this.insert('institutions', {
-      name: institutionData.name,
-      slug: institutionData.name.toLowerCase().replace(/[^a-z0-9]/g, '-'),
-      email: institutionData.email,
-      phone: institutionData.phone || null,
-      plan: 'trial',
-      plan_expires_at: new Date(Date.now() + 14 * 24 * 3600000).toISOString(),
-      max_interviews_per_month: 20,
-      max_seats: 3
-    });
-
-    if (!inst || inst.length === 0) throw new Error('Failed to create institution');
-    const institution = inst[0];
-
-    // Create admin user
-    const user = await this.insert('institution_users', {
-      institution_id: institution.id,
+    // Route through Worker API — password is hashed server-side
+    const data = await this.workerFetch('/api/auth/register', {
+      institution_name: institutionData.name,
       email: userData.email,
-      password_hash: userData.password, // In production, hash via Worker
+      password: userData.password,
       name: userData.name,
-      role: 'owner'
+      phone: institutionData.phone || null
     });
+    if (!data.success) throw new Error(data.error || 'Registration failed');
 
-    return { institution, user: user?.[0] };
+    return { institution: data.institution, user: data.user };
   }
 
   // ═══════════════════════════════════════

@@ -797,18 +797,30 @@ async function handleCVFile(file) {
       text = await file.text();
     } else if (ext === 'pdf') {
       text = await extractPDFText(file);
-    } else if (ext === 'doc' || ext === 'docx') {
-      // For DOC/DOCX, read as text (basic extraction)
+    } else if (ext === 'docx') {
+      // DOCX is a zip file — load mammoth.js for proper extraction
+      if (!window.mammoth) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js';
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      }
+      const arrayBuf = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer: arrayBuf });
+      text = result.value || '';
+    } else if (ext === 'doc') {
+      // Legacy DOC — basic text extraction from binary
       const arrayBuf = await file.arrayBuffer();
       const bytes = new Uint8Array(arrayBuf);
-      // Extract readable text from binary
       let raw = '';
       for (let i = 0; i < bytes.length; i++) {
         const c = bytes[i];
         if ((c >= 32 && c <= 126) || c === 10 || c === 13) raw += String.fromCharCode(c);
         else if (raw.length > 0 && raw[raw.length-1] !== ' ') raw += ' ';
       }
-      // Clean up
       text = raw.replace(/\s{3,}/g, '\n').replace(/[^\x20-\x7E\n]/g, '').trim();
     }
 
@@ -899,7 +911,9 @@ function setupRec() {
   
   // 🚨 THE MAGIC FIX: Turning this to FALSE kills the duplication bug.
   rec.interimResults = false; 
-  rec.lang = "en-US";
+  // Use language from access token or default to en-US
+  const lang = iv.accessToken?.language || 'en-US';
+  rec.lang = lang;
 
   rec.onstart = () => {
     setPhase("listening");
