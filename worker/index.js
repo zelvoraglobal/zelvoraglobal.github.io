@@ -89,7 +89,6 @@ async function supabase(env, path, method = 'GET', body = null) {
   const res = await fetch(url, options);
   const text = await res.text();
   return text ? JSON.parse(text) : null;
-}
 
 // ═══════════════════════════════════════
 // MULTI-TENANT ISOLATION MIDDLEWARE
