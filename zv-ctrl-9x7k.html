@@ -660,7 +660,7 @@ Multi-language + resume
           <div class="edit-row"><span class="edit-label">HR Pass</span><input class="edit-input" type="password" id="set_hrPass" placeholder="Min 4 chars"><button class="btn btn-primary" onclick="changeHRPass()" style="margin-left:8px;">Change</button></div>
         </div>
         <div class="card"><h3>⚙️ Platform</h3>
-          <div class="edit-row"><span class="edit-label">Worker URL</span><input class="edit-input" id="set_worker" value="https://zelvora-api.evalisglobal.workers.dev"></div>
+          <div class="edit-row"><span class="edit-label">Worker URL</span><input class="edit-input" id="set_worker" value="https://zelvora-api.zelvora-global.workers.dev"></div>
           <div class="edit-row"><span class="edit-label">Max Violations</span><input class="edit-input" type="number" id="set_violations" value="3" style="max-width:100px;"></div>
           <div class="edit-row"><span class="edit-label">Maintenance</span><div class="toggle-switch" id="tog_maint" onclick="toggleSwitch(this)"></div><span class="edit-preview">Off</span></div>
           <button class="btn btn-save btn-full" onclick="savePlatformSettings()" style="margin-top:12px;">💾 Save</button>
@@ -680,7 +680,7 @@ Multi-language + resume
 // CONFIG
 // ═══════════════════════════════════════
 const ADMIN_DEFAULT="superadmin@2025";
-const W_DEFAULT="https://zelvora-api.evalisglobal.workers.dev";
+const W_DEFAULT="https://zelvora-api.zelvora-global.workers.dev";
 function getConfig(k,fb){try{return JSON.parse(localStorage.getItem("adminConfig")||"{}")[k]??fb}catch(e){return fb}}
 function setConfig(k,v){try{const c=JSON.parse(localStorage.getItem("adminConfig")||"{}");c[k]=v;localStorage.setItem("adminConfig",JSON.stringify(c))}catch(e){}}
 function getW(){return getConfig('workerUrl',W_DEFAULT)}

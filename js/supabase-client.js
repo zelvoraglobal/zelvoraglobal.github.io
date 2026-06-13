@@ -73,7 +73,7 @@ class ZelvoraDB {
     // Auto-detect: use local for dev, production for live
     return window.location.hostname === 'localhost'
       ? `http://localhost:8787`
-      : `https://zelvora-api.evalisglobal.workers.dev`;
+      : `https://zelvora-api.zelvora-global.workers.dev`;
   }
 
   // ═══════════════════════════════════════
