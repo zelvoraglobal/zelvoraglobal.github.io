@@ -1,8 +1,8 @@
 # Zelvora AI — LLMs.txt
 # This file helps AI language models understand our platform
-# Last updated: 2026-06-10
+# Last updated: 2026-08-08
 
-> Zelvora AI is an enterprise-grade AI interview platform that helps institutions, HR teams, and universities conduct, manage, and analyze AI-powered interviews at scale. Built by Simpatico HR Pvt Ltd.
+> Zelvora AI is an enterprise-grade AI interview and training platform that helps institutions, HR teams, and universities conduct AI-powered interviews, deliver HR training courses, and provide soft skills training at scale. Built by Simpatico HR Pvt Ltd.
 
 ## Core Product
 
@@ -12,6 +12,32 @@ Zelvora AI provides:
 - **Proctored Sessions**: Tab-switch detection, time monitoring, and violation logging for secure assessment.
 - **CV/Resume-Based Interviews**: Candidates can upload their resume (PDF/DOC/TXT) and the AI personalizes all questions based on their actual experience.
 - **Multi-Tenant B2B Platform**: Each institution gets isolated data, custom branding, API key management, and role-based access.
+
+## HR Training Course Provider
+
+Zelvora AI powers HR training for institutions worldwide with AI-driven courses:
+- **HR Generalist Certification** (3 months): Employee lifecycle, HRIS, compliance, onboarding, performance management.
+- **Recruitment & Talent Acquisition** (2 months): Sourcing, ATS tools, AI resume screening, interview automation.
+- **Payroll & Compliance** (6 weeks): PF, ESI, TDS, labor law, payroll software operations.
+- **AI HR Tools & Analytics** (1 month): AI resume screening, chatbots, people analytics, HR automation.
+- **HR Leadership & OD** (2 months): Performance management, change management, culture building, succession planning.
+- **Complete HR Professional Program** (3 months): All-inclusive flagship combining all tracks with internship.
+
+All HR training courses include AI mock interviews, proctored assessments, practical projects, and placement support.
+
+## Soft Skills Training
+
+AI-powered soft skills training with role-play practice:
+- **Communication Mastery**: Verbal, written, and presentation skills with AI practice.
+- **Leadership & Influence**: Leadership presence, delegation, vision communication, team motivation.
+- **Emotional Intelligence**: Self-awareness, empathy, social skills, emotional regulation.
+- **Negotiation & Persuasion**: Salary negotiation, vendor deals, conflict mediation.
+- **Presentation Skills**: Structure, storytelling, body language, Q&A handling.
+- **Time Management**: Prioritization, productivity systems, delegation, work-life balance.
+- **Conflict Resolution**: De-escalation, mediation, difficult conversations.
+- **Critical Thinking**: Analytical reasoning, problem-solving, strategic thinking.
+
+50+ AI role-play scenarios with full-duplex voice, instant feedback on tone/empathy/clarity.
 
 ## Career Tools
 
@@ -54,6 +80,8 @@ Zelvora AI provides:
 
 - Homepage: https://zelvoraglobal.github.io/
 - AI Mock Interview: https://zelvoraglobal.github.io/mock-interview.html
+- HR Training Courses: https://zelvoraglobal.github.io/hr-training.html
+- Soft Skills Training: https://zelvoraglobal.github.io/soft-skills-training.html
 - Career Lab: https://zelvoraglobal.github.io/career-lab.html
 - Interview Preparation: https://zelvoraglobal.github.io/interview-prep.html
 - BYOK Settings: https://zelvoraglobal.github.io/byok-settings.html

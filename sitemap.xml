@@ -6,7 +6,7 @@
   <!-- Homepage -->
   <url>
     <loc>https://zelvoraglobal.github.io/</loc>
-    <lastmod>2026-06-10</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://zelvoraglobal.github.io/"/>
@@ -32,15 +32,41 @@
   <!-- AI Mock Interview -->
   <url>
     <loc>https://zelvoraglobal.github.io/mock-interview.html</loc>
-    <lastmod>2026-06-10</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
+  </url>
+
+  <!-- HR Training Course Provider -->
+  <url>
+    <loc>https://zelvoraglobal.github.io/hr-training.html</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.93</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zelvoraglobal.github.io/hr-training.html"/>
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://zelvoraglobal.github.io/hr-training.html"/>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://zelvoraglobal.github.io/hr-training.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://zelvoraglobal.github.io/hr-training.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zelvoraglobal.github.io/hr-training.html"/>
+  </url>
+
+  <!-- Soft Skills Training -->
+  <url>
+    <loc>https://zelvoraglobal.github.io/soft-skills-training.html</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.92</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zelvoraglobal.github.io/soft-skills-training.html"/>
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://zelvoraglobal.github.io/soft-skills-training.html"/>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://zelvoraglobal.github.io/soft-skills-training.html"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://zelvoraglobal.github.io/soft-skills-training.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zelvoraglobal.github.io/soft-skills-training.html"/>
   </url>
 
   <!-- Career Lab (Resume Builder, Cover Letter, LinkedIn Optimizer) -->
   <url>
     <loc>https://zelvoraglobal.github.io/career-lab.html</loc>
-    <lastmod>2026-06-10</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.90</priority>
   </url>
@@ -48,7 +74,7 @@
   <!-- Interview Preparation Hub -->
   <url>
     <loc>https://zelvoraglobal.github.io/interview-prep.html</loc>
-    <lastmod>2026-06-10</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
@@ -56,7 +82,7 @@
   <!-- BYOK Settings -->
   <url>
     <loc>https://zelvoraglobal.github.io/byok-settings.html</loc>
-    <lastmod>2026-06-10</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.80</priority>
   </url>
@@ -64,7 +90,7 @@
   <!-- Spoken English Gate -->
   <url>
     <loc>https://zelvoraglobal.github.io/spoken-english-gate.html</loc>
-    <lastmod>2026-06-10</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
@@ -72,17 +98,9 @@
   <!-- Spoken English Tutor -->
   <url>
     <loc>https://zelvoraglobal.github.io/spoken-english.html</loc>
-    <lastmod>2026-06-10</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.70</priority>
-  </url>
-
-  <!-- Cover Letter Generator (direct link) -->
-  <url>
-    <loc>https://zelvoraglobal.github.io/cover-letter.html</loc>
-    <lastmod>2026-06-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.65</priority>
   </url>
 
 </urlset>

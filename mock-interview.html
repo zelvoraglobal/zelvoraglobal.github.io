@@ -340,6 +340,21 @@
 </style>
 </head>
 <body>
+<script>
+/* ═══ ZELVORA ACCESS GUARD ═══ */
+(function(){
+  // Allow proctored interview tokens via URL param
+  const params=new URLSearchParams(window.location.search);
+  if(params.get('token'))return;
+  // Allow institution users (zv_session in localStorage)
+  try { const s=localStorage.getItem('zv_session'); if(s){const d=JSON.parse(s);if(d&&d.institution_id)return;} } catch(e){}
+  // Check zelvora_token
+  const t=localStorage.getItem('zelvora_token');
+  if(!t){window.location.replace('spoken-english-gate.html');return;}
+  try{const p=JSON.parse(atob(t));if(Date.now()>p.exp||(p.uses&&p.uses.spoken<=0)){localStorage.removeItem('zelvora_token');window.location.replace('spoken-english-gate.html');return;}}
+  catch(e){localStorage.removeItem('zelvora_token');window.location.replace('spoken-english-gate.html');return;}
+})();
+</script>
 
 <div class="amb">
   <div class="grid"></div>
@@ -676,10 +691,7 @@ function initToken() {
       }
     } catch (e) {}
   }
-  const d = { sub: "demo_" + Date.now(), exp: Date.now() + 30 * 24 * 3600000, uses: { spoken: 500 } };
-  iv.token = btoa(JSON.stringify(d));
-  localStorage.setItem("zelvora_token", iv.token);
-  $("usesDisplay").textContent = "500 uses";
+  window.location.replace("spoken-english-gate.html");
 }
 
 async function verifyAccessToken(token) {

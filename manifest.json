@@ -1,7 +1,7 @@
 {
-  "name": "Zelvora AI — Enterprise Interview Platform",
+  "name": "Zelvora AI — Enterprise Interview & Training Platform",
   "short_name": "Zelvora AI",
-  "description": "AI-powered interview platform for institutions with BYOK, full-duplex voice, and proctored interviews.",
+  "description": "AI-powered interview platform with HR training courses, soft skills training, BYOK, full-duplex voice, and proctored interviews for institutions.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#020617",
@@ -16,6 +16,36 @@
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "AI Mock Interview",
+      "short_name": "Interview",
+      "description": "Start an AI-powered mock interview",
+      "url": "/mock-interview.html",
+      "icons": [{"src": "/icons/icon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "HR Training Courses",
+      "short_name": "HR Training",
+      "description": "Browse HR certification courses",
+      "url": "/hr-training.html",
+      "icons": [{"src": "/icons/icon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Soft Skills Training",
+      "short_name": "Soft Skills",
+      "description": "Practice soft skills with AI role-play",
+      "url": "/soft-skills-training.html",
+      "icons": [{"src": "/icons/icon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Career Lab",
+      "short_name": "Career Lab",
+      "description": "Resume builder, cover letter, LinkedIn optimizer",
+      "url": "/career-lab.html",
+      "icons": [{"src": "/icons/icon-192.png", "sizes": "192x192"}]
     }
   ]
 }
